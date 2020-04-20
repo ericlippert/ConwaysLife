@@ -113,19 +113,17 @@ namespace ConwaysLife
 
         private void DrawBlocks()
         {
-            life.Draw(LifeRect, DrawBlock);
-            DrawGrid();
-
-            void DrawBlock(LifePoint v)
+            using (Graphics g = Graphics.FromImage(display.Image))
             {
-                Point p = LifeToBitmap(v);
-                if (IsValidBitmapPoint(p))
+                life.Draw(LifeRect, DrawBlock);
+                void DrawBlock(LifePoint v)
                 {
-                    Graphics.FromImage(display.Image).FillRectangle(
-                        liveBrush,
-                        p.X, p.Y, 1 << -scale, 1 << -scale);
+                    Point p = LifeToBitmap(v);
+                    if (IsValidBitmapPoint(p))
+                        g.FillRectangle(liveBrush, p.X, p.Y, 1 << -scale, 1 << -scale);
                 }
             }
+            DrawGrid();
         }
 
         private unsafe void DrawPixels()
@@ -156,9 +154,15 @@ namespace ConwaysLife
             DrawDisplay();
         }
 
+        private void ClearDisplay()
+        {
+            using (Graphics g = Graphics.FromImage(display.Image))
+                g.Clear(deadColor);
+        }
+
         private void DrawDisplay()
         {
-            Graphics.FromImage(display.Image).Clear(deadColor);
+            ClearDisplay();
             if (scale < 0)
                 DrawBlocks();
             else
