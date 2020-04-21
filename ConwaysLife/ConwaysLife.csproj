@@ -61,6 +61,7 @@
     <Compile Include="Patterns.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stafford.cs" />
     <EmbeddedResource Include="LifeForm.resx">
       <DependentUpon>LifeForm.cs</DependentUpon>
     </EmbeddedResource>
