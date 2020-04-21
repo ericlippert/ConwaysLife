@@ -145,7 +145,7 @@ namespace ConwaysLife
             {
                 Point p = LifeToBitmap(v);
                 if (IsValidBitmapPoint(p))
-                    pixels[p.Y * display.Width + p.X] = color;
+                    pixels[p.Y * (data.Stride / sizeof(int)) + p.X] = color;
             }
         }
 
