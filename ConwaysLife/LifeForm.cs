@@ -122,7 +122,7 @@ namespace ConwaysLife
         {
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            life = new BoolArrayLife();
+            life = new Abrash();
             life.AddBlinker(new LifePoint(5, 5));
             corner = new LifePoint(-2, LifeHeight - 2);
             display.Image = new Bitmap(display.Width, display.Height);

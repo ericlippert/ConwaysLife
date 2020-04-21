@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abrash.cs" />
     <Compile Include="BoolArrayLife.cs" />
     <Compile Include="ILife.cs" />
     <Compile Include="LifeForm.cs">
