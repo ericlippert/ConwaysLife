@@ -28,9 +28,11 @@ namespace ConwaysLife
         // scale == -2 means a cell is 4 pixels wide
         // scale == -1 means a cell is 2 pixels wide
         // scale ==  0 means a cell is 1 pixel wide
-        
+
         // TODO: Positive scales are not yet implemented.
 
+        private const int maxScale = 0;
+        private const int minScale = -6;
         private int scale = -5;
 
         // If the cells are rendered 8 pixels wide or wider, draw a grid.
@@ -72,6 +74,36 @@ namespace ConwaysLife
         private bool IsValidBitmapPoint(Point p) =>
             0 <= p.X && p.X < display.Width && 0 <= p.Y && p.Y < display.Height;
 
+        // These helpers (1) change the scale level, and (2) compute the new 
+        // upper left corner point of the viewing rectangle in Life grid
+        // coordinates. The passed-in point is the fixed point that we are
+        // zooming at; that is, it is the point which has roughly the same
+        // screen coordinates before and after the zoom.
+
+        // That is to say, if you want to zoom in on a region, point the mouse
+        // at it and zoom in with the mouse wheel; the zoomed-in region will
+        // remain under the mouse. And similarly for zooming out.
+
+        private void ZoomOut(LifePoint v)
+        {
+            if (scale < maxScale)
+            {
+                corner = new LifePoint(2 * corner.X - v.X, 2 * corner.Y - v.Y);
+                scale += 1;
+                DrawDisplay();
+            }
+        }
+
+        private void ZoomIn(LifePoint v)
+        {
+            if (scale > minScale)
+            {
+                corner = new LifePoint((corner.X + v.X) / 2, (corner.Y + v.Y) / 2);
+                scale -= 1;
+                DrawDisplay();
+            }
+        }
+
         public LifeForm()
         {
             InitializeComponent();
@@ -81,6 +113,9 @@ namespace ConwaysLife
         {
             Initialize();
             Draw();
+            // The mouse wheel event handler is not automatically generated
+            // by the forms designer, so we will hook it up manually.
+            display.MouseWheel += display_MouseWheel;
         }
 
         private void Initialize()
@@ -174,6 +209,23 @@ namespace ConwaysLife
         {
             life.Step();
             Draw();
+        }
+
+        // In order to get mouse wheel events, the picture box needs to have
+        // focus, but it does not automatically get focus when moused over.
+
+        private void display_MouseEnter(object sender, EventArgs e)
+        {
+            display.Focus();
+        }
+
+        private void display_MouseWheel(object sender, MouseEventArgs e)
+        {
+            LifePoint v = this.BitmapToLife(new Point(e.X, e.Y));
+            if (e.Delta > 0)
+                ZoomIn(v);
+            else if (e.Delta < 0)
+                ZoomOut(v);
         }
     }
 }
