@@ -5,15 +5,15 @@ namespace ConwaysLife
 {
     // A straightforward naive implementation of Life.
     
-    // The "infinite" board is simulated by a 32 x 32
+    // The "infinite" board is simulated by a 256 x 256
     // array of Booleans; any cells outside the square
-    // bounded by (0, 0) and (31, 31) are considered 
+    // bounded by (0, 0) and (255, 255) are considered 
     // permanently dead.
 
     class BoolArrayLife : ILife
     {
-        private int height = 32;
-        private int width = 32;
+        private int height = 256;
+        private int width = 256;
         private bool[,] cells;
 
         public BoolArrayLife()

@@ -169,7 +169,7 @@ namespace ConwaysLife
             long ymax = Min(height - 1, rect.Y + 1);
             for (long y = ymin; y < ymax; y += 1)
                 for (long x = xmin; x < xmax; x += 1)
-                    if (this[x, y])
+                    if (cells[x, y].State)
                         setPixel(new LifePoint(x, y));
         }
     }

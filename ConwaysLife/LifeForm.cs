@@ -33,7 +33,7 @@ namespace ConwaysLife
 
         private const int maxScale = 0;
         private const int minScale = -6;
-        private int scale = -5;
+        private int scale = -1;
 
         // If the cells are rendered 8 pixels wide or wider, draw a grid.
         private const int gridScale = -3;
@@ -122,8 +122,8 @@ namespace ConwaysLife
         {
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            life = new Abrash();
-            life.AddBlinker(new LifePoint(5, 5));
+            life = new Scholes();
+            life.AddAcorn(new LifePoint(128, 128));
             corner = new LifePoint(-2, LifeHeight - 2);
             display.Image = new Bitmap(display.Width, display.Height);
         }
