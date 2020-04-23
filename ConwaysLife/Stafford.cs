@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using static System.Math;
 
@@ -111,7 +112,7 @@ namespace ConwaysLife
     {
         private int height = 256;
         private int width = 89; // Width in triplets
-        private Triplet[,] triplets;
+        private Triplet[] triplets;
 
         public Stafford()
         {
@@ -120,7 +121,7 @@ namespace ConwaysLife
 
         public void Clear()
         {
-            triplets = new Triplet[width, height];
+            triplets = new Triplet[width * height];
         }
 
         private bool IsValidPoint(long x, long y) =>
@@ -132,7 +133,7 @@ namespace ConwaysLife
             {
                 if (IsValidPoint(x, y))
                 {
-                    Triplet t = triplets[x / 3, y];
+                    Triplet t = triplets[x / 3 + y * width];
                     switch (x % 3)
                     {
                         case 0: return t.LeftCurrent == 1;
@@ -156,6 +157,186 @@ namespace ConwaysLife
 
         public void Step()
         {
+            // The original explanation of the algorithm in the article
+            // presents two problems, one pedagogical and one technical.
+            //
+            // The pedagogical problem is that the explanation is difficult 
+            // to follow because it appears that the order of events in each 
+            // iteration of the main update loop is impossible. The order 
+            // as presented is:
+            //
+            // * Copy the next cell state to the current cell state.
+            // * Update the neighbor counts of the neighboring triplets if necessary
+            //   to match the new current state.
+            // * Compute the next state from the current state and neighbor count.
+            //
+            // It appears we have a chicken-and-egg problem here in that the next
+            // state is used before it is computed! How does this make any sense?
+            //
+            // We *could* resolve the pedagogical problem by explaining why the
+            // wrong-looking order is in fact correct, as follows:
+            //
+            // If you're in an *infinite* loop, it doesn't matter whether this appears
+            // a sensible order or not; all that matters is that the loop body
+            // precondition is *met* when you *first* enter the loop at the top, and 
+            // is *maintained* by the action of the loop body every time it executes.
+            //
+            // The loop body precondition in this description of the algorithm must
+            // be the following:
+            //
+            // * The current cell state is known.
+            // * The neighbor counts are consistent with the current cell states.
+            // * The next tick cell state is known.
+            //
+            // But these conditions are easy to meet on the very first time you 
+            // enter the loop; you just make the "current" state "all dead" so
+            // the neighbor counts are all zero. The initial state of the board
+            // is set to the next state, and we can start the loop at the "copy"
+            // step no problem.
+            //
+            // The algorithm is clearly seen to maintain the body precondition
+            // in the action of the loop body; by the time we are done each
+            // execution of the body we are in a known good state where the
+            // current cell state, current neighbor count, and next cell states
+            // are all consistent.
+            //
+            // The technical problem with my adaptation of this algorithm is that
+            // I want to be able to edit the current state, but if the loop body 
+            // precondition is that the next state is already known, that presents 
+            // a difficulty. You can't just update the current state because that 
+            // is about to be wiped out by the update that was computed from the 
+            // *pre-edit* current state.
+            //
+            // We can solve both the pedagogical problem and the technical problem
+            // by re-stating the action of the main loop in the more sensible order
+            // that we used in our implementation of Abrash's algorithm:
+            //
+            // * Compute the next state from the current state and neighbor count.
+            // * Copy the next cell state to the current cell state.
+            // * Update the neighbor counts of the neighboring triplets if necessary
+            //   to match the new current state.
+            //
+            // Now the precondition is only that the current state and the neighbor
+            // counts are consistent; this property is easy enough to maintain when
+            // editing, as we saw in Abrash's algorithm.
+            //
+            // Once we have the basic algorithm working, we can start to introduce
+            // optimizations, starting with the change list optimization.
+            //
+            // How does the change list optimization work? It is motivated by 
+            // pondering this question:
+            //
+            // Under what circumstances do we know a cell will not change?
+            //
+            //   If it did not change between the previous tick and
+            //   the current tick, and similarly none of its neighbors
+            //   changed, then its state and neighbor count are the same
+            //   now as they were in a previous configuration that led to
+            //   no change. Therefore it will not change from the current
+            //   tick to the next tick either.
+            //
+            // What then are the cells that *might* change in this tick?
+            //
+            //   * Cells that changed in the previous tick.
+            //   * Neighbors of cells that changed in the previous tick.
+            //
+            // Therefore: if we have a list of *all* cells which changed
+            // in the previous tick, we can restrict our computation of 
+            // next state to only those cells and their neighbors.
+            //
+            // Preconditions:
+            // * Current state is known
+            // * Neighbor counts are consistent with current state
+            // * recent changes list accurately lists every cell
+            //   that changed in previous tick.
+            //
+            // Description of algorithm with change list optimization:
+            // 
+            // create a "new changes" list
+            //
+            // for each triplet on the "recent changes" list:
+            //   compute and set next tick bits for the triplet and all its neighbors
+            //   based on current state and neighbor count.
+            //   if the triplet or any of its neighbors will change
+            //     add the index of the changed triplet to the "new changes" list.
+            //
+            // Note that we might end up with duplicates on the "new changes" list,
+            // in the common case where two adjacent triplets changed recently and
+            // both of them will change again. When we process each we then add each
+            // to the "new changes" list, which results in both being added twice. 
+            // We'll deduplicate the list in the next step:
+            //
+            // create a new "recent changes" list
+            // for each triplet on the new changes list
+            //   copy the "next tick" state bits that were computed in the previous
+            //   pass to the "current tick" state bits.
+            //   If that changed the triple:
+            //     update the neighbor counts for the adjacent cells.
+            //     add the triple index to the "recent changes" list.
+            //   otherwise:
+            //     it was a duplicate that we already processed; ignore it.
+            //
+            // Once we have the change list optimization working we can identify more
+            // optimizations.
+            //
+            // Consider the first loop; how can we optimize:
+            //
+            //   compute and set next tick bits for the triplet and all its neighbors
+            //   based on current state and neighbor count.
+            //
+            // ? 
+            // 
+            // Two observations:
+            //
+            // * The three next tick bits depend solely on the three current tick bits and 
+            //   the nine current neighbor bits. That is, there are 4096 possible 
+            //   configurations with 8 possible results. We can just make an array of 4096
+            //   bytes that pre-computes the answers. (The original implementation went
+            //   even farther than this; it had 65536 bytes and was indexed by the entire
+            //   triplet.)
+            // * The question of "what neighbors do we need to check?" depends on whether
+            //   the triplet is at the edge of the board or not; we have extra work to
+            //   do if it is on the edge. But whether a triplet is on the edge does not
+            //   change over time, and we have an extra bit in the triplet that is unused.
+            //   We can precompute this fact and store it, and then have two code paths.
+            //   Moreover, the edge cells are the ones least likely to change anyway.
+            //
+            //  What about the second loop -- how can we optimize:
+            //
+            //   copy the "next tick" state bits that were computed in the previous
+            //   pass to the "current tick" state bits.
+            //   If that changed the triple:
+            //     update the neighbor counts for the adjacent cells.
+            //     add the triple index to the "recent changes" list.
+            //
+            // * Once again we are in a situation where there are only a small number
+            //   of behaviours that are determined entirely by the three current
+            //   state bits (that are about to be overwritten, or already have been),
+            //   the three new state bits, and the is-an-edge bit. That is, there are
+            //   128 different actions this algorithm could take. Rather than doing 
+            //   a bunch of bit twiddling and conditional logic, we could just write
+            //   128 different delegates, put them in an array, and call them based
+            //   on those 7 bits.
+            //
+            //   The sixteen bit patterns where the new state bits do not change
+            //   because we already did the update are no-op delegates.
+            //
+            //   Suppose we have 0 for the edge bit, the old state is 011 and the 
+            //   new state is 001.  What work do we have to do?  We need to decrement
+            //   the left, middle and right neighbor counts for the triplets north
+            //   and south the current triplet; we know they exist because the edge
+            //   bit is zero. But we do not need to update any neighbor counts for the
+            //   triplets to the northwest, northeast, southwest, southeast, east or west.
+            //
+            //   Suppose we have 0 for the edge bit, the old state is 011 and the
+            //   new state is 101. Now what work do we have to do?  The neighbor
+            //   count of the left and middle of the triplets north and south have
+            //   not changed so we don't need to touch them. The right count north
+            //   and south gets decremented. The left neighbor counts on the triplets
+            //   to the west, northwest and southwest get incremented.  And so on;
+            //   you see how this goes.
+           
+
             throw new NotImplementedException();
         }
 
