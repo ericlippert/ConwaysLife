@@ -227,5 +227,19 @@ namespace ConwaysLife
             else if (e.Delta < 0)
                 ZoomOut(v);
         }
+
+        private void LifeForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Don't forget to set KeyPreview to True in the designer.
+            switch (e.KeyCode)
+            {
+                case Keys.S:
+                    Snapshot.SaveImage(display.Image);
+                    break;
+                case Keys.Space:
+                    timer.Enabled = !timer.Enabled;
+                    break;
+            }
+        }
     }
 }
