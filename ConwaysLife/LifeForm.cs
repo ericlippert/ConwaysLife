@@ -260,5 +260,16 @@ namespace ConwaysLife
             display.Height = Math.Max(minHeight, Height - displayHeightOffset);
             Draw();
         }
+
+        private void LifeForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Don't forget to set KeyPreview to True in the designer.
+            switch (e.KeyCode)
+            {
+                case Keys.S:
+                    Screenshot.SaveImage(display.Image);
+                    break;
+            }
+        }
     }
 }

@@ -56,9 +56,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 461);
             this.Controls.Add(this.display);
+            this.KeyPreview = true;
             this.Name = "LifeForm";
             this.Text = "LifeForm";
             this.Load += new System.EventHandler(this.LifeForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LifeForm_KeyDown);
             this.Resize += new System.EventHandler(this.LifeForm_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.display)).EndInit();
             this.ResumeLayout(false);
