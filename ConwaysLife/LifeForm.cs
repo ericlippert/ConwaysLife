@@ -5,8 +5,6 @@ using System.Windows.Forms;
 
 namespace ConwaysLife
 {
-    using System.Security.Cryptography;
-
     public partial class LifeForm : Form
     {
         private readonly Color deadColor = Color.LightGray;
