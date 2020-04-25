@@ -13,6 +13,7 @@ namespace ConwaysLife
         private Brush liveBrush;
         private Pen gridPen;
         private ILife life;
+        private bool running = true;
         
         // Record when we start up how much space was left
         // around the display box on the form, so that we can
@@ -261,6 +262,12 @@ namespace ConwaysLife
             Draw();
         }
 
+        private void ToggleRunning()
+        {
+            running = !running;
+            timer.Enabled = running;
+        }
+
         private void LifeForm_KeyDown(object sender, KeyEventArgs e)
         {
             // Don't forget to set KeyPreview to True in the designer.
@@ -268,6 +275,9 @@ namespace ConwaysLife
             {
                 case Keys.S:
                     Screenshot.SaveImage(display.Image);
+                    break;
+                case Keys.Space:
+                    ToggleRunning();
                     break;
             }
         }
