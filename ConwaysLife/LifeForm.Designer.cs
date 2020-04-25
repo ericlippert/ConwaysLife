@@ -59,6 +59,7 @@
             this.Name = "LifeForm";
             this.Text = "LifeForm";
             this.Load += new System.EventHandler(this.LifeForm_Load);
+            this.Resize += new System.EventHandler(this.LifeForm_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.display)).EndInit();
             this.ResumeLayout(false);
 

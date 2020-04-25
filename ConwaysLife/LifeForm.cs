@@ -12,7 +12,17 @@ namespace ConwaysLife
         private readonly Color gridColor = Color.DarkGray;
         private Brush liveBrush;
         private Pen gridPen;
-        ILife life;
+        private ILife life;
+        
+        // Record when we start up how much space was left
+        // around the display box on the form, so that we can
+        // preserve that as the form is resized.  We never move
+        // the location of the display box upper left corner,
+        // so the only information we need is the difference
+        // between original display width/height and original
+        // form height.
+        private int displayHeightOffset;
+        private int displayWidthOffset;
 
         // A significant amount of the code in this form deals with
         // translating coordinates in the "infinite" Life grid into
@@ -120,12 +130,24 @@ namespace ConwaysLife
 
         private void Initialize()
         {
+            displayHeightOffset = Height - display.Height;
+            displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
             life = new BoolArrayLife();
             life.AddAcorn(new LifePoint(128, 128));
             corner = new LifePoint(-2, LifeHeight - 2);
-            display.Image = new Bitmap(display.Width, display.Height);
+        }
+
+        private void EnsureBitmap()
+        {
+            if (display.Image == null || 
+                display.Image.Width != display.Width || 
+                display.Image.Height != display.Height)
+            {
+                display.Image?.Dispose();
+                display.Image = new Bitmap(display.Width, display.Height);
+            }
         }
 
         private bool GridEnabled() => 
@@ -197,6 +219,7 @@ namespace ConwaysLife
 
         private void DrawDisplay()
         {
+            EnsureBitmap();
             ClearDisplay();
             if (scale < 0)
                 DrawBlocks();
@@ -226,6 +249,16 @@ namespace ConwaysLife
                 ZoomIn(v);
             else if (e.Delta < 0)
                 ZoomOut(v);
+        }
+
+        private void LifeForm_Resize(object sender, EventArgs e)
+        {
+            // Expand or shrink the picture box to stay centered in the form.
+            const int minWidth = 100;
+            const int minHeight = 100;            
+            display.Width = Math.Max(minWidth, Width - displayWidthOffset);
+            display.Height = Math.Max(minHeight, Height - displayHeightOffset);
+            Draw();
         }
     }
 }
