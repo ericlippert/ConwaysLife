@@ -30,10 +30,16 @@ namespace ConwaysLife
         // scale ==  0 means a cell is 1 pixel wide
 
         // TODO: Positive scales are not yet implemented.
-
+        private const int defaultScale = -1;
         private const int maxScale = 0;
         private const int minScale = -6;
-        private int scale = -1;
+        private int scale;
+
+        private const int panMagnitude = 8;
+
+        private const int minSpeed = 16;
+        private const int maxSpeed = 1024;
+        private int speed = 512;
 
         // If the cells are rendered 8 pixels wide or wider, draw a grid.
         private const int gridScale = -3;
@@ -104,6 +110,26 @@ namespace ConwaysLife
             }
         }
 
+        LifePoint CenterPoint => BitmapToLife(new Point(this.display.Width / 2, this.display.Height / 2));
+
+        void Pan(int x, int y)
+        {
+            corner = new LifePoint(corner.X + x, corner.Y + y);
+            DrawDisplay();
+        }
+
+        void SetHomePosition()
+        {
+            scale = defaultScale;
+            corner = new LifePoint(-2, LifeHeight - 2);
+        }
+
+        void Home()
+        {
+            SetHomePosition();
+            DrawDisplay();                 
+        }
+
         public LifeForm()
         {
             InitializeComponent();
@@ -124,10 +150,24 @@ namespace ConwaysLife
             gridPen = new Pen(gridColor);
             life = new Scholes();
             life.AddAcorn(new LifePoint(128, 128));
-            corner = new LifePoint(-2, LifeHeight - 2);
+            SetHomePosition();
             display.Image = new Bitmap(display.Width, display.Height);
+            AdjustSpeed(0);
         }
 
+        private void AdjustSpeed(int adjustment)
+        {     
+            speed = Math.Max(minSpeed, Math.Min(Shift(speed, adjustment), maxSpeed));
+            timer.Interval = speed;
+        }
+
+        private static int Shift(int value, int shift)
+        {
+            return shift < 0
+                ? value >> -shift
+                : value << shift;
+        }
+        
         private bool GridEnabled() => 
             scale <= gridScale;
 
@@ -238,6 +278,33 @@ namespace ConwaysLife
                     break;
                 case Keys.Space:
                     timer.Enabled = !timer.Enabled;
+                    break;
+                case Keys.Oemplus:
+                    AdjustSpeed(-1);
+                    break;
+                case Keys.OemMinus:
+                    AdjustSpeed(1);
+                    break;
+                case Keys.Up:
+                    Pan(0, panMagnitude);
+                    break;
+                case Keys.Down:
+                    Pan(0, -panMagnitude);
+                    break;
+                case Keys.Left:
+                    Pan(-panMagnitude, 0);
+                    break;
+                case Keys.Right:
+                    Pan(panMagnitude, 0);
+                    break;
+                case Keys.Home:
+                    Home();
+                    break;
+                case Keys.PageUp:
+                    ZoomIn(CenterPoint);
+                    break;
+                case Keys.PageDown:
+                    ZoomOut(CenterPoint);
                     break;
             }
         }
