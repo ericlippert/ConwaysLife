@@ -113,6 +113,7 @@ namespace ConwaysLife
 
         private void LifeForm_Load(object sender, EventArgs e)
         {
+            UpdateFormTitle();
             Initialize();
             Draw();
             // The mouse wheel event handler is not automatically generated
@@ -209,6 +210,11 @@ namespace ConwaysLife
 
         private void timer_Tick(object sender, EventArgs e)
         {
+            StepGeneration();
+        }
+
+        private void StepGeneration()
+        {
             life.Step();
             Draw();
         }
@@ -264,7 +270,27 @@ namespace ConwaysLife
                 case Keys.Space:
                     timer.Enabled = !timer.Enabled;
                     break;
+                case Keys.G:
+                    if (!timer.Enabled)
+                        StepGeneration();
+                    break;
             }
+        }
+        
+        private void display_Click(object sender, EventArgs e)
+        {
+            ToggleTimer();
+        }
+
+        private void ToggleTimer()
+        {
+            timer.Enabled = !timer.Enabled;
+            UpdateFormTitle();
+        }
+
+        private void UpdateFormTitle()
+        {
+            Text = $"LifeForm - {(timer.Enabled ? "Automatic" : "Manual")}";
         }
     }
 }
