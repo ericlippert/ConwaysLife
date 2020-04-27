@@ -23,5 +23,14 @@
             life[corner.X + 5, corner.Y - 2] = true;
             life[corner.X + 6, corner.Y - 2] = true;
         }
+
+        public static void AddR(this ILife life, LifePoint corner)
+        {
+            life[corner.X + 1, corner.Y] = true;
+            life[corner.X + 2, corner.Y] = true;
+            life[corner.X, corner.Y - 1] = true;
+            life[corner.X + 1, corner.Y - 1] = true;
+            life[corner.X + 1, corner.Y - 2] = true;
+        }
     }
 }

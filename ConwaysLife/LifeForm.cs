@@ -126,6 +126,7 @@ namespace ConwaysLife
 
         private void LifeForm_Load(object sender, EventArgs e)
         {
+            timer.Enabled = running;
             Initialize();
             Draw();
             // The mouse wheel event handler is not automatically generated
@@ -140,7 +141,7 @@ namespace ConwaysLife
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
             life = new BoolArrayOpt();
-            life.AddAcorn(new LifePoint(128, 128));
+            life.AddR(new LifePoint(128, 128));
             corner = new LifePoint(-2, LifeHeight - 2);
         }
 
