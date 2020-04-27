@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 
 namespace ConwaysLife
@@ -268,11 +270,35 @@ namespace ConwaysLife
             timer.Enabled = running;
         }
 
+        private void PerfTest()
+        {
+            bool save = timer.Enabled;
+            timer.Enabled = false;
+            ILife perf = new BoolArrayLife();
+            perf.AddAcorn(new LifePoint(128, 128));
+            const int ticks = 5000;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            for (int i = 0; i < ticks; i += 1)
+                perf.Step();
+            stopwatch.Stop();
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string path = Path.Combine(desktop, "lifeperf.txt");
+            using (var file = File.AppendText(path))
+            {
+                file.WriteLine($"{DateTime.Now}:{life.GetType()}:{stopwatch.ElapsedMilliseconds}");
+            }
+            timer.Enabled = save;
+        }
+
         private void LifeForm_KeyDown(object sender, KeyEventArgs e)
         {
             // Don't forget to set KeyPreview to True in the designer.
             switch (e.KeyCode)
             {
+                case Keys.P:
+                    PerfTest();
+                    break;
                 case Keys.S:
                     Screenshot.SaveImage(display.Image);
                     break;
