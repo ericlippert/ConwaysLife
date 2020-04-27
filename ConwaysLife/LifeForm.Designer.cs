@@ -42,7 +42,10 @@
             this.display.Size = new System.Drawing.Size(560, 437);
             this.display.TabIndex = 0;
             this.display.TabStop = false;
+            this.display.MouseDown += new System.Windows.Forms.MouseEventHandler(this.display_MouseDown);
             this.display.MouseEnter += new System.EventHandler(this.display_MouseEnter);
+            this.display.MouseMove += new System.Windows.Forms.MouseEventHandler(this.display_MouseMove);
+            this.display.MouseUp += new System.Windows.Forms.MouseEventHandler(this.display_MouseUp);
             // 
             // timer
             // 

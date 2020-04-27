@@ -16,7 +16,9 @@ namespace ConwaysLife
         private Pen gridPen;
         private ILife life;
         private bool running = true;
-        
+        private bool dragging = false;
+        private LifePoint dragStart;
+
         // Record when we start up how much space was left
         // around the display box on the form, so that we can
         // preserve that as the form is resized.  We never move
@@ -305,6 +307,26 @@ namespace ConwaysLife
                     ToggleRunning();
                     break;
             }
+        }
+
+        private void display_MouseDown(object sender, MouseEventArgs e)
+        {
+            dragging = true;
+            dragStart = BitmapToLife(e.Location);
+        }
+
+        private void display_MouseUp(object sender, MouseEventArgs e)
+        {
+            dragging = false;
+        }
+
+        private void display_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!dragging)
+                return;
+            LifePoint current = BitmapToLife(e.Location);
+            corner = new LifePoint(corner.X + dragStart.X - current.X, corner.Y + dragStart.Y - current.Y);
+            DrawDisplay();
         }
     }
 }
