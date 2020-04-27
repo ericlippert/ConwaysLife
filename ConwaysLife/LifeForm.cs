@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 
 namespace ConwaysLife
@@ -63,12 +65,12 @@ namespace ConwaysLife
         private LifeRect LifeRect => new LifeRect(corner, LifeWidth, LifeHeight);
 
         // These functions convert between Life grid coordinates and display coordinates.
-        private Point LifeToBitmap(LifePoint v) => 
+        private Point LifeToBitmap(LifePoint v) =>
             new Point(
                 (int)ScaleDown(v.X - corner.X),
                 (int)ScaleDown(corner.Y - v.Y));
-        
-        private LifePoint BitmapToLife(Point p) => 
+
+        private LifePoint BitmapToLife(Point p) =>
             new LifePoint(corner.X + ScaleUp(p.X), corner.Y - ScaleUp(p.Y));
 
         private bool IsValidBitmapPoint(Point p) =>
@@ -122,13 +124,13 @@ namespace ConwaysLife
         {
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            life = new Scholes();
+            life = new Abrash();
             life.AddAcorn(new LifePoint(128, 128));
             corner = new LifePoint(-2, LifeHeight - 2);
             display.Image = new Bitmap(display.Width, display.Height);
         }
 
-        private bool GridEnabled() => 
+        private bool GridEnabled() =>
             scale <= gridScale;
 
         private void DrawGrid()
@@ -228,11 +230,34 @@ namespace ConwaysLife
                 ZoomOut(v);
         }
 
+        private void PerfTest(ILife perf)
+        {
+            bool save = timer.Enabled;
+            timer.Enabled = false;
+            perf.AddAcorn(new LifePoint(128, 128));
+            const int ticks = 5000;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            for (int i = 0; i < ticks; i += 1)
+                perf.Step();
+            stopwatch.Stop();
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string path = Path.Combine(desktop, "lifeperf.txt");
+            using (var file = File.AppendText(path))
+            {
+                file.WriteLine($"{DateTime.Now}:{perf.GetType()}:{stopwatch.ElapsedMilliseconds}");
+            }
+            timer.Enabled = save;
+        }
+
         private void LifeForm_KeyDown(object sender, KeyEventArgs e)
         {
             // Don't forget to set KeyPreview to True in the designer.
             switch (e.KeyCode)
             {
+                case Keys.P:
+                    PerfTest(new Abrash());
+                    break;
                 case Keys.S:
                     Snapshot.SaveImage(display.Image);
                     break;
