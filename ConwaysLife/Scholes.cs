@@ -28,21 +28,11 @@ namespace ConwaysLife
         private int Height { get; }
         private readonly byte[] bytes;
 
-        public ByteBlock(int width, int height, byte initial = 0)
+        public ByteBlock(int width, int height, byte[] bytes = null)
         {
             this.Width = width;
             this.Height = height;
-            bytes = new byte[width * height];
-            if (initial != 0)
-                for (int i = 0; i < bytes.Length; i += 1)
-                    bytes[i] = initial;
-        }
-
-        private ByteBlock(int width, int height, byte[] bytes)
-        {
-            this.Width = width;
-            this.Height = height;
-            this.bytes = bytes;
+            this.bytes = bytes == null ? new byte[width * height] : bytes;
         }
 
         private bool IsValid(int x, int y) =>
@@ -186,28 +176,15 @@ namespace ConwaysLife
         private const int height = 256;
         private const int width = 256;
         private ByteBlock cells;
-        private ByteBlock border;
 
         public Scholes()
         {
-            // 1111
-            // 1111
-            // 1111
-            // 1111
-            var ones = new ByteBlock(width, height, 1);
-
-            // 0000
-            // 0110
-            // 0110
-            // 0000
-            border = ones.MoveLeft() & ones.MoveRight() & ones.MoveUp() & ones.MoveDown();
-
             Clear();
         }
 
         public void Clear()
         {
-            cells = new ByteBlock(width, height, 0);
+            cells = new ByteBlock(width, height);
         }
 
         private bool IsValidPoint(long x, long y) =>
@@ -345,19 +322,15 @@ namespace ConwaysLife
             // 01000
             // 01100
             // 00000
-            var newCells = threes | livingFours;
-
-            // We might have turned on some border cells; turn them off.
-
-            cells = newCells & border;
+            cells = threes | livingFours;
         }
 
         public void Draw(LifeRect rect, Action<LifePoint> setPixel)
         {
-            long xmin = Max(1, rect.X);
-            long xmax = Min(width - 1, rect.X + rect.Width);
-            long ymin = Max(1, rect.Y - rect.Height + 1);
-            long ymax = Min(height - 1, rect.Y + 1);
+            long xmin = Max(0, rect.X);
+            long xmax = Min(width, rect.X + rect.Width);
+            long ymin = Max(0, rect.Y - rect.Height + 1);
+            long ymax = Min(height, rect.Y + 1);
             for (long y = ymin; y < ymax; y += 1)
                 for (long x = xmin; x < xmax; x += 1)
                     if (cells[(int)x, (int)y] == 1)
