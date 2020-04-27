@@ -137,7 +137,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            life = new BoolArrayLife();
+            life = new BoolArrayOpt();
             life.AddAcorn(new LifePoint(128, 128));
             corner = new LifePoint(-2, LifeHeight - 2);
         }
@@ -270,11 +270,10 @@ namespace ConwaysLife
             timer.Enabled = running;
         }
 
-        private void PerfTest()
+        private void PerfTest(ILife perf)
         {
             bool save = timer.Enabled;
             timer.Enabled = false;
-            ILife perf = new BoolArrayLife();
             perf.AddAcorn(new LifePoint(128, 128));
             const int ticks = 5000;
             var stopwatch = new Stopwatch();
@@ -297,7 +296,7 @@ namespace ConwaysLife
             switch (e.KeyCode)
             {
                 case Keys.P:
-                    PerfTest();
+                    PerfTest(new BoolArrayOpt());
                     break;
                 case Keys.S:
                     Screenshot.SaveImage(display.Image);

@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoolArrayLife.cs" />
+    <Compile Include="BoolArrayOpt.cs" />
     <Compile Include="ILife.cs" />
     <Compile Include="LifeForm.cs">
       <SubType>Form</SubType>
