@@ -14,7 +14,9 @@ namespace ConwaysLife
         private readonly Color gridColor = Color.DarkGray;
         private Brush liveBrush;
         private Pen gridPen;
-        ILife life;
+        private ILife life;
+        private bool dragging = false;
+        private LifePoint dragStart;
 
         // A significant amount of the code in this form deals with
         // translating coordinates in the "infinite" Life grid into
@@ -265,6 +267,26 @@ namespace ConwaysLife
                     timer.Enabled = !timer.Enabled;
                     break;
             }
+        }
+
+        private void display_MouseDown(object sender, MouseEventArgs e)
+        {
+            dragging = true;
+            dragStart = BitmapToLife(e.Location);
+        }
+
+        private void display_MouseUp(object sender, MouseEventArgs e)
+        {
+            dragging = false;
+        }
+
+        private void display_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!dragging)
+                return;
+            LifePoint current = BitmapToLife(e.Location);
+            corner = new LifePoint(corner.X + dragStart.X - current.X, corner.Y + dragStart.Y - current.Y);
+            DrawDisplay();
         }
     }
 }
