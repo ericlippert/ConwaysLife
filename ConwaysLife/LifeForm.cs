@@ -285,7 +285,7 @@ namespace ConwaysLife
             string path = Path.Combine(desktop, "lifeperf.txt");
             using (var file = File.AppendText(path))
             {
-                file.WriteLine($"{DateTime.Now}:{life.GetType()}:{stopwatch.ElapsedMilliseconds}");
+                file.WriteLine($"{DateTime.Now}:{perf.GetType()}:{stopwatch.ElapsedMilliseconds}");
             }
             timer.Enabled = save;
         }
