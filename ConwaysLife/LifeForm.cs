@@ -29,6 +29,11 @@ namespace ConwaysLife
         private int displayHeightOffset;
         private int displayWidthOffset;
 
+        // How far from the display is the panel? When we resize,
+        // keep the panel relative to the display.
+        private int panelOffset; 
+
+
         // A significant amount of the code in this form deals with
         // translating coordinates in the "infinite" Life grid into
         // coordinates in the display bitmap. In particular, we will
@@ -136,6 +141,7 @@ namespace ConwaysLife
 
         private void Initialize()
         {
+            panelOffset = panel.Location.Y - display.Height;
             displayHeightOffset = Height - display.Height;
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
@@ -264,6 +270,7 @@ namespace ConwaysLife
             const int minHeight = 100;            
             display.Width = Math.Max(minWidth, Width - displayWidthOffset);
             display.Height = Math.Max(minHeight, Height - displayHeightOffset);
+            panel.Location = new Point(panel.Location.X, display.Height + panelOffset);
             Draw();
         }
 
