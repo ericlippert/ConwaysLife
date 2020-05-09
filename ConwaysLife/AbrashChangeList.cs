@@ -115,9 +115,6 @@ namespace ConwaysLife
                     for (int x = minx; x < maxx; x += 1)
                     {
                         Cell cell = clone[x, y];
-                        if (cell.AllDead)
-                            continue;
-
                         int count = cell.Count;
                         if (cell.State)
                         {
