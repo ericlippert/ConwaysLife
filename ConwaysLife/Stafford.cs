@@ -40,6 +40,11 @@ namespace ConwaysLife
             this.triplet = triplet;
         }
 
+        public Triplet(int triplet)
+        {
+            this.triplet = (short)triplet;
+        }
+
         // Bits 12, 13 and 14 are the state of the cells on the next tick.
         private const int lnext = 14;
         private const int mnext = 13;
@@ -58,33 +63,97 @@ namespace ConwaysLife
         // And similarly for bits 0, 1 and 2 for the right cell.
         private const int rcount = 0;
 
-        public bool LeftNext => (triplet & (1 << lnext)) != 0;
-        public bool MiddleNext => (triplet & (1 << mnext)) != 0;
-        public bool RightNext => (triplet & (1 << rnext)) != 0;
+        // Masks
+        private const int lnm = 1 << lnext;
+        private const int mnm = 1 << mnext;
+        private const int rnm = 1 << rnext;
+        private const int lcm = 1 << lcur;
+        private const int mcm = 1 << mcur;
+        private const int rcm = 1 << rcur;
 
-        public int LeftNextRaw => (triplet & (1 << lnext)) >> lnext;
-        public int MiddleNextRaw => (triplet & (1 << mnext)) >> mnext;
-        public int RightNextRaw => (triplet & (1 << rnext)) >> rnext;
+        private const int lcountm = 7 << lcount;
+        private const int mcountm = 7 << mcount;
+        private const int rcountm = 7 << rcount;
 
-        public Triplet SetLeftNext(bool b) => new Triplet((short)(b ? (triplet | (1 << lnext)) : (triplet & ~(1 << lnext))));
-        public Triplet SetMiddleNext(bool b) => new Triplet((short)(b ? (triplet | (1 << mnext)) : (triplet & ~(1 << mnext))));
-        public Triplet SetRightNext(bool b) => new Triplet((short)(b ? (triplet | (1 << rnext)) : (triplet & ~(1 << rnext))));
+        // Values
 
-        public bool LeftCurrent => (triplet & (1 << lcur)) != 0;
-        public bool MiddleCurrent => (triplet & (1 << mcur)) != 0;
-        public bool RightCurrent => (triplet & (1 << rcur)) != 0;
+        private const int lcountone = 1 << lcount;
+        private const int mcountone = 1 << mcount;
+        private const int rcountone = 1 << rcount;
 
-        public int LeftCurrentRaw => (triplet & (1 << lcur)) >> lcur;
-        public int MiddleCurrentRaw => (triplet & (1 << mcur)) >> mcur;
-        public int RightCurrentRaw => (triplet & (1 << rcur)) >> rcur;
+        public bool LeftNext => (lnm & triplet) != 0;
+        public bool MiddleNext => (mnm & triplet) != 0;
+        public bool RightNext => (rnm & triplet) != 0;
 
-        public Triplet SetLeftCurrent(bool b) => new Triplet((short)(b ? (triplet | (1 << lcur)) : (triplet & ~(1 << lcur))));
-        public Triplet SetMiddleCurrent(bool b) => new Triplet((short)(b ? (triplet | (1 << mcur)) : (triplet & ~(1 << mcur))));
-        public Triplet SetRightCurrent(bool b) => new Triplet((short)(b ? (triplet | (1 << rcur)) : (triplet & ~(1 << rcur))));
+        public int LeftNextRaw => (triplet & lnm) >> lnext;
+        public int MiddleNextRaw => (triplet & mnm) >> mnext;
+        public int RightNextRaw => (triplet & rnm) >> rnext;
 
-        public int LeftCountRaw => (triplet & (7 << lcount)) >> lcount;
-        public int MiddleCountRaw => (triplet & (7 << mcount)) >> mcount;
-        public int RightCountRaw => (triplet & (7 << rcount)) >> rcount;
+        public Triplet SetLeftNext(bool b) => new Triplet(b ? (lnm | triplet) : (~lnm & triplet));
+        public Triplet SetMiddleNext(bool b) => new Triplet(b ? (mnm | triplet) : (~mnm & triplet));
+        public Triplet SetRightNext(bool b) => new Triplet(b ? (rnm | triplet) : (~rnm & triplet));
+
+        public bool LeftCurrent => (lcm & triplet) != 0;
+        public bool MiddleCurrent => (mcm & triplet) != 0;
+        public bool RightCurrent => (rcm & triplet) != 0;
+
+        public int LeftCurrentRaw => (triplet & lcm) >> lcur;
+        public int MiddleCurrentRaw => (triplet & mcm) >> mcur;
+        public int RightCurrentRaw => (triplet & rcm) >> rcur;
+
+        // These set the current state bits "in parallel". 
+        // U = unchanged
+        // A = becomes alive
+        // D = becomes dead
+
+        public Triplet UUU() => this;
+        // Left unchanged, middle unchanged, right alive.
+        public Triplet UUA() => new Triplet((rcm | triplet));
+        // Left unchanged, middle unchanged, right dead.
+        public Triplet UUD() => new Triplet(~rcm & triplet);
+
+        // And so on; there are only 27 cases so just enumerate them all.
+
+        public Triplet UAU() => new Triplet(mcm | triplet);
+        // The compiler will fold the constants, so this is a single or at runtime.
+        public Triplet UAA() => new Triplet(mcm | rcm | triplet);
+        public Triplet UAD() => new Triplet(mcm | ~rcm & triplet);
+
+        public Triplet UDU() => new Triplet(~mcm & triplet);
+        public Triplet UDA() => new Triplet(rcm | ~mcm & triplet);
+        public Triplet UDD() => new Triplet(~(mcm | rcm) & triplet);
+
+        public Triplet AUU() => new Triplet(lcm | triplet);
+        public Triplet AUA() => new Triplet(lcm | rcm | triplet);
+        public Triplet AUD() => new Triplet(lcm | ~rcm & triplet);
+
+        public Triplet AAU() => new Triplet(lcm | mcm | triplet);
+        public Triplet AAA() => new Triplet(lcm | mcm | rcm | triplet);
+        public Triplet AAD() => new Triplet(lcm | mcm | ~rcm & triplet);
+
+        public Triplet ADU() => new Triplet(lcm | ~mcm & triplet);
+        public Triplet ADA() => new Triplet(lcm | rcm | ~mcm & triplet);
+        public Triplet ADD() => new Triplet(lcm | ~(mcm | rcm) & triplet);
+
+        public Triplet DUU() => new Triplet(~lcm & triplet);
+        public Triplet DUA() => new Triplet(rcm | ~lcm & triplet);
+        public Triplet DUD() => new Triplet(~(rcm | lcm) & triplet);
+
+        public Triplet DAU() => new Triplet(mcm | ~lcm & triplet);
+        public Triplet DAA() => new Triplet(mcm | rcm | ~lcm & triplet);
+        public Triplet DAD() => new Triplet(mcm | ~(rcm | lcm) & triplet);
+
+        public Triplet DDU() => new Triplet(~(lcm | mcm) & triplet);
+        public Triplet DDA() => new Triplet(rcm | ~(lcm | mcm) & triplet);
+        public Triplet DDD() => new Triplet(~(lcm | mcm | rcm) & triplet);
+
+        public Triplet SetLeftCurrent(bool b) => b ? AUU() : DUU();
+        public Triplet SetMiddleCurrent(bool b) => b ? UAU() : UDU();
+        public Triplet SetRightCurrent(bool b) => b ? UUA() : UUD();
+
+        public int LeftCountRaw => (lcountm & triplet) >> lcount;
+        public int MiddleCountRaw => (mcountm & triplet) >> mcount;
+        public int RightCountRaw => (rcountm & triplet) >> rcount;
 
         public int LeftCount => MiddleCurrentRaw + LeftCountRaw;
         public int MiddleCount => LeftCurrentRaw + RightCurrentRaw + MiddleCountRaw;
@@ -93,29 +162,62 @@ namespace ConwaysLife
         public Triplet SetLeftCountRaw(int c)
         {
             Debug.Assert(0 <= c && c <= 7);
-            return new Triplet((short)(triplet & ~(7 << lcount) | (c << lcount)));
+            return new Triplet((c << lcount) | ~lcountm & triplet);
         }
 
         public Triplet SetMiddleCountRaw(int c)
         {
             Debug.Assert(0 <= c && c <= 6);
-            return new Triplet((short)(triplet & ~(7 << mcount) | (c << mcount)));
+            return new Triplet((c << mcount) | ~mcountm & triplet);
         }
 
         public Triplet SetRightCountRaw(int c)
         {
             Debug.Assert(0 <= c && c <= 7);
-            return new Triplet((short)(triplet & ~(7 << rcount) | (c << rcount)));
+
+            return new Triplet((c << rcount) | ~rcountm & triplet);
         }
 
-        public Triplet IncLeft() => SetLeftCountRaw(LeftCountRaw + 1);
-        public Triplet DecLeft() => SetLeftCountRaw(LeftCountRaw - 1);
-        public Triplet IncMiddle() => SetMiddleCountRaw(MiddleCountRaw + 1);
-        public Triplet DecMiddle() => SetMiddleCountRaw(MiddleCountRaw - 1);
-        public Triplet IncRight() => SetRightCountRaw(RightCountRaw + 1);
-        public Triplet DecRight() => SetRightCountRaw(RightCountRaw - 1);
+        // Similarly, there are 27 possible combinations of 
+        // unchanged/increment/decrement the left/middle/right count.
+        //
+        // U = unchanged
+        // P = increment
+        // M = decrement
+        //
+        // Again, if we put all the constant arithmetic on the left
+        // then we know the compiler will fold it.
 
-        public int State => triplet & 0x0fff;
+        // We already have UUU as a no-op above.
+        public Triplet UUP() => new Triplet(rcountone + triplet);
+        public Triplet UUM() => new Triplet(-rcountone + triplet);
+        public Triplet UPU() => new Triplet(mcountone + triplet);
+        public Triplet UPP() => new Triplet(mcountone + rcountone + triplet);
+        public Triplet UPM() => new Triplet(mcountone - rcountone + triplet);
+        public Triplet UMU() => new Triplet(-mcountone + triplet);
+        public Triplet UMP() => new Triplet(-mcountone + rcountone + triplet);
+        public Triplet UMM() => new Triplet(-mcountone - rcountone + triplet);
+        public Triplet PUU() => new Triplet(lcountone + triplet);
+        public Triplet PUP() => new Triplet(lcountone + rcountone + triplet);
+        public Triplet PUM() => new Triplet(lcountone - rcountone + triplet);
+        public Triplet PPU() => new Triplet(lcountone + mcountone + triplet);
+        public Triplet PPP() => new Triplet(lcountone + mcountone + rcountone + triplet);
+        public Triplet PPM() => new Triplet(lcountone + mcountone - rcountone + triplet);
+        public Triplet PMU() => new Triplet(lcountone - mcountone + triplet);
+        public Triplet PMP() => new Triplet(lcountone - mcountone + rcountone + triplet);
+        public Triplet PMM() => new Triplet(lcountone - mcountone - rcountone + triplet);
+        public Triplet MUU() => new Triplet(-lcountone + triplet);
+        public Triplet MUP() => new Triplet(-lcountone + rcountone + triplet);
+        public Triplet MUM() => new Triplet(-lcountone - rcountone + triplet);
+        public Triplet MPU() => new Triplet(-lcountone + mcountone + triplet);
+        public Triplet MPP() => new Triplet(-lcountone + mcountone + rcountone + triplet);
+        public Triplet MPM() => new Triplet(-lcountone + mcountone - rcountone + triplet);
+        public Triplet MMU() => new Triplet(-lcountone - mcountone + triplet);
+        public Triplet MMP() => new Triplet(-lcountone - mcountone + rcountone + triplet);
+        public Triplet MMM() => new Triplet(-lcountone - mcountone - rcountone + triplet);
+
+        public int State1 => triplet & 0x0fff;
+        public int State2 => triplet >> 9;
     }
 
     class StaffordUnoptimized : ILife
@@ -156,30 +258,30 @@ namespace ConwaysLife
                         return;
                     // Left is about to be born
                     t = t.SetLeftCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncLeft();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncLeft();
-                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].IncRight();
-                    triplets[tx - 1, y] = triplets[tx - 1, y].IncRight();
-                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].IncRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
                     break;
                 case 1:
                     if (t.MiddleCurrent)
                         return;
                     // Middle is about to be born
                     t = t.SetMiddleCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncLeft().IncRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncLeft().IncRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
                     break;
                 case 2:
                     if (t.RightCurrent)
                         return;
                     // Right is about to be born
                     t = t.SetRightCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncRight();
-                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].IncLeft();
-                    triplets[tx + 1, y] = triplets[tx + 1, y].IncLeft();
-                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].IncLeft();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
                     break;
             }
             triplets[tx, y] = t;
@@ -196,28 +298,28 @@ namespace ConwaysLife
                     if (!t.LeftCurrent)
                         return;
                     t = t.SetLeftCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecLeft();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecLeft();
-                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].DecRight();
-                    triplets[tx - 1, y] = triplets[tx - 1, y].DecRight();
-                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].DecRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
                     break;
                 case 1:
                     if (!t.MiddleCurrent)
                         return;
                     t = t.SetMiddleCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecLeft().DecRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecLeft().DecRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
                     break;
                 case 2:
                     if (!t.RightCurrent)
                         return;
                     t = t.SetRightCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecRight();
-                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].DecLeft();
-                    triplets[tx + 1, y] = triplets[tx + 1, y].DecLeft();
-                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].DecLeft();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
                     break;
             }
             triplets[tx, y] = t;
@@ -544,30 +646,30 @@ namespace ConwaysLife
                         return;
                     // Left is about to be born
                     t = t.SetLeftCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncLeft();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncLeft();
-                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].IncRight();
-                    triplets[tx - 1, y] = triplets[tx - 1, y].IncRight();
-                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].IncRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
                     break;
                 case 1:
                     if (t.MiddleCurrent)
                         return;
                     // Middle is about to be born
                     t = t.SetMiddleCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncLeft().IncRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncLeft().IncRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
                     break;
                 case 2:
                     if (t.RightCurrent)
                         return;
                     // Right is about to be born
                     t = t.SetRightCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncRight();
-                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].IncLeft();
-                    triplets[tx + 1, y] = triplets[tx + 1, y].IncLeft();
-                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].IncLeft();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
                     break;
             }
             triplets[tx, y] = t;
@@ -584,28 +686,28 @@ namespace ConwaysLife
                     if (!t.LeftCurrent)
                         return;
                     t = t.SetLeftCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecLeft();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecLeft();
-                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].DecRight();
-                    triplets[tx - 1, y] = triplets[tx - 1, y].DecRight();
-                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].DecRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
                     break;
                 case 1:
                     if (!t.MiddleCurrent)
                         return;
                     t = t.SetMiddleCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecLeft().DecRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecLeft().DecRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
                     break;
                 case 2:
                     if (!t.RightCurrent)
                         return;
                     t = t.SetRightCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecRight();
-                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].DecLeft();
-                    triplets[tx + 1, y] = triplets[tx + 1, y].DecLeft();
-                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].DecLeft();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
                     break;
             }
             triplets[tx, y] = t;
@@ -776,7 +878,7 @@ namespace ConwaysLife
                                         .SetLeftNext((lc + middle == 3) | (left == 1) & (lc + middle == 2))
                                         .SetMiddleNext((left + mc + right == 3) | (middle == 1) & (left + mc + right == 2))
                                         .SetRightNext((middle + rc == 3) | (right == 1) & (middle + rc == 2));
-                                    lookup[t.State] = t;
+                                    lookup[t.State1] = t;
                                 }
 
         }
@@ -824,30 +926,30 @@ namespace ConwaysLife
                         return;
                     // Left is about to be born
                     t = t.SetLeftCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncLeft();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncLeft();
-                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].IncRight();
-                    triplets[tx - 1, y] = triplets[tx - 1, y].IncRight();
-                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].IncRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UPU().PUU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UPU().PUU();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
                     break;
                 case 1:
                     if (t.MiddleCurrent)
                         return;
                     // Middle is about to be born
                     t = t.SetMiddleCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncLeft().IncRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncLeft().IncRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UPU().PUU().UUP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UPU().PUU().UUP();
                     break;
                 case 2:
                     if (t.RightCurrent)
                         return;
                     // Right is about to be born
                     t = t.SetRightCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncRight();
-                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].IncLeft();
-                    triplets[tx + 1, y] = triplets[tx + 1, y].IncLeft();
-                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].IncLeft();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UPU().UUP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UPU().UUP();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
                     break;
             }
             triplets[tx, y] = t;
@@ -864,28 +966,28 @@ namespace ConwaysLife
                     if (!t.LeftCurrent)
                         return;
                     t = t.SetLeftCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecLeft();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecLeft();
-                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].DecRight();
-                    triplets[tx - 1, y] = triplets[tx - 1, y].DecRight();
-                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].DecRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UMU().MUU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UMU().MUU();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
                     break;
                 case 1:
                     if (!t.MiddleCurrent)
                         return;
                     t = t.SetMiddleCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecLeft().DecRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecLeft().DecRight();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UMU().MUU().UUM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UMU().MUU().UUM();
                     break;
                 case 2:
                     if (!t.RightCurrent)
                         return;
                     t = t.SetRightCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecRight();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecRight();
-                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].DecLeft();
-                    triplets[tx + 1, y] = triplets[tx + 1, y].DecLeft();
-                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].DecLeft();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UMU().UUM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UMU().UUM();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
                     break;
             }
             triplets[tx, y] = t;
@@ -952,7 +1054,274 @@ namespace ConwaysLife
                 {
                     for (int tx = minx; tx < maxx; tx += 1)
                     {
-                        triplets[tx, y] = TripletLookup.lookup[triplets[tx, y].State];
+                        triplets[tx, y] = TripletLookup.lookup[triplets[tx, y].State1];
+                    }
+                }
+            }
+
+            foreach ((int cx, int cy) in previousChanges)
+            {
+                int minx = Max(cx - 1, 1);
+                int maxx = Min(cx + 2, width - 1);
+                int miny = Max(cy - 1, 1);
+                int maxy = Min(cy + 2, height - 1);
+                for (int y = miny; y < maxy; y += 1)
+                {
+                    for (int tx = minx; tx < maxx; tx += 1)
+                    {
+                        bool changed = false;
+
+                        Triplet t = triplets[tx, y];
+                        if (t.LeftCurrent & !t.LeftNext)
+                        {
+                            BecomeDead(tx * 3, y);
+                            changed = true;
+                        }
+                        else if (!t.LeftCurrent & t.LeftNext)
+                        {
+                            BecomeAlive(tx * 3, y);
+                            changed = true;
+                        }
+
+                        if (t.MiddleCurrent & !t.MiddleNext)
+                        {
+                            BecomeDead(tx * 3 + 1, y);
+                            changed = true;
+                        }
+                        else if (!t.MiddleCurrent & t.MiddleNext)
+                        {
+                            BecomeAlive(tx * 3 + 1, y);
+                            changed = true;
+                        }
+
+                        if (t.RightCurrent & !t.RightNext)
+                        {
+                            BecomeDead(tx * 3 + 2, y);
+                            changed = true;
+                        }
+                        else if (!t.RightCurrent & t.RightNext)
+                        {
+                            BecomeAlive(tx * 3 + 2, y);
+                            changed = true;
+                        }
+                        if (changed)
+                            changes.Add((tx, y));
+                    }
+                }
+            }
+        }
+
+        public void Draw(LifeRect rect, Action<LifePoint> setPixel)
+        {
+            long xmin = Max(0, rect.X);
+            long xmax = Min(width * 3, rect.X + rect.Width);
+            long ymin = Max(0, rect.Y - rect.Height + 1);
+            long ymax = Min(height, rect.Y + 1);
+            for (long y = ymin; y < ymax; y += 1)
+                for (long x = xmin; x < xmax; x += 1)
+                    if (this[x, y])
+                        setPixel(new LifePoint(x, y));
+        }
+    }
+
+    class Stafford : ILife
+    {
+        // We're going to keep the top and bottom edge triplets dead,
+        // so this gives us 256 live rows.
+        private int height = 258;
+
+        // This is the width in triplets. That gives us 264 cells, but 
+        // we'll keep the left and right triplets dead, so that's 258
+        // live columns of cells.
+
+        private int width = 88;
+        private Triplet[,] triplets;
+        private List<(int, int)> changes;
+
+
+
+        public Stafford()
+        {
+            Clear();
+        }
+
+        public void Clear()
+        {
+            triplets = new Triplet[width, height];
+            changes = new List<(int, int)>();
+        }
+
+        private bool IsValidPoint(long x, long y) =>
+            1 <= x && x < (width - 1) * 3 && 1 <= y && y < height - 1;
+
+        private void BecomeAlive(int x, int y)
+        {
+            int tx = x / 3;
+            Triplet t = triplets[tx, y];
+
+            switch (x % 3)
+            {
+                case 0:
+                    if (t.LeftCurrent)
+                        return;
+                    // Left is about to be born
+                    t = t.SetLeftCurrent(true);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+                    break;
+                case 1:
+                    if (t.MiddleCurrent)
+                        return;
+                    // Middle is about to be born
+                    t = t.SetMiddleCurrent(true);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
+                    break;
+                case 2:
+                    if (t.RightCurrent)
+                        return;
+                    // Right is about to be born
+                    t = t.SetRightCurrent(true);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+                    break;
+            }
+            triplets[tx, y] = t;
+        }
+
+        private void BecomeDead(int x, int y)
+        {
+            int tx = x / 3;
+            Triplet t = triplets[tx, y];
+
+            switch (x % 3)
+            {
+                case 0:
+                    if (!t.LeftCurrent)
+                        return;
+                    t = t.SetLeftCurrent(false);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+                    break;
+                case 1:
+                    if (!t.MiddleCurrent)
+                        return;
+                    t = t.SetMiddleCurrent(false);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
+                    break;
+                case 2:
+                    if (!t.RightCurrent)
+                        return;
+                    t = t.SetRightCurrent(false);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+                    break;
+            }
+            triplets[tx, y] = t;
+        }
+
+        public bool this[long x, long y]
+        {
+            get
+            {
+                if (IsValidPoint(x, y))
+                {
+                    Triplet t = triplets[x / 3, y];
+                    switch (x % 3)
+                    {
+                        case 0: return t.LeftCurrent;
+                        case 1: return t.MiddleCurrent;
+                        default: return t.RightCurrent;
+                    }
+                }
+                return false;
+            }
+            set
+            {
+                if (IsValidPoint(x, y))
+                {
+                    if (value)
+                    {
+                        if (!this[x, y])
+                        {
+                            BecomeAlive((int)x, (int)y);
+                            changes.Add(((int)x / 3, (int)y));
+                        }
+                    }
+                    else
+                    {
+                        if (this[x, y])
+                        {
+                            BecomeDead((int)x, (int)y);
+                            changes.Add(((int)x / 3, (int)y));
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool this[LifePoint v]
+        {
+            get => this[v.X, v.Y];
+            set => this[v.X, v.Y] = value;
+        }
+
+        // We are about to update the current state with the next state.
+        // This requires incrementing and decrementing a bunch of neighbour
+        // counts; each combination of "unchanged / become alive / become dead"
+        // is different, and there are 27 such combinations. 
+        //
+        // Here we have 27 helper methods, each of which deals with one combination.
+        // It returns true if there was a change made, so the only one that returns
+        // false is the one that does nothing.
+
+        private bool UUU(int tx, int y)
+        {
+            return false;
+        }
+
+        private bool UUA(int tx, int y)
+        {
+            triplets[tx, y] = triplets[tx, y].UUA();
+
+            triplets[tx, y - 1] = triplets[tx, y - 1].UPU().UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UPU().UUP();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+
+            return true;
+        }
+
+        public void Step()
+        {
+            var previousChanges = changes;
+            changes = new List<(int, int)>();
+
+            foreach ((int cx, int cy) in previousChanges)
+            {
+                int minx = Max(cx - 1, 1);
+                int maxx = Min(cx + 2, width - 1);
+                int miny = Max(cy - 1, 1);
+                int maxy = Min(cy + 2, height - 1);
+                for (int y = miny; y < maxy; y += 1)
+                {
+                    for (int tx = minx; tx < maxx; tx += 1)
+                    {
+                        triplets[tx, y] = TripletLookup.lookup[triplets[tx, y].State1];
                     }
                 }
             }
