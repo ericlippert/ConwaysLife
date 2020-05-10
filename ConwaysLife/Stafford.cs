@@ -58,46 +58,54 @@ namespace ConwaysLife
         // And similarly for bits 0, 1 and 2 for the right cell.
         private const int rcount = 0;
 
-        public int LeftNext => (triplet & (1 << lnext)) >> lnext;
-        public int MiddleNext => (triplet & (1 << mnext)) >> mnext;
-        public int RightNext => (triplet & (1 << rnext)) >> rnext;
+        public bool LeftNext => (triplet & (1 << lnext)) != 0;
+        public bool MiddleNext => (triplet & (1 << mnext)) != 0;
+        public bool RightNext => (triplet & (1 << rnext)) != 0;
 
-        public Triplet SetLeftNext() => new Triplet((short)(triplet | (1 << lnext)));
-        public Triplet SetMiddleNext() => new Triplet((short)(triplet | (1 << mnext)));
-        public Triplet SetRightNext() => new Triplet((short)(triplet | (1 << rnext)));
+        public int LeftNextRaw => (triplet & (1 << lnext)) >> lnext;
+        public int MiddleNextRaw => (triplet & (1 << mnext)) >> mnext;
+        public int RightNextRaw => (triplet & (1 << rnext)) >> rnext;
 
-        public int LeftCurrent => (triplet & (1 << lcur)) >> lcur;
-        public int MiddleCurrent => (triplet & (1 << mcur)) >> mcur;
-        public int RightCurrent => (triplet & (1 << rcur)) >> rcur;
+        public Triplet SetLeftNext(bool b) => new Triplet((short)(b ? (triplet | (1 << lnext)) : (triplet & ~(1 << lnext))));
+        public Triplet SetMiddleNext(bool b) => new Triplet((short)(b ? (triplet | (1 << mnext)) : (triplet & ~(1 << mnext))));
+        public Triplet SetRightNext(bool b) => new Triplet((short)(b ? (triplet | (1 << rnext)) : (triplet & ~(1 << rnext))));
 
-        public Triplet SetLeftCurrent() => new Triplet((short)(triplet | (1 << lcur)));
-        public Triplet SetMiddleCurrent() => new Triplet((short)(triplet | (1 << mcur)));
-        public Triplet SetRightCurrent() => new Triplet((short)(triplet | (1 << rcur)));
+        public bool LeftCurrent => (triplet & (1 << lcur)) != 0;
+        public bool MiddleCurrent => (triplet & (1 << mcur)) != 0;
+        public bool RightCurrent => (triplet & (1 << rcur)) != 0;
+
+        public int LeftCurrentRaw => (triplet & (1 << lcur)) >> lcur;
+        public int MiddleCurrentRaw => (triplet & (1 << mcur)) >> mcur;
+        public int RightCurrentRaw => (triplet & (1 << rcur)) >> rcur;
+
+        public Triplet SetLeftCurrent(bool b) => new Triplet((short)(b ? (triplet | (1 << lcur)) : (triplet & ~(1 << lcur))));
+        public Triplet SetMiddleCurrent(bool b) => new Triplet((short)(b ? (triplet | (1 << mcur)) : (triplet & ~(1 << mcur))));
+        public Triplet SetRightCurrent(bool b) => new Triplet((short)(b ? (triplet | (1 << rcur)) : (triplet & ~(1 << rcur))));
 
         public int LeftCountRaw => (triplet & (7 << lcount)) >> lcount;
         public int MiddleCountRaw => (triplet & (7 << mcount)) >> mcount;
         public int RightCountRaw => (triplet & (7 << rcount)) >> rcount;
 
-        public int LeftCount => MiddleCurrent + LeftCountRaw;
-        public int MiddleCount => LeftCurrent + RightCurrent + MiddleCountRaw;
-        public int RightCount => MiddleCurrent + RightCountRaw;
+        public int LeftCount => MiddleCurrentRaw + LeftCountRaw;
+        public int MiddleCount => LeftCurrentRaw + RightCurrentRaw + MiddleCountRaw;
+        public int RightCount => MiddleCurrentRaw + RightCountRaw;
 
         public Triplet SetLeftCountRaw(int c)
         {
             Debug.Assert(0 <= c && c <= 7);
-            return new Triplet((short)(triplet & (~7 << lcount) | (c << lcount)));
+            return new Triplet((short)(triplet & ~(7 << lcount) | (c << lcount)));
         }
 
         public Triplet SetMiddleCountRaw(int c)
         {
             Debug.Assert(0 <= c && c <= 6);
-            return new Triplet((short)(triplet & (~7 << mcount) | (c << mcount)));
+            return new Triplet((short)(triplet & ~(7 << mcount) | (c << mcount)));
         }
 
         public Triplet SetRightCountRaw(int c)
         {
             Debug.Assert(0 <= c && c <= 7);
-            return new Triplet((short)(triplet & (~7 << rcount) | (c << rcount)));
+            return new Triplet((short)(triplet & ~(7 << rcount) | (c << rcount)));
         }
 
         public Triplet IncLeft() => SetLeftCountRaw(LeftCountRaw + 1);
@@ -108,24 +116,104 @@ namespace ConwaysLife
         public Triplet DecRight() => SetRightCountRaw(RightCountRaw - 1);
     }
 
-    class Stafford : ILife
+    class StaffordUnoptimized : ILife
     {
+        // TODO: Bump this up to account for the rectangle.
         private int height = 256;
         private int width = 89; // Width in triplets
-        private Triplet[] triplets;
+        private Triplet[,] triplets;
 
-        public Stafford()
+        public StaffordUnoptimized()
         {
             Clear();
         }
 
         public void Clear()
         {
-            triplets = new Triplet[width * height];
+            triplets = new Triplet[width, height];
         }
 
         private bool IsValidPoint(long x, long y) =>
-            0 <= x && x < width * 3 && 0 <= y && y < height;
+            1 <= x && x < (width - 1) * 3 && 1 <= y && y < height - 1;
+
+        private void BecomeAlive(int x, int y)
+        {
+            int tx = x / 3;
+            Triplet t = triplets[tx, y];
+
+            switch(x % 3)
+            {
+                case 0:
+                    if (t.LeftCurrent)
+                        return;
+                    // Left is about to be born
+                    t = t.SetLeftCurrent(true);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncLeft();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncLeft();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].IncRight();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].IncRight();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].IncRight();
+                    break;
+                case 1:
+                    if (t.MiddleCurrent)
+                        return;
+                    // Middle is about to be born
+                    t = t.SetMiddleCurrent(true);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncLeft().IncRight();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncLeft().IncRight();
+                    break;
+                case 2:
+                    if (t.RightCurrent)
+                        return;
+                    // Right is about to be born
+                    t = t.SetRightCurrent(true);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].IncMiddle().IncRight();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].IncMiddle().IncRight();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].IncLeft();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].IncLeft();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].IncLeft();
+                    break;
+            }
+            triplets[tx, y] = t;
+        }
+
+        private void BecomeDead(int x, int y)
+        {
+            int tx = x / 3;
+            Triplet t = triplets[tx, y];
+
+            switch (x % 3)
+            {
+                case 0:
+                    if (!t.LeftCurrent)
+                        return;
+                    t = t.SetLeftCurrent(false);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecLeft();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecLeft();
+                    triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].DecRight();
+                    triplets[tx - 1, y] = triplets[tx - 1, y].DecRight();
+                    triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].DecRight();
+                    break;
+                case 1:
+                    if (!t.MiddleCurrent)
+                        return;
+                    t = t.SetMiddleCurrent(false);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecLeft().DecRight();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecLeft().DecRight();
+                    break;
+                case 2:
+                    if (!t.RightCurrent)
+                        return;
+                    t = t.SetRightCurrent(false);
+                    triplets[tx, y - 1] = triplets[tx, y - 1].DecMiddle().DecRight();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].DecMiddle().DecRight();
+                    triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].DecLeft();
+                    triplets[tx + 1, y] = triplets[tx + 1, y].DecLeft();
+                    triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].DecLeft();
+                    break;
+            }
+            triplets[tx, y] = t;
+        }
 
         public bool this[long x, long y]
         {
@@ -133,19 +221,25 @@ namespace ConwaysLife
             {
                 if (IsValidPoint(x, y))
                 {
-                    Triplet t = triplets[x / 3 + y * width];
+                    Triplet t = triplets[x / 3, y];
                     switch (x % 3)
                     {
-                        case 0: return t.LeftCurrent == 1;
-                        case 1: return t.MiddleCurrent == 1;
-                        default: return t.RightCurrent == 1;
+                        case 0: return t.LeftCurrent;
+                        case 1: return t.MiddleCurrent;
+                        default: return t.RightCurrent;
                     }
                 }
                 return false;
             }
             set
             {
-                throw new NotImplementedException();
+                if (IsValidPoint(x, y))
+                {
+                    if (value)
+                        BecomeAlive((int)x, (int)y);
+                    else
+                        BecomeDead((int)x, (int)y);
+                }
             }
         }
 
@@ -335,15 +429,64 @@ namespace ConwaysLife
             //   and south gets decremented. The left neighbor counts on the triplets
             //   to the west, northwest and southwest get incremented.  And so on;
             //   you see how this goes.
-           
 
-            throw new NotImplementedException();
+
+            // Let's start with an implementation without all these optimizations
+            // and see where we get to.
+
+            // * Compute the next state from the current state and neighbor count.
+
+            for (int y = 1; y < height - 1; y += 1)
+            {
+                for (int tx = 1; tx < width - 1; tx += 1)
+                {
+                    // This can be replaced by a table lookup.
+                    Triplet t = triplets[tx, y];
+                    int lc = t.LeftCount;
+                    int mc = t.MiddleCount;
+                    int rc = t.RightCount;
+                    t = t.SetLeftNext(lc == 3 | t.LeftCurrent & lc == 2);
+                    t = t.SetMiddleNext(mc == 3 | t.MiddleCurrent & mc == 2);
+                    t = t.SetRightNext(rc == 3 | t.RightCurrent & rc == 2);
+                    triplets[tx, y] = t;
+                }
+
+            }
+
+            // * Copy the next cell state to the current cell state.
+            // * Update the neighbor counts of the neighboring triplets if necessary
+            //   to match the new current state.
+
+            for (int y = 1;  y < height - 1; y += 1)
+            {
+                for (int tx = 1; tx < width - 1; tx += 1)
+                {
+                    // This can be replaced by jump table logic that looks up the new triple value
+                    // and knows which operations to perform on which neighbours.
+
+                    Triplet t = triplets[tx, y];
+                    if (t.LeftCurrent & !t.LeftNext)
+                        BecomeDead(tx * 3, y);
+                    else if (!t.LeftCurrent & t.LeftNext)
+                        BecomeAlive(tx * 3, y);
+
+                    if (t.MiddleCurrent & !t.MiddleNext)
+                        BecomeDead(tx * 3 + 1, y);
+                    else if (!t.MiddleCurrent & t.MiddleNext)
+                        BecomeAlive(tx * 3 + 1, y);
+
+                    if (t.RightCurrent & !t.RightNext)
+                        BecomeDead(tx * 3 + 2, y);
+                    else if (!t.RightCurrent & t.RightNext)
+                        BecomeAlive(tx * 3 + 2, y);
+                }
+            }
         }
 
         public void Draw(LifeRect rect, Action<LifePoint> setPixel)
         {
             long xmin = Max(0, rect.X);
-            long xmax = Min(width, rect.X + rect.Width);
+            long xmax = Min(width * 3, rect.X + rect.Width);
             long ymin = Max(0, rect.Y - rect.Height + 1);
             long ymax = Min(height, rect.Y + 1);
             for (long y = ymin; y < ymax; y += 1)
