@@ -179,7 +179,8 @@ namespace ConwaysLife
         }
 
         // Similarly, there are 27 possible combinations of 
-        // unchanged/increment/decrement the left/middle/right count.
+        // unchanged/increment/decrement the left/middle/right count, 
+        // but we only use 15 of them.
         //
         // U = unchanged
         // P = increment
@@ -188,33 +189,36 @@ namespace ConwaysLife
         // Again, if we put all the constant arithmetic on the left
         // then we know the compiler will fold it.
 
-        // We already have UUU as a no-op above.
         public Triplet UUP() => new Triplet(rcountone + triplet);
         public Triplet UUM() => new Triplet(-rcountone + triplet);
         public Triplet UPU() => new Triplet(mcountone + triplet);
         public Triplet UPP() => new Triplet(mcountone + rcountone + triplet);
-        public Triplet UPM() => new Triplet(mcountone - rcountone + triplet);
         public Triplet UMU() => new Triplet(-mcountone + triplet);
-        public Triplet UMP() => new Triplet(-mcountone + rcountone + triplet);
         public Triplet UMM() => new Triplet(-mcountone - rcountone + triplet);
         public Triplet PUU() => new Triplet(lcountone + triplet);
-        public Triplet PUP() => new Triplet(lcountone + rcountone + triplet);
         public Triplet PUM() => new Triplet(lcountone - rcountone + triplet);
         public Triplet PPU() => new Triplet(lcountone + mcountone + triplet);
         public Triplet PPP() => new Triplet(lcountone + mcountone + rcountone + triplet);
-        public Triplet PPM() => new Triplet(lcountone + mcountone - rcountone + triplet);
-        public Triplet PMU() => new Triplet(lcountone - mcountone + triplet);
-        public Triplet PMP() => new Triplet(lcountone - mcountone + rcountone + triplet);
-        public Triplet PMM() => new Triplet(lcountone - mcountone - rcountone + triplet);
         public Triplet MUU() => new Triplet(-lcountone + triplet);
         public Triplet MUP() => new Triplet(-lcountone + rcountone + triplet);
-        public Triplet MUM() => new Triplet(-lcountone - rcountone + triplet);
-        public Triplet MPU() => new Triplet(-lcountone + mcountone + triplet);
-        public Triplet MPP() => new Triplet(-lcountone + mcountone + rcountone + triplet);
-        public Triplet MPM() => new Triplet(-lcountone + mcountone - rcountone + triplet);
         public Triplet MMU() => new Triplet(-lcountone - mcountone + triplet);
-        public Triplet MMP() => new Triplet(-lcountone - mcountone + rcountone + triplet);
         public Triplet MMM() => new Triplet(-lcountone - mcountone - rcountone + triplet);
+
+        // We also need these:
+
+        public Triplet PP2P2() => new Triplet(lcountone + 2 * mcountone + 2 * rcountone + triplet);
+        public Triplet PP2P() => new Triplet(lcountone + 2 * mcountone + rcountone + triplet);
+        public Triplet P2P2P() => new Triplet(2 * lcountone + 2 * mcountone + rcountone + triplet);
+        public Triplet P2P3P2() => new Triplet(2 * lcountone + 3 * mcountone + 2 * rcountone + triplet);
+        public Triplet P2PU() => new Triplet(2 * lcountone + mcountone + triplet);
+        public Triplet UPP2() => new Triplet(mcountone + 2 * rcountone + triplet);
+
+        public Triplet MM2M2() => new Triplet(-lcountone - 2 * mcountone - 2 * rcountone + triplet);
+        public Triplet MM2M() => new Triplet(-lcountone - 2 * mcountone - 1 * rcountone + triplet);
+        public Triplet M2M2M() => new Triplet(- 2 * lcountone - 2 * mcountone - rcountone + triplet);
+        public Triplet M2M3M2() => new Triplet(-2 * lcountone - 3 * mcountone - 2 * rcountone + triplet);
+        public Triplet M2MU() => new Triplet(-2 * lcountone - mcountone + triplet);
+        public Triplet UMM2() => new Triplet(- mcountone - 2 * rcountone + triplet);
 
         public int State1 => triplet & 0x0fff;
         public int State2 => triplet >> 9;
@@ -257,7 +261,7 @@ namespace ConwaysLife
                     if (t.LeftCurrent)
                         return;
                     // Left is about to be born
-                    t = t.SetLeftCurrent(true);
+                    t = t.AUU();
                     triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
                     triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
                     triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
@@ -268,7 +272,7 @@ namespace ConwaysLife
                     if (t.MiddleCurrent)
                         return;
                     // Middle is about to be born
-                    t = t.SetMiddleCurrent(true);
+                    t = t.UAU();
                     triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
                     triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
                     break;
@@ -276,7 +280,7 @@ namespace ConwaysLife
                     if (t.RightCurrent)
                         return;
                     // Right is about to be born
-                    t = t.SetRightCurrent(true);
+                    t = t.UUA();
                     triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
                     triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
                     triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
@@ -284,6 +288,8 @@ namespace ConwaysLife
                     triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
                     break;
             }
+            // TODO: This could be in place. Save mutating t again.
+            // TODO: Also re-order the above.
             triplets[tx, y] = t;
         }
 
@@ -297,7 +303,7 @@ namespace ConwaysLife
                 case 0:
                     if (!t.LeftCurrent)
                         return;
-                    t = t.SetLeftCurrent(false);
+                    t = t.DUU();
                     triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
                     triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
                     triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
@@ -307,14 +313,14 @@ namespace ConwaysLife
                 case 1:
                     if (!t.MiddleCurrent)
                         return;
-                    t = t.SetMiddleCurrent(false);
+                    t = t.UDU();
                     triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
                     triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
                     break;
                 case 2:
                     if (!t.RightCurrent)
                         return;
-                    t = t.SetRightCurrent(false);
+                    t = t.UUD();
                     triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
                     triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
                     triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
@@ -1138,10 +1144,32 @@ namespace ConwaysLife
         private Triplet[,] triplets;
         private List<(int, int)> changes;
 
+        private Func<int, int, bool>[] lookup2;
 
 
         public Stafford()
         {
+            lookup2 = new Func<int, int, bool>[1 << 6]
+            {
+                /* NXT CUR */
+                /* DDD DDD */ UUU, /* DDD DDA */ UUD, /* DDD DAD */ UDU, /* DDD DAA */ UDD,
+                /* DDD ADD */ DUU, /* DDD ADA */ DUD, /* DDD AAD */ DDU, /* DDD AAA */ DDD,
+                /* DDA DDD */ UUA, /* DDA DDA */ UUU, /* DDA DAD */ UDA, /* DDA DAA */ UDU,
+                /* DDA ADD */ DUA, /* DDA ADA */ DUU, /* DDA AAD */ DDA, /* DDA AAA */ DDU,
+                /* DAD DDD */ UAU, /* DAD DDA */ UAD, /* DAD DAD */ UUU, /* DAD DAA */ UUD,
+                /* DAD ADD */ DAU, /* DAD ADA */ DAD, /* DAD AAD */ DUU, /* DAD AAA */ DUD,
+                /* DAA DDD */ UAA, /* DAA DDA */ UAU, /* DAA DAD */ UUA, /* DAA DAA */ UUU,
+                /* DAA ADD */ DAA, /* DAA ADA */ DAU, /* DAA AAD */ DUA, /* DAA AAA */ DUU,
+
+                /* ADD DDD */ AUU, /* ADD DDA */ AUD, /* ADD DAD */ ADU, /* ADD DAA */ ADD,
+                /* ADD ADD */ UUU, /* ADD ADA */ UUD, /* ADD AAD */ UDU, /* ADD AAA */ UDD,
+                /* ADA DDD */ AUA, /* ADA DDA */ AUU, /* ADA DAD */ ADA, /* ADA DAA */ ADU,
+                /* ADA ADD */ UUA, /* ADA ADA */ UUU, /* ADA AAD */ UDA, /* ADA AAA */ UDU,
+                /* AAD DDD */ AAU, /* AAD DDA */ AAD, /* AAD DAD */ AUU, /* AAD DAA */ AUD,
+                /* AAD ADD */ UAU, /* AAD ADA */ UAD, /* AAD AAD */ UUU, /* AAD AAA */ UUD,
+                /* AAA DDD */ AAA, /* AAA DDA */ AAU, /* AAA DAD */ AUA, /* AAA DAA */ AUU,
+                /* AAA ADD */ UAA, /* AAA ADA */ UAU, /* AAA AAD */ UUA, /* AAA AAA */ UUU
+            };
             Clear();
         }
 
@@ -1165,7 +1193,7 @@ namespace ConwaysLife
                     if (t.LeftCurrent)
                         return;
                     // Left is about to be born
-                    t = t.SetLeftCurrent(true);
+                    t = t.AUU();
                     triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
                     triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
                     triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
@@ -1176,7 +1204,7 @@ namespace ConwaysLife
                     if (t.MiddleCurrent)
                         return;
                     // Middle is about to be born
-                    t = t.SetMiddleCurrent(true);
+                    t = t.UAU();
                     triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
                     triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
                     break;
@@ -1184,7 +1212,7 @@ namespace ConwaysLife
                     if (t.RightCurrent)
                         return;
                     // Right is about to be born
-                    t = t.SetRightCurrent(true);
+                    t = t.UUA();
                     triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
                     triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
                     triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
@@ -1205,7 +1233,7 @@ namespace ConwaysLife
                 case 0:
                     if (!t.LeftCurrent)
                         return;
-                    t = t.SetLeftCurrent(false);
+                    t = t.DUU();
                     triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
                     triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
                     triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
@@ -1215,14 +1243,14 @@ namespace ConwaysLife
                 case 1:
                     if (!t.MiddleCurrent)
                         return;
-                    t = t.SetMiddleCurrent(false);
+                    t = t.UDU();
                     triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
                     triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
                     break;
                 case 2:
                     if (!t.RightCurrent)
                         return;
-                    t = t.SetRightCurrent(false);
+                    t = t.UUD();
                     triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
                     triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
                     triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
@@ -1295,14 +1323,320 @@ namespace ConwaysLife
 
         private bool UUA(int tx, int y)
         {
-            triplets[tx, y] = triplets[tx, y].UUA();
-
-            triplets[tx, y - 1] = triplets[tx, y - 1].UPU().UUP();
-            triplets[tx, y + 1] = triplets[tx, y + 1].UPU().UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx, y] = triplets[tx, y].UUA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
             triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
 
+        private bool UUD(int tx, int y)
+        {
+            triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx, y] = triplets[tx, y].UUD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+            return true;
+        }
+
+        private bool UAU(int tx, int y)
+        {
+            triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
+            triplets[tx, y] = triplets[tx, y].UAU();
+            triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
+            return true;
+        }
+
+        private bool UAA(int tx, int y)
+        {
+            triplets[tx, y - 1] = triplets[tx, y - 1].PP2P2();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx, y] = triplets[tx, y].UAA();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx, y + 1] = triplets[tx, y + 1].PP2P2();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
+
+        
+        private bool UAD(int tx, int y)
+        {
+            triplets[tx, y - 1] = triplets[tx, y - 1].PUU();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx, y] = triplets[tx, y].UAD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx, y + 1] = triplets[tx, y + 1].PUU();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+            return true;
+        }
+
+        private bool UDU(int tx, int y)
+        {
+            triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
+            triplets[tx, y] = triplets[tx, y].UDU();
+            triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
+            return true;
+        }
+
+        private bool UDA(int tx, int y)
+        {
+            triplets[tx, y - 1] = triplets[tx, y - 1].MUU();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx, y] = triplets[tx, y].UDA();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx, y + 1] = triplets[tx, y + 1].MUU();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
+
+        private bool UDD(int tx, int y)
+        {
+            triplets[tx, y - 1] = triplets[tx, y - 1].MM2M2();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx, y] = triplets[tx, y].UDD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx, y + 1] = triplets[tx, y + 1].MM2M2();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+            return true;
+        }
+
+        private bool AUU(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].AUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
+            return true;
+        }
+
+        private bool AUA(int tx, int y)
+        {
+
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].PP2P();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].AUA();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].PP2P();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
+
+        private bool AUD(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].PUM();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].AUD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].PUM();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+            return true;
+        }
+
+        private bool AAU(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].P2P2P();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].AAU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].P2P2P();
+            return true;
+        }
+
+        private bool AAA(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].P2P3P2();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].AAA();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].P2P3P2();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
+
+        private bool AAD(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].P2PU();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].AAD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].P2PU();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+            return true;
+        }
+
+        private bool ADU(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].UUM();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].ADU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UUM();
+            return true;
+        }
+
+        private bool ADA(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].UPU();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].ADA();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UPU();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
+
+        private bool ADD(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+            triplets[tx, y - 1] = triplets[tx, y - 1].UMM2();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+            triplets[tx, y] = triplets[tx, y].ADD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UMM2();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+            return true;
+        }
+
+        private bool DUU(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
+            return true;
+        }
+
+        private bool DUA(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].MUP();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DUA();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].MUP();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
+
+        private bool DUD(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].MM2M();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DUD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].MM2M();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+            return true;
+        }
+
+        private bool DAU(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].UUP();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DAU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UUP();
+            return true;
+        }
+
+        private bool DAA(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].UPP2();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DAA();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UPP2();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
+
+        private bool DAD(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].UMU();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DAD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].UMU();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
+            return true;
+        }
+
+        private bool DDU(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].M2M2M();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DDU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].M2M2M();
+            return true;
+        }
+
+        private bool DDA(int tx, int y)
+        {
+
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].M2MU();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DDA();
+            triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].M2MU();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
+            return true;
+        }
+
+        private bool DDD(int tx, int y)
+        {
+            triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+            triplets[tx, y - 1] = triplets[tx, y - 1].M2M3M2();
+            triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+            triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+            triplets[tx, y] = triplets[tx, y].DDD();
+            triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+            triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+            triplets[tx, y + 1] = triplets[tx, y + 1].M2M3M2();
+            triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
             return true;
         }
 
@@ -1336,41 +1670,7 @@ namespace ConwaysLife
                 {
                     for (int tx = minx; tx < maxx; tx += 1)
                     {
-                        bool changed = false;
-
-                        Triplet t = triplets[tx, y];
-                        if (t.LeftCurrent & !t.LeftNext)
-                        {
-                            BecomeDead(tx * 3, y);
-                            changed = true;
-                        }
-                        else if (!t.LeftCurrent & t.LeftNext)
-                        {
-                            BecomeAlive(tx * 3, y);
-                            changed = true;
-                        }
-
-                        if (t.MiddleCurrent & !t.MiddleNext)
-                        {
-                            BecomeDead(tx * 3 + 1, y);
-                            changed = true;
-                        }
-                        else if (!t.MiddleCurrent & t.MiddleNext)
-                        {
-                            BecomeAlive(tx * 3 + 1, y);
-                            changed = true;
-                        }
-
-                        if (t.RightCurrent & !t.RightNext)
-                        {
-                            BecomeDead(tx * 3 + 2, y);
-                            changed = true;
-                        }
-                        else if (!t.RightCurrent & t.RightNext)
-                        {
-                            BecomeAlive(tx * 3 + 2, y);
-                            changed = true;
-                        }
+                        bool changed = lookup2[triplets[tx, y].State2](tx, y);
                         if (changed)
                             changes.Add((tx, y));
                     }
