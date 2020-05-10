@@ -258,6 +258,10 @@ namespace ConwaysLife
             switch (e.KeyCode)
             {
                 case Keys.P:
+                    PerfTest(new Abrash());
+                    PerfTest(new AbrashChangeList());
+                    PerfTest(new StaffordChangeList());
+                    PerfTest(new StaffordLookup());
                     PerfTest(new Stafford());
                     break;
                 case Keys.S:

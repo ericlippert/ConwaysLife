@@ -7,8 +7,8 @@ namespace ConwaysLife
 {
     class AbrashChangeList : ILife
     {
-        private const int height = 256;
-        private const int width = 256;
+        private const int height = 258;
+        private const int width = 258;
         private Cell[,] cells;
 
         private List<(int, int)> changes;

@@ -56,8 +56,8 @@ namespace ConwaysLife
 
     class Abrash : ILife
     {
-        private const int height = 256;
-        private const int width = 256; 
+        private const int height = 258;
+        private const int width = 258; 
         private Cell[,] cells;
 
         public Abrash()
