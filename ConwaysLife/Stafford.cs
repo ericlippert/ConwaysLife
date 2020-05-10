@@ -749,30 +749,19 @@ namespace ConwaysLife
         }
     }
 
-    class StaffordLookup : ILife
+    static class TripletLookup
     {
-        // We're going to keep the top and bottom edge triplets dead,
-        // so this gives us 256 live rows.
-        private int height = 258;
 
-        // This is the width in triplets. That gives us 264 cells, but 
-        // we'll keep the left and right triplets dead, so that's 258
-        // live columns of cells.
+        public static Triplet[] lookup;
 
-        private int width = 88;
-        private Triplet[,] triplets;
-        private List<(int, int)> changes;
-
-        private static Triplet[] lookup;
-        
-        static StaffordLookup()
+        static TripletLookup()
         {
             // Some of these are impossible, but who cares?
             lookup = new Triplet[1 << 12];
 
-            for (int left = 0; left < 2; left += 1)            
+            for (int left = 0; left < 2; left += 1)
                 for (int middle = 0; middle < 2; middle += 1)
-                    for (int right = 0; right < 2; right +=1)
+                    for (int right = 0; right < 2; right += 1)
                         for (int lc = 0; lc < 8; lc += 1)
                             for (int mc = 0; mc < 7; mc += 1)
                                 for (int rc = 0; rc < 8; rc += 1)
@@ -791,6 +780,22 @@ namespace ConwaysLife
                                 }
 
         }
+    }
+
+    class StaffordLookup : ILife
+    {
+        // We're going to keep the top and bottom edge triplets dead,
+        // so this gives us 256 live rows.
+        private int height = 258;
+
+        // This is the width in triplets. That gives us 264 cells, but 
+        // we'll keep the left and right triplets dead, so that's 258
+        // live columns of cells.
+
+        private int width = 88;
+        private Triplet[,] triplets;
+        private List<(int, int)> changes;
+
 
 
         public StaffordLookup()
@@ -947,7 +952,7 @@ namespace ConwaysLife
                 {
                     for (int tx = minx; tx < maxx; tx += 1)
                     {
-                        triplets[tx, y] = lookup[triplets[tx, y].State];
+                        triplets[tx, y] = TripletLookup.lookup[triplets[tx, y].State];
                     }
                 }
             }
