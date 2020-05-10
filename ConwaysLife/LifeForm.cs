@@ -126,7 +126,7 @@ namespace ConwaysLife
         {
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            life = new StaffordUnoptimized();
+            life = new StaffordChangeList();
             life.AddAcorn(new LifePoint(128, 128));
             corner = new LifePoint(-2, LifeHeight - 2);
             display.Image = new Bitmap(display.Width, display.Height);
@@ -258,7 +258,7 @@ namespace ConwaysLife
             switch (e.KeyCode)
             {
                 case Keys.P:
-                    PerfTest(new StaffordUnoptimized());
+                    PerfTest(new StaffordChangeList());
                     break;
                 case Keys.S:
                     Snapshot.SaveImage(display.Image);
