@@ -55,8 +55,11 @@ namespace ConwaysLife
 
     class Abrash : ILife
     {
-        private const int height = 256;
-        private const int width = 256;
+        // We're keeping a ring of dead cells around the board; grow the
+        // board two in both directions to account for that, so that we 
+        // still have 256 x 256 cells computed per tick.
+        private const int height = 258;
+        private const int width = 258;
         private Cell[,] cells;
 
         public Abrash()
