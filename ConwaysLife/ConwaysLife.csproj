@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Abrash.cs" />
     <Compile Include="AbrashChangeList.cs" />
+    <Compile Include="AbrashOneArray.cs" />
     <Compile Include="BoolArrayLife.cs" />
     <Compile Include="ILife.cs" />
     <Compile Include="LifeForm.cs">

@@ -126,7 +126,7 @@ namespace ConwaysLife
         {
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            life = new Stafford();
+            life = new AbrashOneArray();
             life.AddAcorn(new LifePoint(128, 128));
             corner = new LifePoint(-2, LifeHeight - 2);
             display.Image = new Bitmap(display.Width, display.Height);
@@ -260,6 +260,7 @@ namespace ConwaysLife
                 case Keys.P:
                     PerfTest(new Abrash());
                     PerfTest(new AbrashChangeList());
+                    PerfTest(new AbrashOneArray());
                     PerfTest(new StaffordChangeList());
                     PerfTest(new StaffordLookup());
                     PerfTest(new Stafford());

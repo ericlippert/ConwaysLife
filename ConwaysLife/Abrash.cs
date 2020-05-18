@@ -26,19 +26,30 @@ namespace ConwaysLife
             this.cell = cell;
         }
 
-        // Bit 7 is the state of the cell; bits 0 through 3 are the 
-        // number of living neighbors. Bits 4, 5 and 6 are unused
-        // and always zero.
-        private const int state = 7;
+        // Bit 5 is the upcoming state of the cell.
+        // Bit 4 is the current state of the cell.
+        // bits 0 through 3 are the number of living neighbors.
 
-        public bool State => (cell & (1 << state)) != 0;
-        public int Count => cell & ~(1 << state);
+        private const int state = 4;
+        private const int next = 5;
+
+        private const int statem = 1 << state;
+        private const int nextm = 1 << next;
+        private const int countm = 0xf;
+
+        public bool State => (cell & statem) != 0;
+        public int Count => cell & countm;
 
         // Dead cell with all dead neighbors.
         public bool AllDead => cell == 0;
 
-        public Cell MakeAlive() => new Cell((byte)(cell | (1 << state)));
-        public Cell MakeDead() => new Cell((byte)(cell & ~(1 << state)));
+        public Cell MakeAlive() => new Cell((byte)(cell | statem));
+        public Cell MakeDead() => new Cell((byte)(cell & ~statem));
+
+        public bool Next => (cell & nextm) != 0;
+        public Cell NextAlive() => new Cell((byte)(cell | nextm));
+        public Cell NextDead() => new Cell((byte)(cell & ~nextm));
+
 
         // We don't have to mask out the state bit to do an increment or
         // decrement!
