@@ -51,6 +51,7 @@
     <Compile Include="Abrash.cs" />
     <Compile Include="BoolArrayLife.cs" />
     <Compile Include="BoolArrayOpt.cs" />
+    <Compile Include="AbrashChangeList.cs" />
     <Compile Include="ILife.cs" />
     <Compile Include="LifeForm.cs">
       <SubType>Form</SubType>

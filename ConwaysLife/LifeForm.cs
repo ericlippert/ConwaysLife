@@ -146,7 +146,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            life = new Abrash();
+            life = new AbrashChangeList();
             life.AddR(new LifePoint(128, 128));
             corner = new LifePoint(-2, LifeHeight - 2);
         }
@@ -306,7 +306,9 @@ namespace ConwaysLife
             switch (e.KeyCode)
             {
                 case Keys.P:
+                    PerfTest(new Scholes());
                     PerfTest(new Abrash());
+                    PerfTest(new AbrashChangeList());
                     break;
                 case Keys.S:
                     Screenshot.SaveImage(display.Image);
