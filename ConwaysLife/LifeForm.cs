@@ -338,5 +338,10 @@ namespace ConwaysLife
             corner = new LifePoint(corner.X + dragStart.X - current.X, corner.Y + dragStart.Y - current.Y);
             DrawDisplay();
         }
+
+        private void playButton_Click(object sender, EventArgs e)
+        {
+            timer.Enabled = !timer.Enabled;
+        }
     }
 }

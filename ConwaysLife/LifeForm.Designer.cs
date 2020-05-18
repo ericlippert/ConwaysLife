@@ -33,6 +33,7 @@
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.panel = new System.Windows.Forms.Panel();
             this.title = new System.Windows.Forms.Label();
+            this.playButton = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.display)).BeginInit();
             this.panel.SuspendLayout();
             this.SuspendLayout();
@@ -58,27 +59,39 @@
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.playButton);
             this.panel.Controls.Add(this.title);
             this.panel.Location = new System.Drawing.Point(12, 391);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(560, 58);
+            this.panel.Size = new System.Drawing.Size(560, 70);
             this.panel.TabIndex = 1;
             // 
             // title
             // 
             this.title.AutoSize = true;
             this.title.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.title.Location = new System.Drawing.Point(3, 0);
+            this.title.Location = new System.Drawing.Point(5, 0);
             this.title.Name = "title";
             this.title.Size = new System.Drawing.Size(168, 16);
             this.title.TabIndex = 0;
             this.title.Text = "Life is Fabulous";
             // 
+            // playButton
+            // 
+            this.playButton.AutoSize = true;
+            this.playButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.playButton.Location = new System.Drawing.Point(3, 25);
+            this.playButton.Name = "playButton";
+            this.playButton.Size = new System.Drawing.Size(42, 29);
+            this.playButton.TabIndex = 2;
+            this.playButton.Text = "⏯︎";
+            this.playButton.Click += new System.EventHandler(this.playButton_Click);
+            // 
             // LifeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 461);
+            this.ClientSize = new System.Drawing.Size(584, 471);
             this.Controls.Add(this.panel);
             this.Controls.Add(this.display);
             this.KeyPreview = true;
@@ -100,6 +113,7 @@
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.Label title;
+        private System.Windows.Forms.Label playButton;
     }
 }
 
