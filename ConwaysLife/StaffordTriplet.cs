@@ -43,6 +43,8 @@ namespace ConwaysLife
         private const int lcm = 1 << lcur;
         private const int mcm = 1 << mcur;
         private const int rcm = 1 << rcur;
+        private const int currentm = lcm | mcm | rcm;
+        private const int nextm = lnm | mnm | rnm;
 
         private const int lcountm = 7 << lcount;
         private const int mcountm = 7 << mcount;
@@ -53,6 +55,9 @@ namespace ConwaysLife
         private const int lcountone = 1 << lcount;
         private const int mcountone = 1 << mcount;
         private const int rcountone = 1 << rcount;
+
+        public int CurrentState => (currentm & triplet) >> rcur;
+        public int NextState => (nextm & triplet) >> rnext;
 
         public bool LeftNext => (lnm & triplet) != 0;
         public bool MiddleNext => (mnm & triplet) != 0;
@@ -193,7 +198,12 @@ namespace ConwaysLife
         public Triplet M2MU() => new Triplet(-2 * lcountone - mcountone + triplet);
         public Triplet UMM2() => new Triplet(-mcountone - 2 * rcountone + triplet);
 
+        // Key for first pass lookup
         public int State1 => triplet & 0x0fff;
+
+        // Key for second pass lookup
         public int State2 => triplet >> 9;
+
+
     }
 }
