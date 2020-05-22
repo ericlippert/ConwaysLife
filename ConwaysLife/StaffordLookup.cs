@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using static System.Math;
 
 namespace ConwaysLife
@@ -10,11 +11,13 @@ namespace ConwaysLife
     static class TripletLookup
     {
         public static Triplet[] lookup;
+        public static bool[] changed;
 
         static TripletLookup()
         {
             // Some of these are impossible, but who cares?
             lookup = new Triplet[1 << 12];
+            changed = new bool[1 << 12];
 
             for (int left = 0; left < 2; left += 1)
                 for (int middle = 0; middle < 2; middle += 1)
@@ -34,6 +37,7 @@ namespace ConwaysLife
                                         .SetMiddleNext((left + mc + right == 3) | (middle == 1) & (left + mc + right == 2))
                                         .SetRightNext((middle + rc == 3) | (right == 1) & (middle + rc == 2));
                                     lookup[t.State1] = t;
+                                    changed[t.State1] = t.NextState != t.CurrentState;
                                 }
 
         }
@@ -67,83 +71,83 @@ namespace ConwaysLife
         private bool IsValidPoint(long x, long y) =>
             1 <= x && x < (width - 1) * 3 && 1 <= y && y < height - 1;
 
-        private void BecomeAlive(int x, int y)
+        // Returns true if a change was made, false if the cell was already alive.
+        private bool BecomeAlive(int x, int y)
         {
             int tx = x / 3;
             Triplet t = triplets[tx, y];
-            // TODO: Fix these to do it all in one operation
             switch (x % 3)
             {
                 case 0:
                     if (t.LeftCurrent)
-                        return;
+                        return false;
                     // Left is about to be born
-                    t = t.SetLeftCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].UPU().PUU();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].UPU().PUU();
                     triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
                     triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
+                    triplets[tx, y] = t.SetLeftCurrent(true);
                     triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
                     break;
                 case 1:
                     if (t.MiddleCurrent)
-                        return;
+                        return false;
                     // Middle is about to be born
-                    t = t.SetMiddleCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].UPU().PUU().UUP();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].UPU().PUU().UUP();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
+                    triplets[tx, y] = t.SetMiddleCurrent(true);
+                    triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
                     break;
                 case 2:
                     if (t.RightCurrent)
-                        return;
+                        return false;
                     // Right is about to be born
-                    t = t.SetRightCurrent(true);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].UPU().UUP();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].UPU().UUP();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
                     triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
+                    triplets[tx, y] = t.SetRightCurrent(true);
                     triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
                     triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
                     break;
             }
-            triplets[tx, y] = t;
+            return true;
         }
 
-        private void BecomeDead(int x, int y)
+        private bool BecomeDead(int x, int y)
         {
             int tx = x / 3;
             Triplet t = triplets[tx, y];
-            // TODO: Fix these to do it all in one operation
+
             switch (x % 3)
             {
                 case 0:
                     if (!t.LeftCurrent)
-                        return;
-                    t = t.SetLeftCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].UMU().MUU();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].UMU().MUU();
+                        return false;
                     triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
+                    triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
                     triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
+                    triplets[tx, y] = t.SetLeftCurrent(false);
                     triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
                     break;
                 case 1:
                     if (!t.MiddleCurrent)
-                        return;
-                    t = t.SetMiddleCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].UMU().MUU().UUM();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].UMU().MUU().UUM();
+                        return false;
+                    triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
+                    triplets[tx, y] = t.SetMiddleCurrent(false);
+                    triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
                     break;
                 case 2:
                     if (!t.RightCurrent)
-                        return;
-                    t = t.SetRightCurrent(false);
-                    triplets[tx, y - 1] = triplets[tx, y - 1].UMU().UUM();
-                    triplets[tx, y + 1] = triplets[tx, y + 1].UMU().UUM();
+                        return false;
+                    triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
                     triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
+                    triplets[tx, y] = t.SetRightCurrent(false);
                     triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
+                    triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
                     triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
                     break;
             }
-            triplets[tx, y] = t;
+            return true;
         }
 
         public bool this[long x, long y]
@@ -168,19 +172,13 @@ namespace ConwaysLife
                 {
                     if (value)
                     {
-                        if (!this[x, y])
-                        {
-                            BecomeAlive((int)x, (int)y);
+                        if (BecomeAlive((int)x, (int)y))
                             changes.Add(((int)x / 3, (int)y));
-                        }
                     }
                     else
                     {
-                        if (this[x, y])
-                        {
-                            BecomeDead((int)x, (int)y);
+                        if (BecomeDead((int)x, (int)y))
                             changes.Add(((int)x / 3, (int)y));
-                        }
                     }
                 }
             }
@@ -194,12 +192,13 @@ namespace ConwaysLife
 
         public void Step()
         {
-            var previousChanges = changes;
-            changes = new List<(int, int)>();
+            // First pass: for the previous changes and all their neighbours, record their
+            // new states. If the new state changed, make a note of that.
 
-            // TODO: Fix up change list algorithm here
+            // This list might have duplicates.
+            var currentChanges = new List<(int, int)>();
 
-            foreach ((int cx, int cy) in previousChanges)
+            foreach ((int cx, int cy) in changes)
             {
                 int minx = Max(cx - 1, 1);
                 int maxx = Min(cx + 2, width - 1);
@@ -209,60 +208,45 @@ namespace ConwaysLife
                 {
                     for (int tx = minx; tx < maxx; tx += 1)
                     {
-                        triplets[tx, y] = TripletLookup.lookup[triplets[tx, y].State1];
+                        int key1 = triplets[tx, y].State1;
+                        if (TripletLookup.changed[key1])
+                        {
+                            triplets[tx, y] = TripletLookup.lookup[key1];
+                            currentChanges.Add((tx, y));
+                        }
                     }
                 }
             }
 
-            foreach ((int cx, int cy) in previousChanges)
+            // We're done with the previous changes list, so throw it away.
+            changes.Clear();
+
+            foreach ((int x, int y) in currentChanges)
             {
-                int minx = Max(cx - 1, 1);
-                int maxx = Min(cx + 2, width - 1);
-                int miny = Max(cy - 1, 1);
-                int maxy = Min(cy + 2, height - 1);
-                for (int y = miny; y < maxy; y += 1)
-                {
-                    for (int tx = minx; tx < maxx; tx += 1)
-                    {
-                        bool changed = false;
+                Triplet t = triplets[x, y];
 
-                        Triplet t = triplets[tx, y];
-                        if (t.LeftCurrent & !t.LeftNext)
-                        {
-                            BecomeDead(tx * 3, y);
-                            changed = true;
-                        }
-                        else if (!t.LeftCurrent & t.LeftNext)
-                        {
-                            BecomeAlive(tx * 3, y);
-                            changed = true;
-                        }
+                // If we've already done this one before, no need to do it again.
 
-                        if (t.MiddleCurrent & !t.MiddleNext)
-                        {
-                            BecomeDead(tx * 3 + 1, y);
-                            changed = true;
-                        }
-                        else if (!t.MiddleCurrent & t.MiddleNext)
-                        {
-                            BecomeAlive(tx * 3 + 1, y);
-                            changed = true;
-                        }
+                if (t.CurrentState == t.NextState)
+                    continue;
 
-                        if (t.RightCurrent & !t.RightNext)
-                        {
-                            BecomeDead(tx * 3 + 2, y);
-                            changed = true;
-                        }
-                        else if (!t.RightCurrent & t.RightNext)
-                        {
-                            BecomeAlive(tx * 3 + 2, y);
-                            changed = true;
-                        }
-                        if (changed)
-                            changes.Add((tx, y));
-                    }
-                }
+                bool changed = false;
+                if (t.LeftNext)
+                    changed |= BecomeAlive(x * 3, y);
+                else
+                    changed |= BecomeDead(x * 3, y);
+
+                if (t.MiddleNext)
+                    changed |= BecomeAlive(x * 3 + 1, y);
+                else
+                    changed |= BecomeDead(x * 3 + 1, y);
+
+                if (t.RightNext)
+                    changed |= BecomeAlive(x * 3 + 2, y);
+                else
+                    changed |= BecomeDead(x * 3 + 2, y);
+                Debug.Assert(changed);
+                changes.Add((x, y));
             }
         }
 
