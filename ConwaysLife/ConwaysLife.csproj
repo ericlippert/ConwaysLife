@@ -68,6 +68,7 @@
     <Compile Include="Snapshot.cs" />
     <Compile Include="Stafford.cs" />
     <Compile Include="StaffordTriplet.cs" />
+    <Compile Include="StaffordUnoptimized.cs" />
     <EmbeddedResource Include="LifeForm.resx">
       <DependentUpon>LifeForm.cs</DependentUpon>
     </EmbeddedResource>
