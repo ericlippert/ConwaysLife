@@ -67,6 +67,7 @@
     <Compile Include="Scholes.cs" />
     <Compile Include="Snapshot.cs" />
     <Compile Include="Stafford.cs" />
+    <Compile Include="StaffordTriplet.cs" />
     <EmbeddedResource Include="LifeForm.resx">
       <DependentUpon>LifeForm.cs</DependentUpon>
     </EmbeddedResource>
