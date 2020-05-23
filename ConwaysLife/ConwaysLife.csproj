@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abrash.cs" />
+    <Compile Include="AbrashOneArray.cs" />
     <Compile Include="BoolArrayLife.cs" />
     <Compile Include="BoolArrayOpt.cs" />
     <Compile Include="AbrashChangeList.cs" />
