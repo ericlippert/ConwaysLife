@@ -374,7 +374,12 @@ namespace ConwaysLife
 
         private void playButton_Click(object sender, EventArgs e)
         {
-            timer.Enabled = !timer.Enabled;
+            ToggleRunning();
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            Reset();
         }
     }
 }
