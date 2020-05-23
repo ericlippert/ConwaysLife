@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using static ConwaysLife.Patterns;
 
 namespace ConwaysLife
 {
@@ -127,7 +128,12 @@ namespace ConwaysLife
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
             life = new Stafford();
-            life.AddAcorn(new LifePoint(128, 128));
+            life.AddPlaintext(new LifePoint(230, 10), HeavyweightSpaceship);
+            life.AddPlaintext(new LifePoint(230, 20), MiddleweightSpaceship);
+            life.AddPlaintext(new LifePoint(230, 30), LightweightSpaceship);
+            life.AddPlaintext(new LifePoint(50, 200), Puffer1);
+            life.AddPlaintext(new LifePoint(120, 200), Puffer2);
+
             corner = new LifePoint(-2, LifeHeight - 2);
             display.Image = new Bitmap(display.Width, display.Height);
         }
