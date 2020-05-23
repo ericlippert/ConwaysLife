@@ -54,7 +54,8 @@ namespace ConwaysLife
 
         private const int maxScale = 0;
         private const int minScale = -6;
-        private int scale = -1;
+        private const int defaultScale = -1;
+        private int scale = defaultScale;
 
         // If the cells are rendered 8 pixels wide or wider, draw a grid.
         private const int gridScale = -3;
@@ -134,7 +135,6 @@ namespace ConwaysLife
         {
             timer.Enabled = running;
             Initialize();
-            Draw();
             // The mouse wheel event handler is not automatically generated
             // by the forms designer, so we will hook it up manually.
             display.MouseWheel += display_MouseWheel;
@@ -147,14 +147,23 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
+            Reset();
+            StartRunning();
+        }
+
+        private void Reset()
+        {
+            StopRunning();
             life = new Stafford();
             life.AddPlaintext(new LifePoint(230, 10), HeavyweightSpaceship);
             life.AddPlaintext(new LifePoint(230, 20), MiddleweightSpaceship);
             life.AddPlaintext(new LifePoint(230, 30), LightweightSpaceship);
             life.AddPlaintext(new LifePoint(50, 200), Puffer1);
             life.AddPlaintext(new LifePoint(120, 200), Puffer2);
-
+            scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
+
+            Draw();
         }
 
         private void EnsureBitmap()
@@ -286,6 +295,18 @@ namespace ConwaysLife
             timer.Enabled = running;
         }
 
+        private void StopRunning()
+        {
+            running = false;
+            timer.Enabled = false;
+        }
+
+        private void StartRunning()
+        {
+            running = true;
+            timer.Enabled = true;
+        }
+
         private void PerfTest(ILife perf)
         {
             bool save = timer.Enabled;
@@ -318,6 +339,9 @@ namespace ConwaysLife
                     PerfTest(new StaffordChangeList());
                     PerfTest(new StaffordLookup());
                     PerfTest(new Stafford());
+                    break;
+                case Keys.R:
+                    Reset();
                     break;
                 case Keys.S:
                     Screenshot.SaveImage(display.Image);
