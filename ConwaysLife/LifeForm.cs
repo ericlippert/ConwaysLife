@@ -16,9 +16,9 @@ namespace ConwaysLife
         private Brush liveBrush;
         private Pen gridPen;
         private ILife life;
+        private bool running = true;
         private bool dragging = false;
         private LifePoint dragStart;
-        private bool running = true;
 
         // Record when we start up how much space was left
         // around the display box on the form, so that we can
@@ -29,6 +29,11 @@ namespace ConwaysLife
         // form height.
         private int displayHeightOffset;
         private int displayWidthOffset;
+
+        // How far from the display is the panel? When we resize,
+        // keep the panel relative to the display.
+        private int panelOffset;
+
 
         // A significant amount of the code in this form deals with
         // translating coordinates in the "infinite" Life grid into
@@ -127,6 +132,7 @@ namespace ConwaysLife
 
         private void LifeForm_Load(object sender, EventArgs e)
         {
+            timer.Enabled = running;
             Initialize();
             Draw();
             // The mouse wheel event handler is not automatically generated
@@ -136,6 +142,7 @@ namespace ConwaysLife
 
         private void Initialize()
         {
+            panelOffset = panel.Location.Y - display.Height;
             displayHeightOffset = Height - display.Height;
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
@@ -269,6 +276,7 @@ namespace ConwaysLife
             const int minHeight = 100;
             display.Width = Math.Max(minWidth, Width - displayWidthOffset);
             display.Height = Math.Max(minHeight, Height - displayHeightOffset);
+            panel.Location = new Point(panel.Location.X, display.Height + panelOffset);
             Draw();
         }
 
