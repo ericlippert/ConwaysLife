@@ -312,7 +312,7 @@ namespace ConwaysLife
                     PerfTest(new Stafford());
                     break;
                 case Keys.S:
-                    Snapshot.SaveImage(display.Image);
+                    Screenshot.SaveImage(display.Image);
                     break;
                 case Keys.Space:
                     ToggleRunning();

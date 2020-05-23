@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace ConwaysLife
 {
-    static class Snapshot
+    static class Screenshot
     {
         static ImageCodecInfo jpgCodec = null;
         static EncoderParameters jpgParameters = null;
 
-        static Snapshot()
+        static Screenshot()
         {
             jpgCodec = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.MimeType == "image/jpeg");
             if (jpgCodec == null)
