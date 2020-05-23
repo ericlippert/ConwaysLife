@@ -18,6 +18,7 @@ namespace ConwaysLife
         private ILife life;
         private bool dragging = false;
         private LifePoint dragStart;
+        private bool running = true;
 
         // Record when we start up how much space was left
         // around the display box on the form, so that we can
@@ -271,6 +272,12 @@ namespace ConwaysLife
             Draw();
         }
 
+        private void ToggleRunning()
+        {
+            running = !running;
+            timer.Enabled = running;
+        }
+
         private void PerfTest(ILife perf)
         {
             bool save = timer.Enabled;
@@ -308,7 +315,7 @@ namespace ConwaysLife
                     Snapshot.SaveImage(display.Image);
                     break;
                 case Keys.Space:
-                    timer.Enabled = !timer.Enabled;
+                    ToggleRunning();
                     break;
             }
         }
