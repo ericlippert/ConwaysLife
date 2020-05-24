@@ -32,9 +32,10 @@
             this.display = new System.Windows.Forms.PictureBox();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.panel = new System.Windows.Forms.Panel();
+            this.resetButton = new System.Windows.Forms.Label();
             this.playButton = new System.Windows.Forms.Label();
             this.title = new System.Windows.Forms.Label();
-            this.resetButton = new System.Windows.Forms.Label();
+            this.loadButton = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.display)).BeginInit();
             this.panel.SuspendLayout();
             this.SuspendLayout();
@@ -60,6 +61,7 @@
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.loadButton);
             this.panel.Controls.Add(this.resetButton);
             this.panel.Controls.Add(this.playButton);
             this.panel.Controls.Add(this.title);
@@ -68,10 +70,21 @@
             this.panel.Size = new System.Drawing.Size(560, 70);
             this.panel.TabIndex = 1;
             // 
+            // resetButton
+            // 
+            this.resetButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.resetButton.Location = new System.Drawing.Point(38, 25);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(29, 29);
+            this.resetButton.TabIndex = 3;
+            this.resetButton.Text = "⏮︎";
+            this.resetButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
             // playButton
             // 
             this.playButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.playButton.Location = new System.Drawing.Point(38, 25);
+            this.playButton.Location = new System.Drawing.Point(73, 25);
             this.playButton.Name = "playButton";
             this.playButton.Size = new System.Drawing.Size(29, 29);
             this.playButton.TabIndex = 2;
@@ -89,16 +102,16 @@
             this.title.TabIndex = 0;
             this.title.Text = "Life is Fabulous";
             // 
-            // resetButton
+            // loadButton
             // 
-            this.resetButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.resetButton.Location = new System.Drawing.Point(3, 25);
-            this.resetButton.Name = "resetButton";
-            this.resetButton.Size = new System.Drawing.Size(29, 29);
-            this.resetButton.TabIndex = 3;
-            this.resetButton.Text = "⏮︎";
-            this.resetButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            this.loadButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.loadButton.Location = new System.Drawing.Point(3, 25);
+            this.loadButton.Name = "loadButton";
+            this.loadButton.Size = new System.Drawing.Size(29, 29);
+            this.loadButton.TabIndex = 4;
+            this.loadButton.Text = "📁";
+            this.loadButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
             // 
             // LifeForm
             // 
@@ -128,6 +141,7 @@
         private System.Windows.Forms.Label title;
         private System.Windows.Forms.Label playButton;
         private System.Windows.Forms.Label resetButton;
+        private System.Windows.Forms.Label loadButton;
     }
 }
 

@@ -377,5 +377,10 @@ namespace ConwaysLife
         {
             Reset();
         }
+
+        private void loadButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
