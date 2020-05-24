@@ -155,11 +155,11 @@ namespace ConwaysLife
         {
             StopRunning();
             life = new Stafford();
-            life.AddPlaintext(new LifePoint(230, 10), HeavyweightSpaceship);
-            life.AddPlaintext(new LifePoint(230, 20), MiddleweightSpaceship);
-            life.AddPlaintext(new LifePoint(230, 30), LightweightSpaceship);
-            life.AddPlaintext(new LifePoint(50, 200), Puffer1);
-            life.AddPlaintext(new LifePoint(120, 200), Puffer2);
+            life.AddPattern(new LifePoint(230, 10), HeavyweightSpaceship);
+            life.AddPattern(new LifePoint(230, 20), MiddleweightSpaceship);
+            life.AddPattern(new LifePoint(230, 30), LightweightSpaceship);
+            life.AddPattern(new LifePoint(50, 200), Puffer1);
+            life.AddPattern(new LifePoint(120, 200), Puffer2);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
 
