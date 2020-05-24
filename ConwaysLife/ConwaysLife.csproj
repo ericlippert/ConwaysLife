@@ -83,8 +83,22 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="Patterns\Puffer1.cells" />
+    <None Include="Patterns\acorn.cells" />
+    <None Include="Patterns\beehive.cells" />
+    <None Include="Patterns\blinker.cells" />
+    <None Include="Patterns\block.cells" />
+    <None Include="Patterns\boat.cells" />
+    <None Include="Patterns\glider.cells" />
+    <None Include="Patterns\HWSS.cells" />
+    <None Include="Patterns\LWSS.cells" />
+    <None Include="Patterns\MWSS.cells" />
+    <None Include="Patterns\pond.cells" />
+    <None Include="Patterns\puffer1.cells" />
+    <None Include="Patterns\puffer2.cells" />
+    <None Include="Patterns\rpentomino.cells" />
+    <None Include="Patterns\snake.cells" />
     <None Include="Patterns\Spider.rle" />
+    <None Include="Patterns\tub.cells" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

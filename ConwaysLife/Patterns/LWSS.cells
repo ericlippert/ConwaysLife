@@ -1,0 +1,8 @@
+﻿!Name: LWSS
+!Author: John Conway
+!The smallest known orthogonally moving spaceship, and the second most common spaceship(after the glider).
+!http://www.conwaylife.com/wiki/index.php?title=Lightweight_spaceship
+.O..O
+O....
+O...O
+OOOO
