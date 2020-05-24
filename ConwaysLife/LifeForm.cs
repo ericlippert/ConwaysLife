@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using static ConwaysLife.Patterns;
 
@@ -16,9 +17,11 @@ namespace ConwaysLife
         private Brush liveBrush;
         private Pen gridPen;
         private ILife life;
+        private IPattern pattern;
         private bool running = true;
         private bool dragging = false;
         private LifePoint dragStart;
+        private OpenFileDialog fileDialog;
 
         // Record when we start up how much space was left
         // around the display box on the form, so that we can
@@ -133,6 +136,17 @@ namespace ConwaysLife
 
         private void LifeForm_Load(object sender, EventArgs e)
         {
+            fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "Life Files(*.cells; *.rle)|*.cells;*.rle|All files(*.*)|*.*";
+            var cd = Directory.GetCurrentDirectory();
+            fileDialog.InitialDirectory = new DirectoryInfo(cd)
+                .Parent
+                .Parent
+                .EnumerateDirectories("Patterns")
+                .FirstOrDefault()
+                ?.FullName 
+                ?? cd;
+
             timer.Enabled = running;
             Initialize();
             // The mouse wheel event handler is not automatically generated
@@ -147,6 +161,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
+            pattern = Spider;
             Reset();
             StartRunning();
         }
@@ -155,7 +170,7 @@ namespace ConwaysLife
         {
             StopRunning();
             life = new Stafford();
-            life.AddPattern(new LifePoint(120, 120), Spider);
+            life.AddPattern(new LifePoint(120, 120), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
 
@@ -328,6 +343,9 @@ namespace ConwaysLife
             // Don't forget to set KeyPreview to True in the designer.
             switch (e.KeyCode)
             {
+                case Keys.L:
+                    LoadFile();
+                    break;
                 case Keys.P:
                     PerfTest(new Abrash());
                     PerfTest(new AbrashChangeList());
@@ -378,9 +396,29 @@ namespace ConwaysLife
             Reset();
         }
 
+        private void LoadFile()
+        {
+            StopRunning();
+            var result = fileDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                var name = fileDialog.FileName.ToLowerInvariant();
+                if (name.EndsWith(".cells"))
+                {
+                    pattern = new PlaintextPattern(File.ReadAllText(name));
+                    Reset();
+                }
+                else if (name.EndsWith(".rle"))
+                {
+                    pattern = new RLEPattern(File.ReadAllText(name));
+                    Reset();
+                }
+            }
+        }
+
         private void loadButton_Click(object sender, EventArgs e)
         {
-
+            LoadFile();
         }
     }
 }
