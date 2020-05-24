@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using static ConwaysLife.Patterns;
 
@@ -16,9 +17,11 @@ namespace ConwaysLife
         private Brush liveBrush;
         private Pen gridPen;
         private ILife life;
+        private IPattern pattern;
         private bool running = true;
         private bool dragging = false;
         private LifePoint dragStart;
+        private OpenFileDialog fileDialog;
 
         // Record when we start up how much space was left
         // around the display box on the form, so that we can
@@ -32,7 +35,7 @@ namespace ConwaysLife
 
         // How far from the display is the panel? When we resize,
         // keep the panel relative to the display.
-        private int panelOffset; 
+        private int panelOffset;
 
 
         // A significant amount of the code in this form deals with
@@ -54,7 +57,8 @@ namespace ConwaysLife
 
         private const int maxScale = 0;
         private const int minScale = -6;
-        private int scale = -1;
+        private const int defaultScale = -1;
+        private int scale = defaultScale;
 
         // If the cells are rendered 8 pixels wide or wider, draw a grid.
         private const int gridScale = -3;
@@ -84,12 +88,12 @@ namespace ConwaysLife
         private LifeRect LifeRect => new LifeRect(corner, LifeWidth, LifeHeight);
 
         // These functions convert between Life grid coordinates and display coordinates.
-        private Point LifeToBitmap(LifePoint v) => 
+        private Point LifeToBitmap(LifePoint v) =>
             new Point(
                 (int)ScaleDown(v.X - corner.X),
                 (int)ScaleDown(corner.Y - v.Y));
-        
-        private LifePoint BitmapToLife(Point p) => 
+
+        private LifePoint BitmapToLife(Point p) =>
             new LifePoint(corner.X + ScaleUp(p.X), corner.Y - ScaleUp(p.Y));
 
         private bool IsValidBitmapPoint(Point p) =>
@@ -132,9 +136,19 @@ namespace ConwaysLife
 
         private void LifeForm_Load(object sender, EventArgs e)
         {
+            fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "Life Files(*.cells; *.rle)|*.cells;*.rle|All files(*.*)|*.*";
+            var cd = Directory.GetCurrentDirectory();
+            fileDialog.InitialDirectory = new DirectoryInfo(cd)
+                .Parent
+                .Parent
+                .EnumerateDirectories("Patterns")
+                .FirstOrDefault()
+                ?.FullName 
+                ?? cd;
+
             timer.Enabled = running;
             Initialize();
-            Draw();
             // The mouse wheel event handler is not automatically generated
             // by the forms designer, so we will hook it up manually.
             display.MouseWheel += display_MouseWheel;
@@ -147,15 +161,26 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            life = new AbrashOneArray();
-            life.AddPattern(new LifePoint(128, 128), Puffer2);
+            pattern = Puffer2;
+            Reset();
+            StartRunning();
+        }
+
+        private void Reset()
+        {
+            StopRunning();
+            life = new AbrashChangeList();
+            life.AddPattern(new LifePoint(120, 40), pattern);
+            scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
+
+            Draw();
         }
 
         private void EnsureBitmap()
         {
-            if (display.Image == null || 
-                display.Image.Width != display.Width || 
+            if (display.Image == null ||
+                display.Image.Width != display.Width ||
                 display.Image.Height != display.Height)
             {
                 display.Image?.Dispose();
@@ -163,7 +188,7 @@ namespace ConwaysLife
             }
         }
 
-        private bool GridEnabled() => 
+        private bool GridEnabled() =>
             scale <= gridScale;
 
         private void DrawGrid()
@@ -268,7 +293,7 @@ namespace ConwaysLife
         {
             // Expand or shrink the picture box to stay centered in the form.
             const int minWidth = 100;
-            const int minHeight = 100;            
+            const int minHeight = 100;
             display.Width = Math.Max(minWidth, Width - displayWidthOffset);
             display.Height = Math.Max(minHeight, Height - displayHeightOffset);
             panel.Location = new Point(panel.Location.X, display.Height + panelOffset);
@@ -279,6 +304,18 @@ namespace ConwaysLife
         {
             running = !running;
             timer.Enabled = running;
+        }
+
+        private void StopRunning()
+        {
+            running = false;
+            timer.Enabled = false;
+        }
+
+        private void StartRunning()
+        {
+            running = true;
+            timer.Enabled = true;
         }
 
         private void PerfTest(ILife perf)
@@ -306,11 +343,16 @@ namespace ConwaysLife
             // Don't forget to set KeyPreview to True in the designer.
             switch (e.KeyCode)
             {
+                case Keys.L:
+                    LoadFile();
+                    break;
                 case Keys.P:
-                    PerfTest(new Scholes());
                     PerfTest(new Abrash());
                     PerfTest(new AbrashChangeList());
                     PerfTest(new AbrashOneArray());
+                    break;
+                case Keys.R:
+                    Reset();
                     break;
                 case Keys.S:
                     Screenshot.SaveImage(display.Image);
@@ -343,7 +385,37 @@ namespace ConwaysLife
 
         private void playButton_Click(object sender, EventArgs e)
         {
-            timer.Enabled = !timer.Enabled;
+            ToggleRunning();
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            Reset();
+        }
+
+        private void LoadFile()
+        {
+            StopRunning();
+            var result = fileDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                var name = fileDialog.FileName.ToLowerInvariant();
+                if (name.EndsWith(".cells"))
+                {
+                    pattern = new PlaintextPattern(File.ReadAllText(name));
+                    Reset();
+                }
+                else if (name.EndsWith(".rle"))
+                {
+                    pattern = new RLEPattern(File.ReadAllText(name));
+                    Reset();
+                }
+            }
+        }
+
+        private void loadButton_Click(object sender, EventArgs e)
+        {
+            LoadFile();
         }
     }
 }
