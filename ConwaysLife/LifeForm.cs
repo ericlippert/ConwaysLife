@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using static ConwaysLife.Patterns;
 
 namespace ConwaysLife
 {
@@ -147,7 +148,7 @@ namespace ConwaysLife
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
             life = new AbrashOneArray();
-            life.AddR(new LifePoint(128, 128));
+            life.AddPattern(new LifePoint(128, 128), Puffer2);
             corner = new LifePoint(-2, LifeHeight - 2);
         }
 
@@ -284,7 +285,7 @@ namespace ConwaysLife
         {
             bool save = timer.Enabled;
             timer.Enabled = false;
-            perf.AddAcorn(new LifePoint(128, 128));
+            perf.AddPattern(new LifePoint(128, 128), Acorn);
             const int ticks = 5000;
             var stopwatch = new Stopwatch();
             stopwatch.Start();
