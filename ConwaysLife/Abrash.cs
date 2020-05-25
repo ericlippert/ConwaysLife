@@ -63,6 +63,8 @@ namespace ConwaysLife
             Debug.Assert(Count > 0);
             return new Cell((byte)(cell - 1));
         }
+
+        public bool IsZero => cell == 0;
     }
 
     class Abrash : ILife

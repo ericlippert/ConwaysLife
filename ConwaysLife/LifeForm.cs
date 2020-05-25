@@ -194,7 +194,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new SparseArray();
+            life = new AbrashSparseArray();
             life.AddPattern(new LifePoint(128, 128), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
@@ -373,6 +373,7 @@ namespace ConwaysLife
                     LoadFile();
                     break;
                 case Keys.P:
+                    Debug.Fail("FYI you are performance testing in the debug build.");
                     PerfTest(new Abrash());
                     PerfTest(new AbrashChangeList());
                     PerfTest(new AbrashOneArray());
@@ -380,6 +381,7 @@ namespace ConwaysLife
                     PerfTest(new StaffordLookup());
                     PerfTest(new Stafford());
                     PerfTest(new SparseArray());
+                    PerfTest(new AbrashSparseArray());
                     break;
                 case Keys.R:
                     Reset();
