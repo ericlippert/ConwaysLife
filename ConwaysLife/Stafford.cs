@@ -438,6 +438,12 @@ namespace ConwaysLife
             }
         }
 
+        public void Step(int speed)
+        {
+            for (int i = 0; i < 1L << speed; i += 1)
+                Step();
+        }
+
         // We are about to update the current state with the next state.
         // This requires incrementing and decrementing a bunch of neighbour
         // counts; each combination of "unchanged / become alive / become dead"
