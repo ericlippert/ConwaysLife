@@ -53,6 +53,7 @@
     <Compile Include="AbrashOneArray.cs" />
     <Compile Include="AbrashSparseArray.cs" />
     <Compile Include="BoolArrayLife.cs" />
+    <Compile Include="CacheManager.cs" />
     <Compile Include="ILife.cs" />
     <Compile Include="LifeForm.cs">
       <SubType>Form</SubType>

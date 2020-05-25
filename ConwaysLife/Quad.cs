@@ -1,5 +1,4 @@
-﻿    using System;
-    using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace ConwaysLife
 {
@@ -27,6 +26,12 @@ namespace ConwaysLife
 
     sealed class Quad
     {
+        static Quad()
+        {
+            CacheManager.EmptyMemoizer = new Memoizer<int, Quad>(UnmemoizedEmpty);
+            CacheManager.MakeQuadMemoizer = new Memoizer<(Quad, Quad, Quad, Quad), Quad>(UnmemoizedMake);
+        }
+
         public static readonly Quad Dead = new Quad();
         public static readonly Quad Alive = new Quad();
 
@@ -55,21 +60,22 @@ namespace ConwaysLife
             Level = nw.Level + 1;
         }
 
-        // TODO: Memoize this
-        public static Quad Make(Quad nw, Quad ne, Quad se, Quad sw)
+        private static Quad UnmemoizedMake((Quad nw, Quad ne, Quad se, Quad sw) args)
         {
-            Debug.Assert(nw != null);
-            Debug.Assert(ne != null);
-            Debug.Assert(se != null);
-            Debug.Assert(sw != null);
-            Debug.Assert(nw.Level == ne.Level);
-            Debug.Assert(ne.Level == se.Level);
-            Debug.Assert(se.Level == sw.Level);
-            return new Quad(nw, ne, se, sw);
+            Debug.Assert(args.nw != null);
+            Debug.Assert(args.ne != null);
+            Debug.Assert(args.se != null);
+            Debug.Assert(args.sw != null);
+            Debug.Assert(args.nw.Level == args.ne.Level);
+            Debug.Assert(args.ne.Level == args.se.Level);
+            Debug.Assert(args.se.Level == args.sw.Level);
+            return new Quad(args.nw, args.ne, args.se, args.sw);
         }
 
-        // TODO: Memoize this
-        public static Quad Empty(int level)
+        private static Quad Make(Quad nw, Quad ne, Quad se, Quad sw) =>
+            CacheManager.MakeQuadMemoizer.MemoizedFunc((nw, ne, se, sw));
+
+        private static Quad UnmemoizedEmpty(int level)
         {
             Debug.Assert(level >= 0);
             if (level == 0)
@@ -77,5 +83,10 @@ namespace ConwaysLife
             var q = Empty(level - 1);
             return Make(q, q, q, q);
         }
+
+        public static Quad Empty(int level) => 
+            CacheManager.EmptyMemoizer.MemoizedFunc(level);
+
+        public bool IsEmpty => this == Empty(this.Level);
     }
 }
