@@ -33,14 +33,7 @@ namespace ConwaysLife
 
         public void Draw(LifeRect rect, Action<LifePoint> setPixel)
         {
-            long xmin = rect.X;
-            long xmax = rect.X + rect.Width;
-            long ymin = rect.Y - rect.Height + 1;
-            long ymax = rect.Y + 1;
-            for (long y = ymin; y < ymax; y += 1)
-                for (long x = xmin; x < xmax; x += 1)
-                    if (this[x, y])
-                        setPixel(new LifePoint(x, y));
+            cells.Draw(rect, setPixel);
         }
 
         public void Step()

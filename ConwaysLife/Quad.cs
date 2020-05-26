@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace ConwaysLife
 {
@@ -205,5 +206,47 @@ namespace ConwaysLife
         public Quad Set(long x, long y, Quad q) =>
             Set(new LifePoint(-Width / 2, -Width / 2), new LifePoint(x, y), q);
 
+        //
+        // Drawing to bitmaps
+        //
+
+        // Assuming that this quad is a grid centered on the origin, 
+        // call setPixel for every living cell inside the given
+        // rectangle.
+        public void Draw(LifeRect r, Action<LifePoint> setPixel)
+        {
+            Draw(new LifePoint(-Width / 2, -Width / 2), r, setPixel);
+        }
+
+        // Assuming that this quad is a grid whose bottom left corner
+        // has the given coordinates, call setPixel for every living 
+        // cell inside the given rectangle.
+        private void Draw(LifePoint lowerLeft, LifeRect rect, Action<LifePoint> setPixel)
+        {
+            // Easy out; if we're an empty grid then there are no pixels to draw.
+            if (IsEmpty)
+                return;
+
+            // Does this quad overlap the rectangle at all? If not, then we have
+            // no work to do.
+
+            // Remember that the rectangle has the coordinates of the top left
+            // corner of the rectangle, but we are given the bottom left corner,
+            // so we have a small amount of math to do.
+            if (!rect.Overlaps(new LifeRect(lowerLeft.X, lowerLeft.Y + Width - 1, Width, Width)))
+                return;
+
+            if (Level == 0)
+            {
+                setPixel(lowerLeft);
+                return;
+            }
+
+            long w = Width / 2;
+            NW.Draw(new LifePoint(lowerLeft.X, lowerLeft.Y + w), rect, setPixel);
+            NE.Draw(new LifePoint(lowerLeft.X + w, lowerLeft.Y + w), rect, setPixel);
+            SE.Draw(new LifePoint(lowerLeft.X + w, lowerLeft.Y), rect, setPixel);
+            SW.Draw(lowerLeft, rect, setPixel);
+        }
     }
 }
