@@ -9,6 +9,6 @@
 
         public static Memoizer<Quad, Quad> StepMemoizer { get; set; }
 
-
+        public static Memoizer<(Quad, int), Quad> StepSpeedMemoizer { get; set; }
     }
 }

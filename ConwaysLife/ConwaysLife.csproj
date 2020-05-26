@@ -54,6 +54,7 @@
     <Compile Include="AbrashSparseArray.cs" />
     <Compile Include="BoolArrayLife.cs" />
     <Compile Include="CacheManager.cs" />
+    <Compile Include="Gosper.cs" />
     <Compile Include="GosperSlow.cs" />
     <Compile Include="ILife.cs" />
     <Compile Include="LifeForm.cs">
