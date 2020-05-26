@@ -194,7 +194,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new AbrashSparseArray();
+            life = new GosperSlow();
             life.AddPattern(new LifePoint(128, 128), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);

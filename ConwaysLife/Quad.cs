@@ -187,13 +187,15 @@ namespace ConwaysLife
             if (Level == 0)
                 return q;
 
+            long w = Width / 2;
+
             // The point is inside somewhere, and we're not level zero.
             // Since Make is memoized, if this turns out to be a no-op, no big deal.
             // We rebuild, but we end up with exactly the same reference as we started with.
             return Make(
-                NW.Set(new LifePoint(lowerLeft.X, lowerLeft.Y + Width), p, q),
-                NE.Set(new LifePoint(lowerLeft.X + Width, lowerLeft.Y + Width), p, q),
-                SE.Set(new LifePoint(lowerLeft.X + Width, lowerLeft.Y), p, q),
+                NW.Set(new LifePoint(lowerLeft.X, lowerLeft.Y + w), p, q),
+                NE.Set(new LifePoint(lowerLeft.X + w, lowerLeft.Y + w), p, q),
+                SE.Set(new LifePoint(lowerLeft.X + w, lowerLeft.Y), p, q),
                 SW.Set(lowerLeft, p, q)) ;
         }
 
