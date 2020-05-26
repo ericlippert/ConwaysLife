@@ -27,6 +27,8 @@ namespace ConwaysLife
 
     sealed class Quad
     {
+        public const int MaxLevel = 60;
+
         static Quad()
         {
             CacheManager.EmptyMemoizer = new Memoizer<int, Quad>(UnmemoizedEmpty);
@@ -44,6 +46,54 @@ namespace ConwaysLife
         // We could compute level recursively of course, but this is frequently 
         // accessed so we'll cache it in the object and use an extra field.
         public int Level { get; }
+
+        // We have the NW, NE, SE and SW quads in hand, but we will also need to
+        // be able to get the N, S, E, W and center quads.
+
+        public Quad Center
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(NW.SE, NE.SW, SE.NW, SW.NE);
+            }
+        }
+
+        public Quad N
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(NW.NE, NE.NW, NE.SW, NW.SE);
+            }
+        }
+
+        public Quad E
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(NE.SW, NE.SE, SE.NE, SE.NW);
+            }
+        }
+
+        public Quad S
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(SW.NE, SE.NW, SE.SW, SW.SE);
+            }
+        }
+
+        public Quad W
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(NW.SW, NW.SE, SW.NE, SW.NW);
+            }
+        }
 
         public long Width => 1L << Level;
 
@@ -73,7 +123,7 @@ namespace ConwaysLife
             return new Quad(args.nw, args.ne, args.se, args.sw);
         }
 
-        private static Quad Make(Quad nw, Quad ne, Quad se, Quad sw) =>
+        public static Quad Make(Quad nw, Quad ne, Quad se, Quad sw) =>
             CacheManager.MakeQuadMemoizer.MemoizedFunc((nw, ne, se, sw));
 
         private static Quad UnmemoizedEmpty(int level)
@@ -248,5 +298,47 @@ namespace ConwaysLife
             SE.Draw(new LifePoint(lowerLeft.X + w, lowerLeft.Y), rect, setPixel);
             SW.Draw(lowerLeft, rect, setPixel);
         }
+
+        // Given an n-quad, give me back an (n+1) quad with the original
+        // quad in the center, and a ring of empty cells surrounding it.
+
+        public Quad Embiggen()
+        {
+            Debug.Assert(Level >= 1);
+            if (Level >= MaxLevel)
+                return this;
+            Quad q = Empty(this.Level - 1);
+            return Make(
+                Make(q, q, NW, q),
+                Make(q, q, q, NE),
+                Make(SE, q, q, q),
+                Make(q, SW, q, q));
+        }
+
+        // Suppose we have an n-quad; how do we know if there are living
+        // cells getting sufficiently close to the edge of the quad that we
+        // should embiggen it? We'll run around the ring of twelve (n-2) quads
+        // on the outer edge and see if any of them are non-empty.
+
+        public bool HasAllEmptyEdges
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return NW.NW.IsEmpty &&
+                    NW.NE.IsEmpty &&
+                    NE.NW.IsEmpty &&
+                    NE.NE.IsEmpty &&
+                    NE.SE.IsEmpty &&
+                    SE.NE.IsEmpty &&
+                    SE.SE.IsEmpty &&
+                    SE.SW.IsEmpty &&
+                    SW.SE.IsEmpty &&
+                    SW.SW.IsEmpty &&
+                    SW.NW.IsEmpty &&
+                    NW.SW.IsEmpty;
+            }
+        }
+
     }
 }
