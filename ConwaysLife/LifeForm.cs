@@ -380,8 +380,12 @@ namespace ConwaysLife
                     PerfTest(new StaffordChangeList());
                     PerfTest(new StaffordLookup());
                     PerfTest(new Stafford());
-                    PerfTest(new SparseArray());
-                    PerfTest(new AbrashSparseArray());
+                    // PerfTest(new SparseArray());
+                    // PerfTest(new AbrashSparseArray());
+
+                    // Run this one twice!
+                    PerfTest(new GosperSlow());
+                    PerfTest(new GosperSlow());
                     break;
                 case Keys.R:
                     Reset();

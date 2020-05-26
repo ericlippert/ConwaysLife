@@ -7,6 +7,11 @@ namespace ConwaysLife
     // Implementation of Gosper's algorithm without "hyper speed".
     sealed class GosperSlow : ILife
     {
+        static GosperSlow()
+        {
+            CacheManager.StepMemoizer = new Memoizer<Quad, Quad>(UnmemoizedStep);
+        }
+
         // To start with, we will just create a 9-quad and use that for testing.
         Quad cells;
 
@@ -143,8 +148,7 @@ namespace ConwaysLife
                 Rule(q.SW.NE, n22));
         }
 
-        // TODO: Memoize this
-        private static Quad Step(Quad q)
+        private static Quad UnmemoizedStep(Quad q)
         {
             Debug.Assert(q.Level >= 2);
             Quad r;
@@ -176,5 +180,8 @@ namespace ConwaysLife
             Debug.Assert(q.Level == r.Level + 1);
             return r;
         }
+
+        private static Quad Step(Quad q) => 
+            CacheManager.StepMemoizer.MemoizedFunc(q);
     }
 }
