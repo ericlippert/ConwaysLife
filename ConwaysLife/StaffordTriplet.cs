@@ -54,6 +54,8 @@ namespace ConwaysLife
         private const int lcm = 1 << lcur;
         private const int mcm = 1 << mcur;
         private const int rcm = 1 << rcur;
+        private const int currentm = lcm | mcm | rcm;
+        private const int nextm = lnm | mnm | rnm;
         private const int lcountm = 7 << lcount;
         private const int mcountm = 7 << mcount;
         private const int rcountm = 7 << rcount;
@@ -87,8 +89,13 @@ namespace ConwaysLife
         public Triplet SetMiddleCurrent(bool b) => new Triplet(b ? (mcm | triplet) : (~mcm & triplet));
         public Triplet SetRightCurrent(bool b) => new Triplet(b ? (rcm | triplet) : (~rcm & triplet));
 
+        // It's convenient to fetch the current and next states as integers.
+        public int CurrentState => (currentm & triplet) >> rcur;
+        public int NextState => (nextm & triplet) >> rnext;
+        public bool Changed => CurrentState != NextState;
+
         // Getters and setters for the neighbour counts
-        
+
         // I've got getters for both the "raw" 3-bit integer stored in the 
         // triplet and the actual neighbour count it represents.
 
