@@ -120,5 +120,32 @@ namespace ConwaysLife
             Debug.Assert(0 <= c && c <= 7);
             return new Triplet((c << rcount) | ~rcountm & triplet);
         }
+
+        // It is slow and tedious to change counts via the "set raw count"
+        // mechanism; instead, let's make fifteen helper methods using the
+        // naming convention:
+        //
+        // U = unchanged
+        // P = increment
+        // M = decrement
+
+        private const int lcountone = 1 << lcount;
+        private const int mcountone = 1 << mcount;
+        private const int rcountone = 1 << rcount;
+
+        public Triplet UUP() => new Triplet(rcountone + triplet);
+        public Triplet UUM() => new Triplet(-rcountone + triplet);
+        public Triplet UPU() => new Triplet(mcountone + triplet);
+        public Triplet UPP() => new Triplet(mcountone + rcountone + triplet);
+        public Triplet UMU() => new Triplet(-mcountone + triplet);
+        public Triplet UMM() => new Triplet(-mcountone - rcountone + triplet);
+        public Triplet PUU() => new Triplet(lcountone + triplet);
+        public Triplet PUM() => new Triplet(lcountone - rcountone + triplet);
+        public Triplet PPU() => new Triplet(lcountone + mcountone + triplet);
+        public Triplet PPP() => new Triplet(lcountone + mcountone + rcountone + triplet);
+        public Triplet MUU() => new Triplet(-lcountone + triplet);
+        public Triplet MUP() => new Triplet(-lcountone + rcountone + triplet);
+        public Triplet MMU() => new Triplet(-lcountone - mcountone + triplet);
+        public Triplet MMM() => new Triplet(-lcountone - mcountone - rcountone + triplet);
     }
 }
