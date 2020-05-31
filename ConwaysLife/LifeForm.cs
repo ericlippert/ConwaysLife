@@ -169,7 +169,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new AbrashChangeList();
+            life = new StaffordOne();
             life.AddPattern(new LifePoint(120, 40), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
@@ -350,6 +350,7 @@ namespace ConwaysLife
                     PerfTest(new Abrash());
                     PerfTest(new AbrashChangeList());
                     PerfTest(new AbrashOneArray());
+                    PerfTest(new StaffordOne());
                     break;
                 case Keys.R:
                     Reset();
