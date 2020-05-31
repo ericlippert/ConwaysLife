@@ -197,7 +197,7 @@ namespace ConwaysLife
 
                 // If we've already done this one before, no need to do it again.
 
-                if (t.CurrentState == t.NextState)
+                if (!t.Changed)
                     continue;
 
                 bool changed = false;
