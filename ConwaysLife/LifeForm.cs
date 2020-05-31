@@ -60,6 +60,30 @@ namespace ConwaysLife
         private const int defaultScale = -1;
         private int scale = defaultScale;
 
+        // Just as the space scale is the log2 of the side of the square, the
+        // the time scale is the log2 of the number of ticks: 0 is one tick,
+        // 1 is two ticks, 2 is four ticks, and so on.
+        //
+        // However, from the perspective of the client what we care about is
+        // ticks per second. We want the timer to tick every 30ms or slower,
+        // so what we will do is: if the speed is 0 through 5, we'll just
+        // set the timer to 1000ms to 30ms, and calculate one tick per timer
+        // event. If the speed is higher than 5 then we will calculate two to the 
+        // speed - 5 ticks per timer event, and keep the timer at 30ms.
+
+        private const int defaultSpeed = 5;  // 32 ticks per second
+        private const int maximumTimerSpeed = 5;
+        private const int maximumSpeed = 15; // 32K ticks per second
+        private int speed = defaultSpeed;
+
+        private void SetTimer()
+        {
+            if (speed <= maximumTimerSpeed)
+                timer.Interval = 1000 >> speed;
+            else
+                timer.Interval = 1000 >> maximumTimerSpeed;
+        }
+
         // If the cells are rendered 8 pixels wide or wider, draw a grid.
         private const int gridScale = -3;
 
@@ -147,6 +171,7 @@ namespace ConwaysLife
                 ?.FullName 
                 ?? cd;
 
+            UpdateSpeed();
             timer.Enabled = running;
             Initialize();
             // The mouse wheel event handler is not automatically generated
@@ -161,7 +186,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            pattern = Puffer2;
+            pattern = Acorn;
             Reset();
             StartRunning();
         }
@@ -170,7 +195,7 @@ namespace ConwaysLife
         {
             StopRunning();
             life = new StaffordOne();
-            life.AddPattern(new LifePoint(120, 40), pattern);
+            life.AddPattern(new LifePoint(128, 128), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
 
@@ -268,7 +293,8 @@ namespace ConwaysLife
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            life.Step();
+            int tickSpeed = speed <= maximumTimerSpeed ? 0 : speed - maximumTimerSpeed;
+            life.Step(tickSpeed);
             Draw();
         }
 
@@ -347,6 +373,7 @@ namespace ConwaysLife
                     LoadFile();
                     break;
                 case Keys.P:
+                    Debug.Fail("FYI you are performance testing in the debug build.");
                     PerfTest(new Abrash());
                     PerfTest(new AbrashChangeList());
                     PerfTest(new AbrashOneArray());
@@ -417,6 +444,40 @@ namespace ConwaysLife
         private void loadButton_Click(object sender, EventArgs e)
         {
             LoadFile();
+        }
+
+        private void UpdateSpeed()
+        {
+            speedLabel.Text = speed.ToString();
+            SetTimer();
+        }
+
+        private void Slower()
+        {
+            if (speed > 0)
+            {
+                speed -= 1;
+                UpdateSpeed();
+            }
+        }
+
+        private void slowerButton_Click(object sender, EventArgs e)
+        {
+            Slower();
+        }
+
+        private void Faster()
+        {
+            if (speed < maximumSpeed)
+            {
+                speed += 1;
+                UpdateSpeed();
+            }
+        }
+
+        private void fasterButton_Click(object sender, EventArgs e)
+        {
+            Faster();
         }
     }
 }

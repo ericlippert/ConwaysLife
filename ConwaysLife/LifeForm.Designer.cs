@@ -32,10 +32,13 @@
             this.display = new System.Windows.Forms.PictureBox();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.panel = new System.Windows.Forms.Panel();
+            this.loadButton = new System.Windows.Forms.Label();
             this.resetButton = new System.Windows.Forms.Label();
             this.playButton = new System.Windows.Forms.Label();
             this.title = new System.Windows.Forms.Label();
-            this.loadButton = new System.Windows.Forms.Label();
+            this.fasterButton = new System.Windows.Forms.Label();
+            this.slowerButton = new System.Windows.Forms.Label();
+            this.speedLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.display)).BeginInit();
             this.panel.SuspendLayout();
             this.SuspendLayout();
@@ -61,6 +64,9 @@
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.speedLabel);
+            this.panel.Controls.Add(this.slowerButton);
+            this.panel.Controls.Add(this.fasterButton);
             this.panel.Controls.Add(this.loadButton);
             this.panel.Controls.Add(this.resetButton);
             this.panel.Controls.Add(this.playButton);
@@ -69,6 +75,17 @@
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(560, 70);
             this.panel.TabIndex = 1;
+            // 
+            // loadButton
+            // 
+            this.loadButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.loadButton.Location = new System.Drawing.Point(3, 25);
+            this.loadButton.Name = "loadButton";
+            this.loadButton.Size = new System.Drawing.Size(29, 29);
+            this.loadButton.TabIndex = 4;
+            this.loadButton.Text = "📁";
+            this.loadButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
             // 
             // resetButton
             // 
@@ -102,16 +119,37 @@
             this.title.TabIndex = 0;
             this.title.Text = "Life is Fabulous";
             // 
-            // loadButton
+            // fasterButton
             // 
-            this.loadButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.loadButton.Location = new System.Drawing.Point(3, 25);
-            this.loadButton.Name = "loadButton";
-            this.loadButton.Size = new System.Drawing.Size(29, 29);
-            this.loadButton.TabIndex = 4;
-            this.loadButton.Text = "📁";
-            this.loadButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
+            this.fasterButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fasterButton.Location = new System.Drawing.Point(183, 25);
+            this.fasterButton.Name = "fasterButton";
+            this.fasterButton.Size = new System.Drawing.Size(29, 29);
+            this.fasterButton.TabIndex = 5;
+            this.fasterButton.Text = "⏫";
+            this.fasterButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.fasterButton.Click += new System.EventHandler(this.fasterButton_Click);
+            // 
+            // slowerButton
+            // 
+            this.slowerButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.slowerButton.Location = new System.Drawing.Point(108, 25);
+            this.slowerButton.Name = "slowerButton";
+            this.slowerButton.Size = new System.Drawing.Size(29, 29);
+            this.slowerButton.TabIndex = 6;
+            this.slowerButton.Text = "⏬";
+            this.slowerButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.slowerButton.Click += new System.EventHandler(this.slowerButton_Click);
+            // 
+            // speedLabel
+            // 
+            this.speedLabel.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.speedLabel.Location = new System.Drawing.Point(132, 27);
+            this.speedLabel.Name = "speedLabel";
+            this.speedLabel.Size = new System.Drawing.Size(45, 29);
+            this.speedLabel.TabIndex = 7;
+            this.speedLabel.Text = "15";
+            this.speedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LifeForm
             // 
@@ -142,6 +180,9 @@
         private System.Windows.Forms.Label playButton;
         private System.Windows.Forms.Label resetButton;
         private System.Windows.Forms.Label loadButton;
+        private System.Windows.Forms.Label speedLabel;
+        private System.Windows.Forms.Label slowerButton;
+        private System.Windows.Forms.Label fasterButton;
     }
 }
 
