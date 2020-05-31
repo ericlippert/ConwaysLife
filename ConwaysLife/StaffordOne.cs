@@ -231,6 +231,12 @@ namespace ConwaysLife
             }
         }
 
+        public void Step(int speed)
+        {
+            for (long i = 0; i < 1L << speed; i += 1)
+                Step();
+        }
+
         public void Draw(LifeRect rect, Action<LifePoint> setPixel)
         {
             long xmin = Max(0, rect.X);
