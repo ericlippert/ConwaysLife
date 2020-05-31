@@ -154,5 +154,10 @@ namespace ConwaysLife
         public Triplet MUP() => new Triplet(-lcountone + rcountone + triplet);
         public Triplet MMU() => new Triplet(-lcountone - mcountone + triplet);
         public Triplet MMM() => new Triplet(-lcountone - mcountone - rcountone + triplet);
+
+
+        // Key for first pass lookup is the bottom 12 bits:
+        // the raw counts and current state.
+        public int LookupKey1 => triplet & 0x0fff;
     }
 }
