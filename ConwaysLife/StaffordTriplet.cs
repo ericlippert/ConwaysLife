@@ -85,6 +85,8 @@ namespace ConwaysLife
         public int MiddleCurrentRaw => (triplet & mcm) >> mcur;
         public int RightCurrentRaw => (triplet & rcm) >> rcur;
 
+        public Triplet NextToCurrent() => new Triplet((triplet & ~currentm) | ((triplet & nextm) >> 3));
+
         public Triplet SetLeftCurrent(bool b) => new Triplet(b ? (lcm | triplet) : (~lcm & triplet));
         public Triplet SetMiddleCurrent(bool b) => new Triplet(b ? (mcm | triplet) : (~mcm & triplet));
         public Triplet SetRightCurrent(bool b) => new Triplet(b ? (rcm | triplet) : (~rcm & triplet));
@@ -155,9 +157,31 @@ namespace ConwaysLife
         public Triplet MMU() => new Triplet(-lcountone - mcountone + triplet);
         public Triplet MMM() => new Triplet(-lcountone - mcountone - rcountone + triplet);
 
+        // We also need these:
+
+        public Triplet PP2P2() => new Triplet(lcountone + 2 * mcountone + 2 * rcountone + triplet);
+        public Triplet PP2P() => new Triplet(lcountone + 2 * mcountone + rcountone + triplet);
+        public Triplet P2P2P() => new Triplet(2 * lcountone + 2 * mcountone + rcountone + triplet);
+        public Triplet P2P3P2() => new Triplet(2 * lcountone + 3 * mcountone + 2 * rcountone + triplet);
+        public Triplet P2PU() => new Triplet(2 * lcountone + mcountone + triplet);
+        public Triplet UPP2() => new Triplet(mcountone + 2 * rcountone + triplet);
+
+        public Triplet MM2M2() => new Triplet(-lcountone - 2 * mcountone - 2 * rcountone + triplet);
+        public Triplet MM2M() => new Triplet(-lcountone - 2 * mcountone - 1 * rcountone + triplet);
+        public Triplet M2M2M() => new Triplet(-2 * lcountone - 2 * mcountone - rcountone + triplet);
+        public Triplet M2M3M2() => new Triplet(-2 * lcountone - 3 * mcountone - 2 * rcountone + triplet);
+        public Triplet M2MU() => new Triplet(-2 * lcountone - mcountone + triplet);
+        public Triplet UMM2() => new Triplet(-mcountone - 2 * rcountone + triplet);
+
 
         // Key for first pass lookup is the bottom 12 bits:
         // the raw counts and current state.
         public int LookupKey1 => triplet & 0x0fff;
+
+        // Key for second pass lookup is top 6 bits:
+        // the next state and the current state.
+        public int LookupKey2 => triplet >> 9;
+
+
     }
 }
