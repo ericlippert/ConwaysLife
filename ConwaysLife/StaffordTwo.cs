@@ -14,7 +14,7 @@ namespace ConwaysLife
     // * Deduplicated list of previous changes
     // * Compute next state bits as a lookup
 
-    class StaffordTwo : ILife
+    sealed class StaffordTwo : ILife
     {
         // Top and bottom rows are always dead, so 256 cells in
         // effective height.

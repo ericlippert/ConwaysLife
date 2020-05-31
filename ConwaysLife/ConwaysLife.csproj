@@ -67,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scholes.cs" />
     <Compile Include="Screenshot.cs" />
+    <Compile Include="Stafford.cs" />
     <Compile Include="StaffordLookup.cs" />
     <Compile Include="StaffordOne.cs" />
     <Compile Include="StaffordTriplet.cs" />

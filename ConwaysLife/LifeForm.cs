@@ -194,7 +194,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new StaffordTwo();
+            life = new Stafford();
             life.AddPattern(new LifePoint(128, 128), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
@@ -379,6 +379,7 @@ namespace ConwaysLife
                     PerfTest(new AbrashOneArray());
                     PerfTest(new StaffordOne());
                     PerfTest(new StaffordTwo());
+                    PerfTest(new Stafford());
                     break;
                 case Keys.R:
                     Reset();
