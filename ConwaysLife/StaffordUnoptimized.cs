@@ -44,7 +44,7 @@ namespace ConwaysLife
                     if (t.LeftCurrent)
                         return;
                     // Left is about to be born
-                    t = t.AUU();
+                    t = t.SetLeftCurrent(true);
                     triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
                     triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
                     triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
@@ -55,7 +55,7 @@ namespace ConwaysLife
                     if (t.MiddleCurrent)
                         return;
                     // Middle is about to be born
-                    t = t.UAU();
+                    t = t.SetMiddleCurrent(true);
                     triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
                     triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
                     break;
@@ -63,7 +63,7 @@ namespace ConwaysLife
                     if (t.RightCurrent)
                         return;
                     // Right is about to be born
-                    t = t.UUA();
+                    t = t.SetRightCurrent(true);
                     triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
                     triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
                     triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
@@ -86,7 +86,7 @@ namespace ConwaysLife
                 case 0:
                     if (!t.LeftCurrent)
                         return;
-                    t = t.DUU();
+                    t = t.SetLeftCurrent(false);
                     triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
                     triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
                     triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
@@ -96,14 +96,14 @@ namespace ConwaysLife
                 case 1:
                     if (!t.MiddleCurrent)
                         return;
-                    t = t.UDU();
+                    t = t.SetMiddleCurrent(false);
                     triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
                     triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
                     break;
                 case 2:
                     if (!t.RightCurrent)
                         return;
-                    t = t.UUD();
+                    t = t.SetRightCurrent(false);
                     triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
                     triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
                     triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();

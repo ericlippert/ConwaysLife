@@ -434,7 +434,10 @@ namespace ConwaysLife
                 Func<int, int, bool> helper = lookup2[key2];
                 bool changed = helper(x, y);
                 if (changed)
+                {
+                    triplets[x, y] = triplets[x, y].NextToCurrent();
                     changes.Add((x, y));
+                }
             }
         }
 
@@ -462,7 +465,6 @@ namespace ConwaysLife
         {
             triplets[tx, y - 1] = triplets[tx, y - 1].UPP();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
-            triplets[tx, y] = triplets[tx, y].UUA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx, y + 1] = triplets[tx, y + 1].UPP();
             triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
@@ -473,7 +475,6 @@ namespace ConwaysLife
         {
             triplets[tx, y - 1] = triplets[tx, y - 1].UMM();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
-            triplets[tx, y] = triplets[tx, y].UUD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx, y + 1] = triplets[tx, y + 1].UMM();
             triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
@@ -483,7 +484,6 @@ namespace ConwaysLife
         private bool UAU(int tx, int y)
         {
             triplets[tx, y - 1] = triplets[tx, y - 1].PPP();
-            triplets[tx, y] = triplets[tx, y].UAU();
             triplets[tx, y + 1] = triplets[tx, y + 1].PPP();
             return true;
         }
@@ -492,7 +492,6 @@ namespace ConwaysLife
         {
             triplets[tx, y - 1] = triplets[tx, y - 1].PP2P2();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
-            triplets[tx, y] = triplets[tx, y].UAA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx, y + 1] = triplets[tx, y + 1].PP2P2();
             triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
@@ -504,7 +503,6 @@ namespace ConwaysLife
         {
             triplets[tx, y - 1] = triplets[tx, y - 1].PUU();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
-            triplets[tx, y] = triplets[tx, y].UAD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx, y + 1] = triplets[tx, y + 1].PUU();
             triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
@@ -514,7 +512,6 @@ namespace ConwaysLife
         private bool UDU(int tx, int y)
         {
             triplets[tx, y - 1] = triplets[tx, y - 1].MMM();
-            triplets[tx, y] = triplets[tx, y].UDU();
             triplets[tx, y + 1] = triplets[tx, y + 1].MMM();
             return true;
         }
@@ -523,7 +520,6 @@ namespace ConwaysLife
         {
             triplets[tx, y - 1] = triplets[tx, y - 1].MUU();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
-            triplets[tx, y] = triplets[tx, y].UDA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx, y + 1] = triplets[tx, y + 1].MUU();
             triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].PUU();
@@ -534,7 +530,6 @@ namespace ConwaysLife
         {
             triplets[tx, y - 1] = triplets[tx, y - 1].MM2M2();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
-            triplets[tx, y] = triplets[tx, y].UDD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx, y + 1] = triplets[tx, y + 1].MM2M2();
             triplets[tx + 1, y + 1] = triplets[tx + 1, y + 1].MUU();
@@ -546,7 +541,6 @@ namespace ConwaysLife
             triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
             triplets[tx, y - 1] = triplets[tx, y - 1].PPU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].AUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].PPU();
             return true;
@@ -559,7 +553,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].PP2P();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].AUA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].PP2P();
@@ -573,7 +566,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].PUM();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].AUD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].PUM();
@@ -586,7 +578,6 @@ namespace ConwaysLife
             triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
             triplets[tx, y - 1] = triplets[tx, y - 1].P2P2P();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].AAU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].P2P2P();
             return true;
@@ -598,7 +589,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].P2P3P2();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].AAA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].P2P3P2();
@@ -612,7 +602,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].P2PU();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].AAD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].P2PU();
@@ -625,7 +614,6 @@ namespace ConwaysLife
             triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUP();
             triplets[tx, y - 1] = triplets[tx, y - 1].UUM();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].ADU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].UUM();
             return true;
@@ -637,7 +625,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].UPU();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].ADA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].UPU();
@@ -651,7 +638,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].UMM2();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUP();
-            triplets[tx, y] = triplets[tx, y].ADD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUP();
             triplets[tx, y + 1] = triplets[tx, y + 1].UMM2();
@@ -664,7 +650,6 @@ namespace ConwaysLife
             triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
             triplets[tx, y - 1] = triplets[tx, y - 1].MMU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].MMU();
             return true;
@@ -676,7 +661,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].MUP();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DUA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].MUP();
@@ -690,7 +674,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].MM2M();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DUD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].MM2M();
@@ -703,7 +686,6 @@ namespace ConwaysLife
             triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
             triplets[tx, y - 1] = triplets[tx, y - 1].UUP();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DAU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].UUP();
             return true;
@@ -715,7 +697,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].UPP2();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DAA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].UPP2();
@@ -729,7 +710,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].UMU();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DAD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].UMU();
@@ -742,7 +722,6 @@ namespace ConwaysLife
             triplets[tx - 1, y - 1] = triplets[tx - 1, y - 1].UUM();
             triplets[tx, y - 1] = triplets[tx, y - 1].M2M2M();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DDU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].M2M2M();
             return true;
@@ -755,7 +734,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].M2MU();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].PUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DDA();
             triplets[tx + 1, y] = triplets[tx + 1, y].PUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].M2MU();
@@ -769,7 +747,6 @@ namespace ConwaysLife
             triplets[tx, y - 1] = triplets[tx, y - 1].M2M3M2();
             triplets[tx + 1, y - 1] = triplets[tx + 1, y - 1].MUU();
             triplets[tx - 1, y] = triplets[tx - 1, y].UUM();
-            triplets[tx, y] = triplets[tx, y].DDD();
             triplets[tx + 1, y] = triplets[tx + 1, y].MUU();
             triplets[tx - 1, y + 1] = triplets[tx - 1, y + 1].UUM();
             triplets[tx, y + 1] = triplets[tx, y + 1].M2M3M2();

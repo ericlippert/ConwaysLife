@@ -194,7 +194,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new Gosper();
+            life = new Stafford();
             life.AddPattern(new LifePoint(128, 128), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);

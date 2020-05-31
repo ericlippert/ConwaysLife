@@ -79,55 +79,11 @@ namespace ConwaysLife
         public int MiddleCurrentRaw => (triplet & mcm) >> mcur;
         public int RightCurrentRaw => (triplet & rcm) >> rcur;
 
-        // These set the current state bits "in parallel". 
-        // U = unchanged
-        // A = becomes alive
-        // D = becomes dead
+        public Triplet NextToCurrent() => new Triplet((triplet & ~currentm) | ((triplet & nextm) >> 3));
 
-        public Triplet UUU() => this;
-        // Left unchanged, middle unchanged, right alive.
-        public Triplet UUA() => new Triplet((rcm | triplet));
-        // Left unchanged, middle unchanged, right dead.
-        public Triplet UUD() => new Triplet(~rcm & triplet);
-
-        // And so on; there are only 27 cases so just enumerate them all.
-
-        public Triplet UAU() => new Triplet(mcm | triplet);
-        // The compiler will fold the constants, so this is a single or at runtime.
-        public Triplet UAA() => new Triplet(mcm | rcm | triplet);
-        public Triplet UAD() => new Triplet(mcm | ~rcm & triplet);
-
-        public Triplet UDU() => new Triplet(~mcm & triplet);
-        public Triplet UDA() => new Triplet(rcm | ~mcm & triplet);
-        public Triplet UDD() => new Triplet(~(mcm | rcm) & triplet);
-
-        public Triplet AUU() => new Triplet(lcm | triplet);
-        public Triplet AUA() => new Triplet(lcm | rcm | triplet);
-        public Triplet AUD() => new Triplet(lcm | ~rcm & triplet);
-
-        public Triplet AAU() => new Triplet(lcm | mcm | triplet);
-        public Triplet AAA() => new Triplet(lcm | mcm | rcm | triplet);
-        public Triplet AAD() => new Triplet(lcm | mcm | ~rcm & triplet);
-
-        public Triplet ADU() => new Triplet(lcm | ~mcm & triplet);
-        public Triplet ADA() => new Triplet(lcm | rcm | ~mcm & triplet);
-        public Triplet ADD() => new Triplet(lcm | ~(mcm | rcm) & triplet);
-
-        public Triplet DUU() => new Triplet(~lcm & triplet);
-        public Triplet DUA() => new Triplet(rcm | ~lcm & triplet);
-        public Triplet DUD() => new Triplet(~(rcm | lcm) & triplet);
-
-        public Triplet DAU() => new Triplet(mcm | ~lcm & triplet);
-        public Triplet DAA() => new Triplet(mcm | rcm | ~lcm & triplet);
-        public Triplet DAD() => new Triplet(mcm | ~(rcm | lcm) & triplet);
-
-        public Triplet DDU() => new Triplet(~(lcm | mcm) & triplet);
-        public Triplet DDA() => new Triplet(rcm | ~(lcm | mcm) & triplet);
-        public Triplet DDD() => new Triplet(~(lcm | mcm | rcm) & triplet);
-
-        public Triplet SetLeftCurrent(bool b) => b ? AUU() : DUU();
-        public Triplet SetMiddleCurrent(bool b) => b ? UAU() : UDU();
-        public Triplet SetRightCurrent(bool b) => b ? UUA() : UUD();
+        public Triplet SetLeftCurrent(bool b) => new Triplet(b ? lcm | triplet : ~lcm & triplet);
+        public Triplet SetMiddleCurrent(bool b) => new Triplet(b ? mcm | triplet : ~mcm & triplet);
+        public Triplet SetRightCurrent(bool b) => new Triplet(b ? rcm | triplet : ~rcm & triplet);
 
         public int LeftCountRaw => (lcountm & triplet) >> lcount;
         public int MiddleCountRaw => (mcountm & triplet) >> mcount;
