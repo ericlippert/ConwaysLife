@@ -186,7 +186,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            pattern = Acorn;
+            pattern = FourPuffer2s;
             Reset();
             StartRunning();
         }
@@ -194,10 +194,14 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new Stafford();
-            life.AddPattern(new LifePoint(128, 128), pattern);
+            int size = 11;
+            life = new Stafford(size);
+            var halfway = new LifePoint(1L << (size - 1), 1L << (size - 1));
+
+
+            life.AddPattern(halfway, pattern);
             scale = defaultScale;
-            corner = new LifePoint(-2, LifeHeight - 2);
+            corner = halfway;
 
             Draw();
         }

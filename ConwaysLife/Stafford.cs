@@ -212,15 +212,8 @@ namespace ConwaysLife
 
     class Stafford : ILife
     {
-        // We're going to keep the top and bottom edge triplets dead,
-        // so this gives us 256 live rows.
-        private int height = 258;
-
-        // This is the width in triplets. That gives us 264 cells, but 
-        // we'll keep the left and right triplets dead, so that's 258
-        // live columns of cells.
-
-        private int width = 88;
+        private int height;
+        private int width; // Width in triplets
         private Triplet[,] triplets;
         private List<(int, int)> changes;
 
@@ -232,8 +225,12 @@ namespace ConwaysLife
         private Func<int, int, bool>[] lookup2;
 
 
-        public Stafford()
+        public Stafford(int size = 8)
         {
+            size = Max(size, 8);
+            height = (1 << size) + 2;
+            width = ((1 << size) + 2) / 3 + 2;
+
             lookup2 = new Func<int, int, bool>[1 << 6]
             {
                 // This table is keyed on the next and current bits. Suppose we have:
