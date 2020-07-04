@@ -310,8 +310,6 @@ namespace ConwaysLife.Hensel
             if (c.OnActiveList) 
                 return;
 
-            c.BecomeActive();
-
             if (c.OnDeadList)
             {
                 if (c.Prev == null) 
@@ -336,6 +334,8 @@ namespace ConwaysLife.Hensel
             if (active != null) 
                 active.Prev = c;
             active = c;
+
+            c.BecomeActive();
         }
 
         const int maximum = short.MaxValue;
