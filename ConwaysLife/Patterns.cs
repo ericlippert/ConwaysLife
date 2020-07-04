@@ -133,6 +133,13 @@ OOO");
 ..O 
 OOO ");
 
+        public static IPattern Glider2 = new PlaintextPattern(@"
+!Name: Glider 
+! 
+OOO 
+..O 
+.O. ");
+
         public static IPattern GliderGun = new PlaintextPattern(@"
 !Name: Gosper glider gun 
 ! 

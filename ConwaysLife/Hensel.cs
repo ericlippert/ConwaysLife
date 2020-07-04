@@ -99,12 +99,12 @@ namespace ConwaysLife.Hensel
       
         private void StepEven()
         {
-            Quad4 nextLiving;
-            for (Quad4 c = active; c != null; c = nextLiving)
+            Quad4 nextActive;
+            for (Quad4 c = active; c != null; c = nextActive)
             {
                 // The cell might go inactive, so we need to cache the next
                 // item in the list.
-                nextLiving = c.Next;
+                nextActive = c.Next;
                 StepEvenQuad4(c);
                 if (!previousCorrect)
                     c.SetOddQuad4AllRegionsActive();
@@ -113,12 +113,12 @@ namespace ConwaysLife.Hensel
 
         private void StepOdd()
         {
-            Quad4 nextLiving;
-            for (Quad4 c = active; c != null; c = nextLiving)
+            Quad4 nextActive;
+            for (Quad4 c = active; c != null; c = nextActive)
             {
                 // The cell might go inactive, so we need to cache the next
                 // item in the list.
-                nextLiving = c.Next;
+                nextActive = c.Next;
                 StepOddQuad4(c);
                 if (!previousCorrect)
                     c.SetEvenQuad4AllRegionsActive();
@@ -401,6 +401,9 @@ namespace ConwaysLife.Hensel
 
         public void Step()
         {
+            // TODO: Stable list can have dead quad4s on it; this looks like a bug.
+            // TODO: Come back to this after stepping is correct.
+            // TODO: Track size of active, stable and dead lists.
             if (ShouldRemoveDead) 
                 RemoveDead();
 

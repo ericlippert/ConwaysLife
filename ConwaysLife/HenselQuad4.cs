@@ -585,20 +585,19 @@
 
         // Update quad3s
 
-        private void UpdateEvenNW(Quad3 new_even_nw)
+        private void UpdateEvenNW(Quad3 newEvenNW)
         {
-            Quad3ChangeReport changes = new_even_nw.Compare(evenNW);
-
+            Quad3ChangeReport changes = newEvenNW.Compare(evenNW);
             if (changes.NorthwestCornerNoChange)
             {
-                if (new_even_nw.NorthwestCornerDead)
+                if (newEvenNW.NorthwestCornerDead)
                     SetEvenNWNWCornerDead();
                 else
                     SetEvenNWNWCornerInactive();
 
                 if (changes.NorthEdgeNoChange)
                 {
-                    if (new_even_nw.NorthEdgeDead)
+                    if (newEvenNW.NorthEdgeDead)
                         SetEvenNWNorthEdgeDead();
                     else
                         SetEvenNWNorthEdgeInactive();
@@ -610,14 +609,14 @@
 
                 if (changes.WestEdgeNoChange)
                 {
-                    if (new_even_nw.WestEdgeDead)
+                    if (newEvenNW.WestEdgeDead)
                         SetEvenNWWestEdgeDead();
                     else
                         SetEvenNWWestEdgeInactive();
 
                     if (changes.NoChange)
                     {
-                        if (new_even_nw.AllDead)
+                        if (newEvenNW.AllDead)
                             SetEvenNWAllRegionsDead();
                         else
                             SetEvenNWAllRegionsInactive();
@@ -636,23 +635,22 @@
             {
                 SetEvenNWAllRegionsActive();
             }
-            evenNW = new_even_nw;
+            evenNW = newEvenNW;
         }
 
-        private void UpdateEvenSW(Quad3 new_even_sw)
+        private void UpdateEvenSW(Quad3 newEvenSW)
         {
-            Quad3ChangeReport changes = new_even_sw.Compare(evenSW);
-
+            Quad3ChangeReport changes = newEvenSW.Compare(evenSW);
             if (changes.NorthwestCornerNoChange)
             {
-                if (new_even_sw.NorthwestCornerDead)
+                if (newEvenSW.NorthwestCornerDead)
                     SetEvenSWNWCornerDead();
                 else
                     SetEvenSWNWCornerInactive();
 
                 if (changes.NorthEdgeNoChange)
                 {
-                    if (new_even_sw.NorthEdgeDead)
+                    if (newEvenSW.NorthEdgeDead)
                         SetEvenSWNorthEdgeDead();
                     else
                         SetEvenSWNorthEdgeInactive();
@@ -664,14 +662,14 @@
 
                 if (changes.WestEdgeNoChange)
                 {
-                    if (new_even_sw.WestEdgeDead)
+                    if (newEvenSW.WestEdgeDead)
                         SetEvenSWWestEdgeDead();
                     else
                         SetEvenSWWestEdgeInactive();
 
                     if (changes.NoChange)
                     {
-                        if (new_even_sw.AllDead)
+                        if (newEvenSW.AllDead)
                             SetEvenSWAllRegionsDead();
                         else
                             SetEvenSWAllRegionsInactive();
@@ -691,23 +689,22 @@
                 SetEvenSWAllRegionsActive();
             }
 
-            evenSW = new_even_sw;
+            evenSW = newEvenSW;
         }
 
-        private void UpdateEvenNE(Quad3 new_even_ne)
+        private void UpdateEvenNE(Quad3 newEvenNE)
         {
-            Quad3ChangeReport changes = new_even_ne.Compare(evenNE);
-
+            Quad3ChangeReport changes = newEvenNE.Compare(evenNE);
             if (changes.NorthwestCornerNoChange)
             {
-                if (new_even_ne.NorthwestCornerDead)
+                if (newEvenNE.NorthwestCornerDead)
                     SetEvenNENWCornerDead();
                 else
                     SetEvenNENWCornerInactive();
 
                 if (changes.NorthEdgeNoChange)
                 {
-                    if (new_even_ne.NorthEdgeDead)
+                    if (newEvenNE.NorthEdgeDead)
                         SetEvenNENorthEdgeDead();
                     else
                         SetEvenNENorthEdgeInactive();
@@ -719,14 +716,14 @@
 
                 if (changes.WestEdgeNoChange)
                 {
-                    if (new_even_ne.WestEdgeDead)
+                    if (newEvenNE.WestEdgeDead)
                         SetEvenNEWestEdgeDead();
                     else
                         SetEvenNEWestEdgeInactive();
 
                     if (changes.NoChange)
                     {
-                        if (new_even_ne.AllDead)
+                        if (newEvenNE.AllDead)
                             SetEvenNEAllRegionsDead();
                         else
                             SetEvenNEAllRegionsInactive();
@@ -746,24 +743,22 @@
                 SetEvenNEAllRegionsActive();
             }
 
-            evenNE = new_even_ne;
+            evenNE = newEvenNE;
         }
 
-        private void UpdateEvenSE(Quad3 new_even_se)
+        private void UpdateEvenSE(Quad3 newEvenSE)
         {
-
-            Quad3ChangeReport changes = new_even_se.Compare(evenSE);
-
+            Quad3ChangeReport changes = newEvenSE.Compare(evenSE);
             if (changes.NorthwestCornerNoChange)
             {
-                if (new_even_se.NorthwestCornerDead)
+                if (newEvenSE.NorthwestCornerDead)
                     SetEvenSENWCornerDead();
                 else
                     SetEvenSENWCornerInactive();
 
                 if (changes.NorthEdgeNoChange)
                 {
-                    if (new_even_se.NorthEdgeDead)
+                    if (newEvenSE.NorthEdgeDead)
                         SetEvenSENorthEdgeDead();
                     else
                         SetEvenSENorthEdgeInactive();
@@ -775,14 +770,14 @@
 
                 if (changes.WestEdgeNoChange)
                 {
-                    if (new_even_se.WestEdgeDead)
+                    if (newEvenSE.WestEdgeDead)
                         SetEvenSEWestEdgeDead();
                     else
                         SetEvenSEWestEdgeInactive();
 
                     if (changes.NoChange)
                     {
-                        if (new_even_se.AllDead)
+                        if (newEvenSE.AllDead)
                             SetEvenSEAllRegionsDead();
                         else
                             SetEvenSEAllRegionsInactive();
@@ -801,23 +796,22 @@
             {
                 SetEvenSEAllRegionsActive();
             }
-            evenSE = new_even_se;
+            evenSE = newEvenSE;
         }
 
-        private void UpdateOddNW(Quad3 new_odd_nw)
+        private void UpdateOddNW(Quad3 newOddNW)
         {
-            Quad3ChangeReport changes = new_odd_nw.Compare(oddNW);
-
+            Quad3ChangeReport changes = newOddNW.Compare(oddNW);
             if (changes.SoutheastCornerNoChange)
             {
-                if (new_odd_nw.SoutheastCornerDead)
+                if (newOddNW.SoutheastCornerDead)
                     SetOddNWSECornerDead();
                 else
                     SetOddNWSECornerInactive();
 
                 if (changes.SouthEdgeNoChange)
                 {
-                    if (new_odd_nw.SouthEdgeDead)
+                    if (newOddNW.SouthEdgeDead)
                         SetOddNWSouthEdgeDead();
                     else
                         SetOddNWSouthEdgeInactive();
@@ -829,14 +823,14 @@
 
                 if (changes.EastEdgeNoChange)
                 {
-                    if (new_odd_nw.EastEdgeDead)
+                    if (newOddNW.EastEdgeDead)
                         SetOddNWEastEdgeDead();
                     else
                         SetOddNWEastEdgeInactive();
 
                     if (changes.NoChange)
                     {
-                        if (new_odd_nw.AllDead)
+                        if (newOddNW.AllDead)
                             SetOddNWAllRegionsDead();
                         else
                             SetOddNWAllRegionsInactive();
@@ -856,22 +850,22 @@
                 SetOddNWAllRegionsActive();
             }
 
-            oddNW = new_odd_nw;
+            oddNW = newOddNW;
         }
 
-        private void UpdateOddSW(Quad3 new_odd_sw)
+        private void UpdateOddSW(Quad3 newOddSW)
         {
-            Quad3ChangeReport changes = new_odd_sw.Compare(oddSW);
+            Quad3ChangeReport changes = newOddSW.Compare(oddSW);
             if (changes.SoutheastCornerNoChange)
             {
-                if (new_odd_sw.SoutheastCornerDead)
+                if (newOddSW.SoutheastCornerDead)
                     SetOddSWSECornerDead();
                 else
                     SetOddSWSECornerInactive();
 
                 if (changes.SouthEdgeNoChange)
                 {
-                    if (new_odd_sw.SouthEdgeDead)
+                    if (newOddSW.SouthEdgeDead)
                         SetOddSWSouthEdgeDead();
                     else
                         SetOddSWSouthEdgeInactive();
@@ -883,14 +877,14 @@
 
                 if (changes.EastEdgeNoChange)
                 {
-                    if (new_odd_sw.EastEdgeDead)
+                    if (newOddSW.EastEdgeDead)
                         SetOddSWEastEdgeDead();
                     else
                         SetOddSWEastEdgeInactive();
 
                     if (changes.NoChange)
                     {
-                        if (new_odd_sw.AllDead)
+                        if (newOddSW.AllDead)
                             SetOddSWAllRegionsDead();
                         else
                             SetOddSWAllRegionsInactive();
@@ -910,23 +904,22 @@
                 SetOddSWAllRegionsActive();
             }
 
-            oddSW = new_odd_sw;
+            oddSW = newOddSW;
         }
 
-        private void UpdateOddNE(Quad3 new_odd_ne)
+        private void UpdateOddNE(Quad3 newOddNE)
         {
-            Quad3ChangeReport changes = new_odd_ne.Compare(new_odd_ne);
-
+            Quad3ChangeReport changes = newOddNE.Compare(oddNE);
             if (changes.SoutheastCornerNoChange)
             {
-                if (new_odd_ne.SoutheastCornerDead)
+                if (newOddNE.SoutheastCornerDead)
                     SetOddNESECornerDead();
                 else
                     SetOddNESECornerInactive();
 
                 if (changes.SouthEdgeNoChange)
                 {
-                    if (new_odd_ne.SouthEdgeDead)
+                    if (newOddNE.SouthEdgeDead)
                         SetOddNESouthEdgeDead();
                     else
                         SetOddNESouthEdgeInactive();
@@ -938,14 +931,14 @@
 
                 if (changes.EastEdgeNoChange)
                 {
-                    if (new_odd_ne.EastEdgeDead)
+                    if (newOddNE.EastEdgeDead)
                         SetOddNEEastEdgeDead();
                     else
                         SetOddNEEastEdgeInactive();
 
                     if (changes.NoChange)
                     {
-                        if (new_odd_ne.AllDead)
+                        if (newOddNE.AllDead)
                             SetOddNEAllRegionsDead();
                         else
                             SetOddNEAllRegionsInactive();
@@ -965,21 +958,21 @@
                 SetOddNEAllRegionsActive();
             }
 
-            oddNE = new_odd_ne;
+            oddNE = newOddNE;
         }
 
-        private void UpdateOddSE(Quad3 new_odd_se)
+        private void UpdateOddSE(Quad3 newOddSE)
         {
-            Quad3ChangeReport changes = new_odd_se.Compare(oddSE);
+            Quad3ChangeReport changes = newOddSE.Compare(oddSE);
             if (changes.SoutheastCornerNoChange)
             {
-                if (new_odd_se.SoutheastCornerDead)
+                if (newOddSE.SoutheastCornerDead)
                     SetOddSESECornerDead();
                 else
                     SetOddSESECornerInactive();
                 if (changes.SouthEdgeNoChange)
                 {
-                    if (new_odd_se.SouthEdgeDead)
+                    if (newOddSE.SouthEdgeDead)
                         SetOddSESouthEdgeDead();
                     else
                         SetOddSESouthEdgeInactive();
@@ -990,14 +983,14 @@
                 }
                 if (changes.EastEdgeNoChange)
                 {
-                    if (new_odd_se.EastEdgeDead)
+                    if (newOddSE.EastEdgeDead)
                         SetOddSEEastEdgeDead();
                     else
                         SetOddSEEastEdgeInactive();
 
                     if (changes.NoChange)
                     {
-                        if (new_odd_se.AllDead)
+                        if (newOddSE.AllDead)
                             SetOddSEAllRegionsDead();
                         else
                             SetOddSEAllRegionsInactive();
@@ -1016,7 +1009,7 @@
             {
                 SetOddSEAllRegionsActive();
             }
-            oddSE = new_odd_se;
+            oddSE = newOddSE;
         }
 
         // Stepping
