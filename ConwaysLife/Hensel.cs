@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ConwaysLife.Hensel
 {
-    sealed class Hensel
+    sealed class QuickLife : ILife
     {
         // A C# implementation of Alan Hensel's QuickLife algorithm,
         // based on his 1996 source code at:
@@ -61,15 +62,21 @@ namespace ConwaysLife.Hensel
         public bool previousCorrect;
         public int generation;
 
-        private Quad4 GetQuad4(int x, int y) => quad4s[((short)x, (short)y)];
+        private Quad4 GetQuad4(int x, int y)
+        {
+            Quad4 q = null;
+            quad4s.TryGetValue(((short)x, (short)y), out q);
+            return q;
+        }
+
         private void SetQuad4(int x, int y, Quad4 q) => quad4s[((short)x, (short)y)] = q;
 
-        public Hensel()
+        public QuickLife()
         {
             Clear();
         }
 
-        private void Clear()
+        public void Clear()
         {
             generation = 0;
             previousCorrect = false;
@@ -79,12 +86,15 @@ namespace ConwaysLife.Hensel
             quad4s = new Dictionary<(short, short), Quad4>();
         }
 
-        private void EnsureActive(Quad4 c, int x, int y)
+        private Quad4 EnsureActive(Quad4 c, int x, int y)
         {
             if (c != null)
+            {
                 MakeActive(c);
+                return c;
+            }
             else
-                AllocateQuad4(x, y);
+                return AllocateQuad4(x, y);
         }
       
         private void StepEven()
@@ -123,11 +133,11 @@ namespace ConwaysLife.Hensel
                 return;
             c.StepEvenQuad4();
             if (c.OddSouthEdgeActive)
-                EnsureActive(c.S, c.X, c.Y + 1);
+                EnsureActive(c.S, c.X, c.Y - 1);
             if (c.OddEastEdgeActive)
                 EnsureActive(c.E, c.X + 1, c.Y);
             if (c.OddSoutheastCornerActive)
-                EnsureActive(c.SE, c.X + 1, c.Y + 1);
+                EnsureActive(c.SE, c.X + 1, c.Y - 1);
         }
 
         private void StepOddQuad4(Quad4 c)
@@ -138,9 +148,9 @@ namespace ConwaysLife.Hensel
             if (c.EvenWestEdgeActive)
                 EnsureActive(c.W, c.X - 1, c.Y);
             if (c.EvenNorthEdgeActive)
-                EnsureActive(c.N, c.X, c.Y - 1);
+                EnsureActive(c.N, c.X, c.Y + 1);
             if (c.EvenNorthwestCornerActive)
-                EnsureActive(c.NW, c.X - 1, c.Y - 1);
+                EnsureActive(c.NW, c.X - 1, c.Y + 1);
         }
 
         // Try to remove an inactive quad4 on the even cycle.
@@ -221,24 +231,23 @@ namespace ConwaysLife.Hensel
 
         private Quad4 AllocateQuad4(int x, int y)
         {
-            // TODO: Y is getting larger when we go south.
             Quad4 c = new Quad4(x, y);
-            c.S = GetQuad4(x, y + 1);
+            c.S = GetQuad4(x, y - 1);
             if (c.S != null)
                 c.S.N = c;
             c.E = GetQuad4(x + 1, y);
             if (c.E != null) 
                 c.E.W = c;
-            c.SE = GetQuad4(x + 1, y + 1);
+            c.SE = GetQuad4(x + 1, y - 1);
             if (c.SE != null) 
                 c.SE.NW = c;
-            c.N = GetQuad4(x, y - 1);
+            c.N = GetQuad4(x, y + 1);
             if (c.N != null)
                 c.N.S = c;
             c.W = GetQuad4(x - 1, y);
             if (c.W != null) 
                 c.W.E = c;
-            c.NW = GetQuad4(x - 1, y - 1);
+            c.NW = GetQuad4(x - 1, y + 1);
             if (c.NW != null) 
                 c.NW.SE = c;
             c.Next = active;
@@ -321,19 +330,104 @@ namespace ConwaysLife.Hensel
             active = c;
         }
 
+        const int maximum = short.MaxValue;
+        const int minimum = short.MinValue;
+
+        private bool IsValidPoint(long x, long y) => 
+            minimum <= (x >> 4) && (x >> 4) < maximum && minimum <= (y >> 4) && (y >> 4) < maximum;
+
+        public bool this[LifePoint v] 
+        {
+            get => this[v.X, v.Y];
+            set => this[v.X, v.Y] = value;
+        }
+        
+        public bool this[long x, long y] 
+        { 
+            get
+            {
+                if (IsOdd)
+                {
+                    x -= 1;
+                    y += 1;
+                }
+
+                if (!IsValidPoint(x, y))
+                    return false;
+
+                Quad4 q = GetQuad4((int)(x >> 4), (int)(y >> 4));
+
+                if (q == null || q.OnDeadList)
+                    return false;
+
+                if (IsOdd)
+                    return q.GetOdd((int)(x & 0xf), (int)(y & 0xf));
+                return q.GetEven((int)(x & 0xf), (int)(y & 0xf));
+            }
+            set
+            {
+                if (IsOdd)
+                {
+                    x += 1;
+                    y -= 1;
+                }
+
+                if (!IsValidPoint(x, y))
+                    return;
+
+                previousCorrect = false;
+
+                Quad4 q = EnsureActive(GetQuad4((int)(x >> 4), (int)(y >> 4)), (int)(x >> 4), (int)(y >> 4));
+
+                if (IsOdd)
+                { 
+                    if (value)
+                        q.SetOdd((int)(x & 0xf), (int)(y & 0xf));
+                    else
+                        q.ClearOdd((int)(x & 0xf), (int)(y & 0xf));
+                }
+                else
+                {
+                    if (value)
+                        q.SetEven((int)(x & 0xf), (int)(y & 0xf));
+                    else
+                        q.ClearEven((int)(x & 0xf), (int)(y & 0xf));
+                }
+            }
+        }
+
+        private bool IsOdd => (generation & 0x1) != 0;
+
+        // TODO: Can we come up with a better policy than this? Maybe count size of dead list?
+        private bool ShouldRemoveDead => (generation & 0x7f) == 0;
+
         public void Step()
         {
-            // TODO: Can we come up with a better policy than this? Maybe count size of dead list?
-            if ((generation & 0x7f) == 0) 
+            if (ShouldRemoveDead) 
                 RemoveDead();
 
-            if ((generation & 0x1) == 0)
-                StepEven();
-            else
+            if (IsOdd)
                 StepOdd();
+            else
+                StepEven();                
 
             generation++;
             previousCorrect = true;
+        }
+
+        public void Draw(LifeRect rect, Action<LifePoint> setPixel)
+        {
+            // TODO: Do better
+            for (long x = rect.X; x < rect.X + rect.Width; x += 1)
+                for (long y = rect.Y; y > rect.Y - rect.Height; y -= 1)
+                    if (this[x, y])
+                        setPixel(new LifePoint(x, y));
+        }
+
+        public void Step(int speed)
+        {
+            for (int i = 0; i < 1L << speed; i += 1)
+                Step();
         }
     }
 }

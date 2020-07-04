@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using static ConwaysLife.Patterns;
+using ConwaysLife.Hensel;
 
 namespace ConwaysLife
 {
@@ -18,7 +19,7 @@ namespace ConwaysLife
         private Pen gridPen;
         private ILife life;
         private IPattern pattern;
-        private bool running = true;
+        private bool running = false;
         private bool dragging = false;
         private LifePoint dragStart;
         private OpenFileDialog fileDialog;
@@ -186,7 +187,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            pattern = FourPuffer2s;
+            pattern = GliderGun;
             Reset();
             StartRunning();
         }
@@ -194,12 +195,12 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new SparseArray();
+            life = new QuickLife();
 
-            life.AddPattern(new LifePoint(0, 0), pattern);
+            life.AddPattern(new LifePoint(40, 40), pattern);
 
             scale = defaultScale;
-            corner = new LifePoint(40, 40);
+            corner = new LifePoint(40, 50);
 
             Draw();
         }

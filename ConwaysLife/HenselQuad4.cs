@@ -1,5 +1,6 @@
 ﻿namespace ConwaysLife.Hensel
 {
+    using System.Diagnostics;
     using static HenselLookup;
     using static Quad2;
 
@@ -1226,6 +1227,107 @@
             listFlags &= ~(onDeadMask | onStableMask | readyMask);
             SetEvenQuad4AllRegionsActive();
             SetOddQuad4AllRegionsActive();
+        }
+
+        public bool GetEven(int x, int y)
+        {
+            Debug.Assert(0 <= x && x < 16);
+            Debug.Assert(0 <= y && y < 16);
+            if (x < 8)
+            {
+                if (y < 8)
+                    return evenSW.Get(x, y);
+                return evenNW.Get(x, y - 8);
+            }
+            else if (y < 8)
+                return evenSE.Get(x - 8, y);
+            else
+                return evenNE.Get(x - 8, y - 8);
+        }
+
+        public void SetEven(int x, int y)
+        {
+            Debug.Assert(0 <= x && x < 16);
+            Debug.Assert(0 <= y && y < 16);
+            if (x < 8)
+            {
+                if (y < 8)
+                    evenSW = evenSW.Set(x, y);
+                else
+                    evenNW = evenNW.Set(x, y - 8);
+            }
+            else if (y < 8)
+                evenSE = evenSE.Set(x - 8, y);
+            else
+                evenNE = evenNE.Set(x - 8, y - 8);
+        }
+
+        public void ClearEven(int x, int y)
+        {
+            Debug.Assert(0 <= x && x < 16);
+            Debug.Assert(0 <= y && y < 16);
+            if (x < 8)
+            {
+                if (y < 8)
+                    evenSW = evenSW.Clear(x, y);
+                else
+                    evenNW = evenNW.Clear(x, y - 8);
+            }
+            else if (y < 8)
+                evenSE = evenSE.Clear(x - 8, y);
+            else
+                evenNE = evenNE.Clear(x - 8, y - 8);
+        }
+
+
+        public bool GetOdd(int x, int y)
+        {
+            Debug.Assert(0 <= x && x < 16);
+            Debug.Assert(0 <= y && y < 16);
+            if (x < 8)
+            {
+                if (y < 8)
+                    return oddSW.Get(x, y);
+                return oddNW.Get(x, y - 8);
+            }
+            else if (y < 8)
+                return oddSE.Get(x - 8, y);
+            else
+                return oddNE.Get(x - 8, y - 8);
+        }
+
+        public void SetOdd(int x, int y)
+        {
+            Debug.Assert(0 <= x && x < 16);
+            Debug.Assert(0 <= y && y < 16);
+            if (x < 8)
+            {
+                if (y < 8)
+                    oddSW = oddSW.Set(x, y);
+                else
+                    oddNW = oddNW.Set(x, y - 8);
+            }
+            else if (y < 8)
+                oddSE = oddSE.Set(x - 8, y);
+            else
+                oddNE = oddNE.Set(x - 8, y - 8);
+        }
+
+        public void ClearOdd(int x, int y)
+        {
+            Debug.Assert(0 <= x && x < 16);
+            Debug.Assert(0 <= y && y < 16);
+            if (x < 8)
+            {
+                if (y < 8)
+                    oddSW = oddSW.Clear(x, y);
+                else
+                    oddNW = oddNW.Clear(x, y - 8);
+            }
+            else if (y < 8)
+                oddSE = oddSE.Clear(x - 8, y);
+            else
+                oddNE = oddNE.Clear(x - 8, y - 8);
         }
     }
 }
