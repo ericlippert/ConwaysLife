@@ -64,41 +64,27 @@ namespace ConwaysLife.Hensel
             // it needs, but this avoids rather a lot of bit shifting and masking in the 
             // inner loop.
             //
-            // We have a map from Quad2 to Quad2. For the odd cycle, the output quad2 has the format:
-            //
-            // * The SE quad1 is the next step of the input quad2.
-            // * The NE quad1 is the next step of the "flipped" input quad2. 
-            //   That is, a quad2 where the north 4x2 cells have been swapped with the south 4x2 cells.
-            // * The SW quad1 is the next step of the mirror image of the input quad2.
-            //   That is, the east 2x4 cells have been swapped with the west.
-            // * The NW quad1 is the next step of the mirrored-and-flipped quad2.
-            //   That is, the NE quad1 has been swapped with the SW, and similarly the NW and SE.
-            //
-            // For the even cycle it's the same, just different:
-            //
-            // * The NW quad1 is the next step of the input quad2.
-            // * The NE quad1 is mirrored
-            // * The SW quad1 is flipped
-            // * The SE quad1 is mirrored and flipped.
+            // TODO: Add a correct explanation here.
+
 
             for (int i = 0; i <= 0xffff; i += 1)
             {                
-                Quad2 q2 = new Quad2((ushort)i);
-                int result = StepQuad2(q2);
-                int oddNormal = result;
-                int oddFlipped = ((result & 0b0011) << 6) | ((result & 0b1100) << 2);
-                int oddMirrored = ((result & 0b0101) << 9) | ((result & 0b1010) << 7);
-                int oddBoth = ((result & 0b0001) << 15) | ((result & 0b0010) << 13) | 
-                    ((result & 0b0100) << 11) | ((result & 0b1000) << 9);
-                oddLookup[i] = new Quad2((ushort)(oddNormal | oddFlipped | oddMirrored | oddBoth));
+                Quad2 normal = new Quad2((ushort)i);
+                Quad2 mirror = normal.Mirror;
+                Quad2 flip = normal.Flip;
+                Quad2 both = mirror.Flip;
 
-                int evenNormal = result << 12;
-                int evenMirrored = ((result & 0b0101) << 5) | ((result & 0b1010) << 3);
-                int evenFlipped = ((result & 0b0011) << 10) | ((result & 0b1100) << 6);
-                int evenBoth = ((result & 0b0001) << 3) | ((result & 0b0010) << 1) |
-                    ((result & 0b0100) >> 1) | ((result & 0b1000) >> 3);
+                int result = StepQuad2(normal);
 
-                evenLookup[i] = new Quad2((ushort)(evenNormal | evenFlipped | evenMirrored | evenBoth));
+                oddLookup[(ushort)normal] |= new Quad2((ushort)result);
+                oddLookup[(ushort)flip] |= new Quad2((ushort)(result << 4));
+                oddLookup[(ushort)mirror] |= new Quad2((ushort)(result << 8));
+                oddLookup[(ushort)both] |= new Quad2((ushort)(result << 12));
+
+                evenLookup[(ushort)both] |= new Quad2((ushort)result);
+                evenLookup[(ushort)mirror] |= new Quad2((ushort)(result << 4));
+                evenLookup[(ushort)flip] |= new Quad2((ushort)(result << 8));
+                evenLookup[(ushort)normal] |= new Quad2((ushort)(result << 12));
             }
         }
 

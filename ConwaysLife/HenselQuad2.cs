@@ -83,6 +83,9 @@ namespace ConwaysLife.Hensel
         public static Quad2 operator ^(Quad2 x, Quad2 y) => new Quad2((ushort)(x.cells ^ y.cells));
         public static explicit operator ushort(Quad2 x) => x.cells;
 
+        public Quad2 Flip => new Quad2((ushort)(((cells & SouthEdgeMask) << 4) | ((cells & NorthEdgeMask) >> 4)));
+        public Quad2 Mirror => new Quad2((ushort)((cells << 8) | (cells >> 8)));
+
         public bool Get(int x, int y)
         {
             Debug.Assert(0 <= x && x < 4);

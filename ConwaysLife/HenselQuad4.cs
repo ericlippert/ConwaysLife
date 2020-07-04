@@ -1329,5 +1329,26 @@
             else
                 oddNE = oddNE.Clear(x - 8, y - 8);
         }
+
+        public override string ToString()
+        {
+            string s = $"{X}, {Y}\nEven\n";
+            for (int y = 15; y >= 0; y -= 1)
+            {
+                for (int x = 0; x < 16; x += 1)
+                    s += this.GetEven(x, y) ? 'O' : '.';
+                s += "\n";
+            }
+            s += "\nOdd\n";
+            for (int y = 15; y >= 0; y -= 1)
+            {
+                for (int x = 0; x < 16; x += 1)
+                    s += this.GetOdd(x, y) ? 'O' : '.';
+                s += "\n";
+            }
+
+            return s;
+        }
+
     }
 }
