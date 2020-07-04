@@ -19,7 +19,7 @@ namespace ConwaysLife.Hensel
 
         public bool AllDead => (NW | NE | SW | SE).Dead;
         public bool NorthwestCornerDead => NW.NW.Dead;
-        public bool SoutheastCornerDead => NW.SE.Dead;
+        public bool SoutheastCornerDead => SE.SE.Dead;
 
         public bool NorthEdgeDead => (NW | NE).NorthEdge.Dead;
         public bool WestEdgeDead => (SW | NW).WestEdge.Dead;

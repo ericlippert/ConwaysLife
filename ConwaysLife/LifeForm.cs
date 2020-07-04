@@ -187,7 +187,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            pattern = GliderGun;
+            pattern = Glider;
             Reset();
             if (running)
                 StartRunning();
@@ -198,10 +198,10 @@ namespace ConwaysLife
             StopRunning();
             life = new QuickLife();
 
-            life.AddPattern(new LifePoint(40, 40), pattern);
+            life.AddPattern(new LifePoint(35, 21), pattern);
 
             scale = defaultScale;
-            corner = new LifePoint(40, 50);
+            corner = new LifePoint(20, 50);
 
             Draw();
         }
