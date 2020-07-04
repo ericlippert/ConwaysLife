@@ -1245,14 +1245,30 @@
             if (x < 8)
             {
                 if (y < 8)
+                {
                     evenSW = evenSW.Set(x, y);
+                    // TODO: Could be more specific
+                    SetEvenSWAllRegionsActive();
+                }
                 else
+                {
                     evenNW = evenNW.Set(x, y - 8);
+                    // TODO: Could be more specific
+                    SetEvenNWAllRegionsActive();
+                }
             }
             else if (y < 8)
+            {
                 evenSE = evenSE.Set(x - 8, y);
+                // TODO: Could be more specific
+                SetEvenSEAllRegionsActive();
+            }
             else
+            {                
                 evenNE = evenNE.Set(x - 8, y - 8);
+                // TODO: Could be more specific
+                SetEvenSEAllRegionsActive();
+            }
         }
 
         public void ClearEven(int x, int y)
@@ -1262,14 +1278,30 @@
             if (x < 8)
             {
                 if (y < 8)
+                {
                     evenSW = evenSW.Clear(x, y);
+                    // TODO: Could be more specific
+                    SetEvenSWAllRegionsActive();
+                }
                 else
+                {
                     evenNW = evenNW.Clear(x, y - 8);
+                    // TODO: Could be more specific
+                    SetEvenNWAllRegionsActive();
+                }
             }
             else if (y < 8)
+            {
                 evenSE = evenSE.Clear(x - 8, y);
+                // TODO: Could be more specific
+                SetEvenSEAllRegionsActive();
+            }
             else
+            {
                 evenNE = evenNE.Clear(x - 8, y - 8);
+                // TODO: Could be more specific
+                SetEvenNEAllRegionsActive();
+            }
         }
 
 

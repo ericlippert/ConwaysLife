@@ -125,17 +125,32 @@ namespace ConwaysLife.Hensel
             }
         }
 
-        private void StepEvenQuad4(Quad4 c)
+        private void MakeOddNeighborsActive(Quad4 c)
         {
-            if (RemoveInactiveEvenQuad4(c))
-                return;
-            c.StepEvenQuad4();
             if (c.OddSouthEdgeActive)
                 EnsureActive(c.S, c.X, c.Y - 1);
             if (c.OddEastEdgeActive)
                 EnsureActive(c.E, c.X + 1, c.Y);
             if (c.OddSoutheastCornerActive)
-                EnsureActive(c.SE, c.X + 1, c.Y - 1);
+                EnsureActive(c.SE, c.X + 1, c.Y - 1);            
+        }
+
+        private void StepEvenQuad4(Quad4 c)
+        {
+            if (RemoveInactiveEvenQuad4(c))
+                return;
+            c.StepEvenQuad4();
+            MakeOddNeighborsActive(c);
+        }
+
+        private void MakeEvenNeighborsActive(Quad4 c)
+        {
+            if (c.EvenWestEdgeActive)
+                EnsureActive(c.W, c.X - 1, c.Y);
+            if (c.EvenNorthEdgeActive)
+                EnsureActive(c.N, c.X, c.Y + 1);
+            if (c.EvenNorthwestCornerActive)
+                EnsureActive(c.NW, c.X - 1, c.Y + 1);
         }
 
         private void StepOddQuad4(Quad4 c)
@@ -143,12 +158,7 @@ namespace ConwaysLife.Hensel
             if (RemoveInactiveOddQuad4(c))
                 return;
             c.StepOddQuad4();
-            if (c.EvenWestEdgeActive)
-                EnsureActive(c.W, c.X - 1, c.Y);
-            if (c.EvenNorthEdgeActive)
-                EnsureActive(c.N, c.X, c.Y + 1);
-            if (c.EvenNorthwestCornerActive)
-                EnsureActive(c.NW, c.X - 1, c.Y + 1);
+            MakeEvenNeighborsActive(c);
         }
 
         // Try to remove an inactive quad4 on the even cycle.
@@ -383,6 +393,7 @@ namespace ConwaysLife.Hensel
                         q.SetOdd((int)(x & 0xf), (int)(y & 0xf));
                     else
                         q.ClearOdd((int)(x & 0xf), (int)(y & 0xf));
+                    MakeOddNeighborsActive(q);
                 }
                 else
                 {
@@ -390,6 +401,7 @@ namespace ConwaysLife.Hensel
                         q.SetEven((int)(x & 0xf), (int)(y & 0xf));
                     else
                         q.ClearEven((int)(x & 0xf), (int)(y & 0xf));
+                    MakeEvenNeighborsActive(q);
                 }
             }
         }
