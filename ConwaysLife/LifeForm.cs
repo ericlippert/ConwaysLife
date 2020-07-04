@@ -194,14 +194,12 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            int size = 11;
-            life = new Stafford(size);
-            var halfway = new LifePoint(1L << (size - 1), 1L << (size - 1));
+            life = new SparseArray();
 
+            life.AddPattern(new LifePoint(0, 0), pattern);
 
-            life.AddPattern(halfway, pattern);
             scale = defaultScale;
-            corner = halfway;
+            corner = new LifePoint(40, 40);
 
             Draw();
         }
@@ -368,6 +366,46 @@ namespace ConwaysLife
             timer.Enabled = save;
         }
 
+        private void PerfTest2()
+        {
+            bool save = timer.Enabled;
+            timer.Enabled = false;
+            const int size = 11;
+            var perf = new Stafford(size);
+            for (int x = 40; x < (1 << size); x += 40)
+                perf.AddPattern(new LifePoint(x, 20), GliderGun);
+            const int blocks = 20;
+            const int ticks = 500;
+            long[] times = new long[blocks];
+            long[] changes = new long[blocks];
+            var stopwatch = new Stopwatch();
+            for (int block = 0; block < blocks; block += 1)
+            {
+                int c = 0;
+                stopwatch.Restart();
+                for (int tick = 0; tick < ticks; tick += 1)
+                {
+                    perf.Step();
+                    c += perf.ChangedTriplets;
+                }
+                stopwatch.Stop();
+                times[block] = stopwatch.ElapsedMilliseconds;
+                changes[block] = c;
+            }
+
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string path = Path.Combine(desktop, "lifeperf.txt");
+            using (var file = File.AppendText(path))
+            {
+                file.WriteLine($"{DateTime.Now}:{perf.GetType()}");
+                file.WriteLine(string.Join("\n", changes));
+                file.WriteLine();
+                file.WriteLine(string.Join("\n", times));
+            }
+            timer.Enabled = save;
+        }
+
+
         private void LifeForm_KeyDown(object sender, KeyEventArgs e)
         {
             // Don't forget to set KeyPreview to True in the designer.
@@ -378,18 +416,18 @@ namespace ConwaysLife
                     break;
                 case Keys.P:
                     Debug.Fail("FYI you are performance testing in the debug build.");
-                    PerfTest(new Abrash());
-                    PerfTest(new AbrashChangeList());
-                    PerfTest(new AbrashOneArray());
-                    PerfTest(new StaffordChangeList());
-                    PerfTest(new StaffordLookup());
+                    // PerfTest2();
+                    //PerfTest(new Abrash());
+                    //PerfTest(new AbrashChangeList());
+                    //PerfTest(new AbrashOneArray());
+                    //PerfTest(new StaffordChangeList());
+                    //PerfTest(new StaffordLookup());
                     PerfTest(new Stafford());
-                    // PerfTest(new SparseArray());
-                    // PerfTest(new AbrashSparseArray());
-
-                    // Run this one twice!
-                    PerfTest(new GosperSlow());
-                    PerfTest(new GosperSlow());
+                    PerfTest(new SparseArray());
+                    
+                    //// Run this one twice!
+                    //PerfTest(new GosperSlow());
+                    //PerfTest(new GosperSlow());
                     break;
                 case Keys.R:
                     Reset();

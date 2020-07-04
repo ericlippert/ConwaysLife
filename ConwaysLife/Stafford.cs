@@ -263,6 +263,8 @@ namespace ConwaysLife
             Clear();
         }
 
+        public int ChangedTriplets => changes.Count;
+
         public void Clear()
         {
             triplets = new Triplet[width, height];

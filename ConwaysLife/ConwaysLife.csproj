@@ -56,7 +56,12 @@
     <Compile Include="CacheManager.cs" />
     <Compile Include="Gosper.cs" />
     <Compile Include="GosperSlow.cs" />
+    <Compile Include="Hensel.cs" />
+    <Compile Include="HenselLookup.cs" />
+    <Compile Include="HenselQuad2.cs" />
+    <Compile Include="HenselQuad3.cs" />
     <Compile Include="ILife.cs" />
+    <Compile Include="HenselQuad4.cs" />
     <Compile Include="LifeForm.cs">
       <SubType>Form</SubType>
     </Compile>
