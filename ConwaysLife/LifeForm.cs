@@ -72,7 +72,7 @@ namespace ConwaysLife
         // event. If the speed is higher than 5 then we will calculate two to the 
         // speed - 5 ticks per timer event, and keep the timer at 30ms.
 
-        private const int defaultSpeed = 5;  // 32 ticks per second
+        private const int defaultSpeed = 0;  // 32 ticks per second
         private const int maximumTimerSpeed = 5;
         private const int maximumSpeed = 15; // 32K ticks per second
         private int speed = defaultSpeed;

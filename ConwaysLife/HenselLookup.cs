@@ -133,7 +133,7 @@ Given the nine quad2s shown, the next step of the shaded region is returned:
             Quad2 center_se_flip_mirror = center_e_mirror.SouthEdge | center_s_flip.NE | se.NW;
 
             Quad2 new_nw =
-                evenLookup[(ushort)nw.NW] | 
+                evenLookup[(ushort)nw].NW | 
                 evenLookup[(ushort)n_w_mirror].NE |
                 evenLookup[(ushort)w_n_flip].SW | 
                 evenLookup[(ushort)center_nw_flip_mirror].SE;
