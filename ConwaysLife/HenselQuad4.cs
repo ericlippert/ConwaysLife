@@ -1208,7 +1208,7 @@
         public void ClearStayActive() => listFlags &= ~stayActiveMask;
         public void SetStayActive() => listFlags |= stayActiveMask;
 
-        public bool OnActiveList => (listFlags & (onDeadMask & onStableMask)) == 0;
+        public bool OnActiveList => (listFlags & (onDeadMask | onStableMask)) == 0;
         public bool OnDeadList => (listFlags & onDeadMask) != 0;
         public bool OnStableList => (listFlags & onStableMask) != 0;
 

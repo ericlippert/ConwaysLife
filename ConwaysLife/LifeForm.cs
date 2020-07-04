@@ -198,7 +198,7 @@ namespace ConwaysLife
             StopRunning();
             life = new QuickLife();
 
-            life.AddPattern(new LifePoint(35, 21), pattern);
+            life.AddPattern(new LifePoint(43, 29), pattern);
 
             scale = defaultScale;
             corner = new LifePoint(20, 50);
