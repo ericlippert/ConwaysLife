@@ -1121,15 +1121,15 @@
             if (!OddSWPossiblyActive())
                 return;
             Quad3 new_even_sw = Step9Quad2ToQuad3Odd(
-                W == null ? AllDead : W.oddNW.SE,
+                W == null ? AllDead : W.oddNE.SE,
                 oddNW.SW,
                 oddNW.SE,
-                W == null ? AllDead : W.oddSW.NE,
-                oddNW.NW,
-                oddNW.NE,
-                W == null ? AllDead : W.oddSW.SE,
-                oddNW.SW,
-                oddNW.SE);
+                W == null ? AllDead : W.oddSE.NE,
+                oddSW.NW,
+                oddSW.NE,
+                W == null ? AllDead : W.oddSE.SE,
+                oddSW.SW,
+                oddSW.SE);
             UpdateEvenSW(new_even_sw);
         }
 
@@ -1141,12 +1141,12 @@
                 N == null ? AllDead : N.oddSW.SE,
                 N == null ? AllDead : N.oddSE.SW,
                 N == null ? AllDead : N.oddSE.SE,
-                oddNE.NE,
-                oddNW.NW,
                 oddNW.NE,
-                oddNE.SE,
-                oddNW.SW,
-                oddNW.SE);
+                oddNE.NW,
+                oddNE.NE,
+                oddNW.SE,
+                oddNE.SW,
+                oddNE.SE);
             UpdateEvenNE(new_even_ne);
         }
 
@@ -1159,11 +1159,11 @@
                 oddNE.SW,
                 oddNE.SE,
                 oddSW.NE,
-                oddNW.NW,
-                oddNW.NE,
+                oddSE.NW,
+                oddSE.NE,
                 oddSW.SE,
-                oddNW.SW,
-                oddNW.SE);
+                oddSE.SW,
+                oddSE.SE);
             UpdateEvenSE(new_even_se);
         }
 
