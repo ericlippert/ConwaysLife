@@ -1025,7 +1025,7 @@
         {
             if (!EvenNWPossiblyActive())
                 return;
-            Quad3 new_odd_nw = Step9Quad2ToQuad3(
+            Quad3 new_odd_nw = Step9Quad2ToQuad3Even(
                 evenNW.NW,
                 evenNW.NE,
                 evenNE.NW,
@@ -1042,7 +1042,7 @@
         {
             if (!EvenSWPossiblyActive())
                 return;
-            Quad3 new_odd_sw = Step9Quad2ToQuad3(
+            Quad3 new_odd_sw = Step9Quad2ToQuad3Even(
                 evenSW.NW,
                 evenSW.NE,
                 evenSE.NW,
@@ -1059,7 +1059,7 @@
         {
             if (!EvenNEPossiblyActive())
                 return;
-            Quad3 new_odd_ne = Step9Quad2ToQuad3(
+            Quad3 new_odd_ne = Step9Quad2ToQuad3Even(
                 evenNE.NW,
                 evenNE.NE,
                 E == null ? AllDead : E.evenNW.NW,
@@ -1076,7 +1076,7 @@
         {
             if (!EvenSEPossiblyActive())
                 return;
-            Quad3 new_odd_se = Step9Quad2ToQuad3(
+            Quad3 new_odd_se = Step9Quad2ToQuad3Even(
                 evenSE.NW,
                 evenSE.NE,
                 E == null ? AllDead : E.evenSW.NW,
@@ -1103,7 +1103,7 @@
             if (!OddNWPossiblyActive())
                 return;
 
-            Quad3 new_even_nw = Step9Quad2ToQuad3(
+            Quad3 new_even_nw = Step9Quad2ToQuad3Odd(
                 NW == null ? AllDead : NW.oddSE.SE,
                 N == null ? AllDead : N.oddSW.SW,
                 N == null ? AllDead : N.oddSW.SE,
@@ -1120,7 +1120,7 @@
         {
             if (!OddSWPossiblyActive())
                 return;
-            Quad3 new_even_sw = Step9Quad2ToQuad3(
+            Quad3 new_even_sw = Step9Quad2ToQuad3Odd(
                 W == null ? AllDead : W.oddNW.SE,
                 oddNW.SW,
                 oddNW.SE,
@@ -1137,7 +1137,7 @@
         {
             if (!OddNEPossiblyActive())
                 return;
-            Quad3 new_even_ne = Step9Quad2ToQuad3(
+            Quad3 new_even_ne = Step9Quad2ToQuad3Odd(
                 N == null ? AllDead : N.oddSW.SE,
                 N == null ? AllDead : N.oddSE.SW,
                 N == null ? AllDead : N.oddSE.SE,
@@ -1154,7 +1154,7 @@
         {
             if (!OddSEPossiblyActive())
                 return;
-            Quad3 new_even_se = Step9Quad2ToQuad3(
+            Quad3 new_even_se = Step9Quad2ToQuad3Odd(
                 oddNW.SE,
                 oddNE.SW,
                 oddNE.SE,

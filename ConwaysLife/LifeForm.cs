@@ -189,7 +189,8 @@ namespace ConwaysLife
             gridPen = new Pen(gridColor);
             pattern = GliderGun;
             Reset();
-            StartRunning();
+            if (running)
+                StartRunning();
         }
 
         private void Reset()

@@ -75,6 +75,18 @@ namespace ConwaysLife.Hensel
             else
                 return new Quad3(NW, NE.Clear(x - 4, y - 4), SW, SE);
         }
+
+        public override string ToString()
+        {
+            string s = "";
+            for (int y = 7; y >= 0; y -= 1)
+            {
+                for (int x = 0; x < 8; x += 1)
+                    s += this.Get(x, y) ? 'O' : '.';
+                s += "\n";
+            }
+            return s;
+        }
     }
 
     struct Quad3ChangeReport

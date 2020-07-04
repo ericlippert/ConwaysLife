@@ -103,5 +103,18 @@ namespace ConwaysLife.Hensel
             Debug.Assert(0 <= y && y < 4);
             return new Quad2((ushort)(cells & ~masks[x + y * 4])); 
         }
+
+        public override string ToString()
+        {
+            string s = "";
+            for (int y = 3; y >= 0; y -= 1)
+            {
+                for (int x = 0; x < 4; x += 1)
+                    s += this.Get(x, y) ? 'O' : '.';
+                s += "\n";
+            }
+            return s;
+        }
+
     }
 }

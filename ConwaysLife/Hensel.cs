@@ -109,8 +109,6 @@ namespace ConwaysLife.Hensel
                 if (!previousCorrect)
                     c.SetOddQuad4AllRegionsActive();
             }
-            generation++;
-            previousCorrect = true;
         }
 
         private void StepOdd()
