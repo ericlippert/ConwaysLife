@@ -1161,13 +1161,14 @@
             StepOddSEQuad3();
         }
 
+        public bool StayActive { get; set; }
+
         private uint listFlags;
 
         // 15 Even quad4 is ready to go into dead list
         // 14 Even quad4 is ready to go into stable list
         // 13 Odd quad4 is ready to go into dead list
         // 12 Odd quad4 is ready to go into stable list
-        // 11 This quad4 needs to become active or stay active
 
         //  2 This quad4 is on the stable list
         //  1 This quad4 is on the dead list
@@ -1179,26 +1180,20 @@
         private const uint evenReadyStableMask = 1 << 14;
         private const uint oddReadyDeadMask = 3 << 12;
         private const uint oddReadyStableMask = 1 << 12;
-        private const uint stayActiveMask = 1 << 11;
         private const uint readyMask = evenReadyDeadMask | oddReadyDeadMask;
         private const uint readyStableMask = evenReadyStableMask | oddReadyStableMask;
         private const uint onStableMask = 1 << 2;
         private const uint onDeadMask = 1 << 1;
 
-        private void ClearReadyBits() => listFlags &= ~(readyMask | stayActiveMask);
+        private void ClearReadyBits() => listFlags &= ~readyMask;
 
         public void SetEvenReadyForDeadList() => listFlags |= (evenReadyDeadMask | evenReadyStableMask);
         public void SetOddReadyForDeadList() => listFlags |= (oddReadyDeadMask | oddReadyStableMask);
-        // Both even and odd are stable, dead, and we're not trying to keep this quad4 active.
-        public bool BothReadyForDeadList => (listFlags & (readyMask | stayActiveMask)) == readyMask;
+        public bool BothReadyForDeadList => (listFlags & readyMask) == readyMask;
 
         public void SetEvenReadyForStableList() => listFlags |= evenReadyStableMask;
         public void SetOddReadyForStableList() => listFlags |= oddReadyStableMask;
-        // Both even and odd are stable and we're not trying to keep this quad4 active.
-        public bool BothReadyForStableList => (listFlags & (readyStableMask | stayActiveMask)) == readyStableMask;
-
-        public void ClearStayActive() => listFlags &= ~stayActiveMask;
-        public void SetStayActive() => listFlags |= stayActiveMask;
+        public bool BothReadyForStableList => (listFlags & readyStableMask) == readyStableMask;
 
         public bool OnActiveList => (listFlags & (onDeadMask | onStableMask)) == 0;
         public bool OnDeadList => (listFlags & onDeadMask) != 0;
