@@ -3,6 +3,14 @@
     using System.Diagnostics;
     using static HenselLookup;
     using static Quad2;
+    using static QuadState;
+
+    enum QuadState
+    {
+        Active,
+        Stable,
+        Dead
+    }
 
     sealed class Quad4 : IDoubleLink<Quad4>
     {
@@ -229,8 +237,8 @@
 
         // Active
 
-        public void SetEvenQuad4AllRegionsActive() => evenstate = 0x00000000;
-        public void SetOddQuad4AllRegionsActive() => oddstate = 0x00000000;
+        private void SetEvenQuad4AllRegionsActive() => evenstate = 0x00000000;
+        private void SetOddQuad4AllRegionsActive() => oddstate = 0x00000000;
 
         private void SetEvenNWAllRegionsActive() => evenstate &= 0x00ffffff;
         private void SetEvenSWAllRegionsActive() => evenstate &= 0xff00ffff;
@@ -1170,9 +1178,6 @@
         // 13 Odd quad4 is ready to go into dead list
         // 12 Odd quad4 is ready to go into stable list
 
-        //  2 This quad4 is on the stable list
-        //  1 This quad4 is on the dead list
-
         // When both even and odd are ready to go to the dead list or stable list, 
         // and the "stay active" bit is off, they do so.
 
@@ -1182,8 +1187,6 @@
         private const uint oddReadyStableMask = 1 << 12;
         private const uint readyMask = evenReadyDeadMask | oddReadyDeadMask;
         private const uint readyStableMask = evenReadyStableMask | oddReadyStableMask;
-        private const uint onStableMask = 1 << 2;
-        private const uint onDeadMask = 1 << 1;
 
         private void ClearReadyBits() => listFlags &= ~readyMask;
 
@@ -1195,18 +1198,19 @@
         public void SetOddReadyForStableList() => listFlags |= oddReadyStableMask;
         public bool BothReadyForStableList => (listFlags & readyStableMask) == readyStableMask;
 
-        public bool OnActiveList => (listFlags & (onDeadMask | onStableMask)) == 0;
-        public bool OnDeadList => (listFlags & onDeadMask) != 0;
-        public bool OnStableList => (listFlags & onStableMask) != 0;
-
-        public void SetOnDeadList() => listFlags |= onDeadMask;
-        public void SetOnStableList() => listFlags |= onStableMask;
-
-        public void BecomeActive()
-        {
-            listFlags &= ~(onDeadMask | onStableMask | readyMask);
-            SetEvenQuad4AllRegionsActive();
-            SetOddQuad4AllRegionsActive();
+        private QuadState state; 
+        public QuadState State { 
+            get => state; 
+            set
+            {
+                if (value == Active)
+                {
+                    ClearReadyBits();
+                    SetEvenQuad4AllRegionsActive();
+                    SetOddQuad4AllRegionsActive();
+                }
+                state = value;
+            }
         }
 
         public bool GetEven(int x, int y)

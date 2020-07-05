@@ -5,6 +5,8 @@ using static System.Math;
 
 namespace ConwaysLife.Hensel
 {
+    using static QuadState;
+
     sealed class QuickLife : ILife, IReport
     {
         // A C# implementation of Alan Hensel's QuickLife algorithm,
@@ -246,31 +248,31 @@ namespace ConwaysLife.Hensel
 
         private void MakeDead(Quad4 c)
         {
-            Debug.Assert(c.OnActiveList);
+            Debug.Assert(c.State == Active);
             active.Remove(c);
             dead.Add(c);
-            c.SetOnDeadList();
+            c.State = Dead;
         }
 
         private void MakeStable(Quad4 c)
         {
-            Debug.Assert(c.OnActiveList);
+            Debug.Assert(c.State == Active);
             active.Remove(c);
             stable.Add(c);
-            c.SetOnStableList();
+            c.State = Stable;
         }
 
         private void MakeActive(Quad4 c)
         {
             c.StayActive = true;
-            if (c.OnActiveList) 
+            if (c.State == Active) 
                 return;
-            else if (c.OnDeadList)
+            else if (c.State == Dead)
                 dead.Remove(c);
             else
                 stable.Remove(c);
             active.Add(c);
-            c.BecomeActive();
+            c.State = Active;
         }
 
         const int maximum = short.MaxValue;
@@ -299,8 +301,7 @@ namespace ConwaysLife.Hensel
                     return false;
 
                 Quad4 q = GetQuad4((int)(x >> 4), (int)(y >> 4));
-
-                if (q == null || q.OnDeadList)
+                if (q == null || q.State == Dead)
                     return false;
 
                 if (IsOdd)
@@ -371,7 +372,7 @@ namespace ConwaysLife.Hensel
                 for (long x = xmin - 1; x <= xmax; x += 1)
                 {
                     Quad4 q = GetQuad4((int)x, (int)y);
-                    if (q == null || q.OnDeadList)
+                    if (q == null || q.State == Dead)
                         continue;
                     for (long oy = omin; oy < omax; oy += 1)
                     {
@@ -397,30 +398,3 @@ namespace ConwaysLife.Hensel
             $"gen {generation}\n{active.Count} active\n{stable.Count} stable\n{dead.Count} dead\n";
     }
 }
-
-#if false
-
-digraph G {
-  none_no_a->esd_no_a[label="ed&\nend"]
-  none_no_a->osd_no_a[label="od&\nond"]
-
-  none_no_a->es_no_a[label="e(s|d)&\nen(s|d)"]
-  none_no_a->os_no_a[label="o(s|d)&\non(s|d)"]
-
-  esd_no_a->none_no_a[label="ona"]
-  osd_no_a->none_no_a[label="ena"]
-
-  es_no_a->none_no_a[label="ona"]
-  os_no_a->none_no_a[label="ena"]
-
-  esd_no_a->esd_os_no_s[label="ons"]
-  osd_no_a->es_osd_no_s[label="ens"]
-
-  esd_no_a->esd_osd_no_d[label="ond"]
-  osd_no_a->esd_osd_no_d[label="end"]
-
-  es_no_a->es_os_no_s[label="on(s|d)"]
-  os_no_a->es_os_no_s[label="en(s|d)"]
-}
-
-#endif
