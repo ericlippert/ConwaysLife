@@ -1084,7 +1084,6 @@
 
         public void StepEvenQuad4()
         {
-            ClearReadyBits();
             StepEvenNWQuad3();
             StepEvenSWQuad3();
             StepEvenNEQuad3();
@@ -1162,41 +1161,13 @@
 
         public void StepOddQuad4()
         {
-            ClearReadyBits();
             StepOddNWQuad3();
             StepOddSWQuad3();
             StepOddNEQuad3();
             StepOddSEQuad3();
         }
 
-        public bool StayActive { get; set; }
-
-        private uint listFlags;
-
-        // 15 Even quad4 is ready to go into dead list
-        // 14 Even quad4 is ready to go into stable list
-        // 13 Odd quad4 is ready to go into dead list
-        // 12 Odd quad4 is ready to go into stable list
-
-        // When both even and odd are ready to go to the dead list or stable list, 
-        // and the "stay active" bit is off, they do so.
-
-        private const uint evenReadyDeadMask = 3 << 14;
-        private const uint evenReadyStableMask = 1 << 14;
-        private const uint oddReadyDeadMask = 3 << 12;
-        private const uint oddReadyStableMask = 1 << 12;
-        private const uint readyMask = evenReadyDeadMask | oddReadyDeadMask;
-        private const uint readyStableMask = evenReadyStableMask | oddReadyStableMask;
-
-        private void ClearReadyBits() => listFlags &= ~readyMask;
-
-        public void SetEvenReadyForDeadList() => listFlags |= (evenReadyDeadMask | evenReadyStableMask);
-        public void SetOddReadyForDeadList() => listFlags |= (oddReadyDeadMask | oddReadyStableMask);
-        public bool BothReadyForDeadList => (listFlags & readyMask) == readyMask;
-
-        public void SetEvenReadyForStableList() => listFlags |= evenReadyStableMask;
-        public void SetOddReadyForStableList() => listFlags |= oddReadyStableMask;
-        public bool BothReadyForStableList => (listFlags & readyStableMask) == readyStableMask;
+        public bool StayActiveNextStep { get; set; }
 
         private QuadState state; 
         public QuadState State { 
@@ -1205,13 +1176,16 @@
             {
                 if (value == Active)
                 {
-                    ClearReadyBits();
+                    EvenState = Active;
+                    OddState = Active;
                     SetEvenQuad4AllRegionsActive();
                     SetOddQuad4AllRegionsActive();
                 }
                 state = value;
             }
         }
+        public QuadState EvenState { get; set; }
+        public QuadState OddState { get; set; }
 
         public bool GetEven(int x, int y)
         {

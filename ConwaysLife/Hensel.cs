@@ -145,57 +145,56 @@ namespace ConwaysLife.Hensel
         {
             if (c.EvenQuad4OrNeighborsActive)
             {
-                // TODO: Move the ClearReadyBits call inside quad4 to here.
-                // It is a concern of this class.
-                c.StayActive = false;
+                c.EvenState = Active;
+                c.OddState = Active;
+                c.StayActiveNextStep = false;
                 return false;
             }
 
             if (c.EvenQuad4AndNeighborsAreDead)
             { 
-                c.SetEvenReadyForDeadList();
+                c.EvenState = Dead;
                 c.SetOddQuad4AllRegionsDead();
-                if (!c.StayActive && c.BothReadyForDeadList)
+                if (!c.StayActiveNextStep && c.OddState == Dead)
                     MakeDead(c);
             }
             else
             {
-                c.SetEvenReadyForStableList();
+                c.EvenState = Stable;
                 c.SetOddQuad4AllRegionsInactive();
-                if (!c.StayActive && c.BothReadyForStableList)
+                if (!c.StayActiveNextStep && c.OddState != Active)
                     MakeStable(c);
             }
-            c.StayActive = false;
+            c.StayActiveNextStep = false;
             return true;
         }
 
         // Similar to above.
         private bool RemoveInactiveOddQuad4(Quad4 c)
         {
-            // TODO: Move the ClearReadyBits call inside quad4 to here.
-            // It is a concern of this class.
-
             if (c.OddQuad4OrNeighborsActive)
             {
-                c.StayActive = false;
+                c.EvenState = Active;
+                c.OddState = Active;
+                c.StayActiveNextStep = false;
                 return false;
             }
 
             if (c.OddQuad4AndNeighborsAreDead)
             {
-                c.SetOddReadyForDeadList();
+                c.OddState = Dead;
                 c.SetEvenQuad4AllRegionsDead();
-                if (!c.StayActive && c.BothReadyForDeadList)
+                if (!c.StayActiveNextStep && c.EvenState == Dead)
                     MakeDead(c);
             }
             else
             {
-                c.SetOddReadyForStableList();
+                c.OddState = Stable;
                 c.SetEvenQuad4AllRegionsInactive();
-                if (!c.StayActive && c.BothReadyForStableList)
+                if (!c.StayActiveNextStep && c.EvenState != Active)
                     MakeStable(c);
             }
-            c.StayActive = false;
+            c.StayActiveNextStep = false;
             return true;
         }
 
@@ -264,7 +263,7 @@ namespace ConwaysLife.Hensel
 
         private void MakeActive(Quad4 c)
         {
-            c.StayActive = true;
+            c.StayActiveNextStep = true;
             if (c.State == Active) 
                 return;
             else if (c.State == Dead)
