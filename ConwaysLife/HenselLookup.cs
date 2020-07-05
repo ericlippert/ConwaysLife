@@ -62,8 +62,59 @@
             // it needs, but this avoids rather a lot of bit shifting and masking in the 
             // inner loop.
             //
-            // TODO: Add a correct explanation here.
-
+            // Let's just consider the "even" lookup table first.
+            //
+            // Each entry in the lookup table is keyed on the 16 bits in a quad2, and
+            // it returns a quad2. Now, you might think that the returned quad2 would
+            // be the center four cells stepped one tick ahead, and the outer edge zero,
+            // but that's not the case at all.
+            //
+            // Rather, the northwest quad1 of the returned quad2 is the center of the key
+            // quad2 stepped one tick ahead. 
+            //
+            // What's in the other three quad1s of the output?
+            //
+            // The northeast quad1 gives the answer to the question "suppose we mirror-
+            // reflected the input quad2 **at the level of its component quad1s** and then
+            // stepped that one tick ahead".
+            //
+            // Let's work an example. Suppose the key quad2 is:
+            //
+            //  .. ..
+            //  O. .O
+            //  .. .O
+            //  .. ..
+            //
+            // If we stepped the center one ahead, we'd get an empty quad1. So evenLookup[key]'s northwest corner is empty.
+            //
+            // The mirror reflection of that quad2 is:
+            //  .. ..
+            //  .O O.
+            //  .O ..
+            //  .. ..
+            //
+            // Remember, we're not reflecting the cells, we're reflecting the quad1s, swapping the east 2x4 region with
+            // the west 2x4 region. 
+            //
+            // If we move the center of that ahead one tick we get an all-alive quad1. evenLookup[key]'s northeast corner
+            // is all alive.
+            //
+            // Similarly the southwest corner answers the question "what if we flipped the key quad2 top-bottom?" and
+            // the southeast corner answers "what if we flipped it both ways?"
+            //
+            // Summing up:
+            //
+            // evenLookup[key].NW is center of key stepped one.
+            // evenLookup[key].NE is center of key.Mirror stepped one.
+            // evenLookup[key].SW is center of key.Flip stepped one.
+            // evenLookup[key].SE is center of key.Mirror.Flip stepped one.
+            //
+            // The odd lookup table is almost the same:
+            //
+            // oddLookup[key].NW is center of key.Mirror.Flip stepped one.
+            // oddLookup[key].NE is center of key.Flip stepped one.
+            // oddLookup[key].SW is center of key.Mirror stepped one.
+            // oddLookup[key].SE is center of key stepped one.
 
             for (int i = 0; i <= 0xffff; i += 1)
             {                
@@ -154,7 +205,6 @@ Given the nine quad2s shown, the next step of the shaded region is returned:
             return r;
         }
 
-
         /*
 Given the nine quad2s shown, the next step of the shaded region is returned:
         nw    n     ne
@@ -221,6 +271,5 @@ Given the nine quad2s shown, the next step of the shaded region is returned:
             var r = new Quad3(new_nw, new_ne, new_sw, new_se);
             return r;
         }
-
     }
 }
