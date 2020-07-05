@@ -136,12 +136,14 @@ namespace ConwaysLife.Hensel
         // If the quad4 cannot be removed because either the
         // even quad4 is active, or a neighboring edge is active,
         // this returns false; if it successfully make the quad4
-        // dead or inactive, it returns true and the quad4 should
+        // dead or stable, it returns true and the quad4 should
         // not be processed further.
 
         private bool RemoveInactiveEvenQuad4(Quad4 c)
         {
             if (c.EvenQuad4OrNeighborsActive)
+                // TODO: Move the ClearReadyBits call inside quad4 to here.
+                // It is a concern of this class.
                 return false;
 
             if (c.EvenQuad4AndNeighborsAreDead)
@@ -153,8 +155,8 @@ namespace ConwaysLife.Hensel
             }
             else
             {
-                c.SetEvenReadyForInactiveList();
-                if (c.BothReadyForInactiveList)
+                c.SetEvenReadyForStableList();
+                if (c.BothReadyForStableList)
                     MakeStable(c);
                 c.SetOddQuad4AllRegionsInactive();
             }
@@ -165,6 +167,9 @@ namespace ConwaysLife.Hensel
         // Similar to above.
         private bool RemoveInactiveOddQuad4(Quad4 c)
         {
+            // TODO: Move the ClearReadyBits call inside quad4 to here.
+            // It is a concern of this class.
+
             if (c.OddQuad4OrNeighborsActive)
                 return false;
 
@@ -177,8 +182,8 @@ namespace ConwaysLife.Hensel
             }
             else
             {
-                c.SetOddReadyForInactiveList();
-                if (c.BothReadyForInactiveList)
+                c.SetOddReadyForStableList();
+                if (c.BothReadyForStableList)
                     MakeStable(c);
                 c.SetEvenQuad4AllRegionsInactive();
             }
@@ -307,8 +312,6 @@ namespace ConwaysLife.Hensel
                 if (!IsValidPoint(x, y))
                     return;
 
-                // previousCorrect = false;
-
                 Quad4 q = EnsureActive(GetQuad4((int)(x >> 4), (int)(y >> 4)), (int)(x >> 4), (int)(y >> 4));
 
                 if (IsOdd)
@@ -345,7 +348,6 @@ namespace ConwaysLife.Hensel
                 StepEven();                
 
             generation++;
-            // previousCorrect = true;
         }
 
         public void Draw(LifeRect rect, Action<LifePoint> setPixel)
@@ -389,3 +391,30 @@ namespace ConwaysLife.Hensel
             $"gen {generation}\n{active.Count} active\n{stable.Count} stable\n{dead.Count} dead\n";
     }
 }
+
+#if false
+
+digraph G {
+  none_no_a->esd_no_a[label="ed&\nend"]
+  none_no_a->osd_no_a[label="od&\nond"]
+
+  none_no_a->es_no_a[label="e(s|d)&\nen(s|d)"]
+  none_no_a->os_no_a[label="o(s|d)&\non(s|d)"]
+
+  esd_no_a->none_no_a[label="ona"]
+  osd_no_a->none_no_a[label="ena"]
+
+  es_no_a->none_no_a[label="ona"]
+  os_no_a->none_no_a[label="ena"]
+
+  esd_no_a->esd_os_no_s[label="ons"]
+  osd_no_a->es_osd_no_s[label="ens"]
+
+  esd_no_a->esd_osd_no_d[label="ond"]
+  osd_no_a->esd_osd_no_d[label="end"]
+
+  es_no_a->es_os_no_s[label="on(s|d)"]
+  os_no_a->es_os_no_s[label="en(s|d)"]
+}
+
+#endif

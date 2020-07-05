@@ -1192,10 +1192,10 @@
         // Both even and odd are stable, dead, and we're not trying to keep this quad4 active.
         public bool BothReadyForDeadList => (listFlags & (readyMask | stayActiveMask)) == readyMask;
 
-        public void SetEvenReadyForInactiveList() => listFlags |= evenReadyStableMask;
-        public void SetOddReadyForInactiveList() => listFlags |= oddReadyStableMask;
+        public void SetEvenReadyForStableList() => listFlags |= evenReadyStableMask;
+        public void SetOddReadyForStableList() => listFlags |= oddReadyStableMask;
         // Both even and odd are stable and we're not trying to keep this quad4 active.
-        public bool BothReadyForInactiveList => (listFlags & (readyStableMask | stayActiveMask)) == readyStableMask;
+        public bool BothReadyForStableList => (listFlags & (readyStableMask | stayActiveMask)) == readyStableMask;
 
         public void ClearStayActive() => listFlags &= ~stayActiveMask;
         public void SetStayActive() => listFlags |= stayActiveMask;
