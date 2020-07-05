@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace ConwaysLife.Hensel
+﻿namespace ConwaysLife.Hensel
 {
     static class HenselLookup
     {

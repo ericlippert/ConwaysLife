@@ -1,9 +1,59 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ConwaysLife.Hensel
 {
+    sealed class Quad4List : IEnumerable<Quad4>
+    {
+        private Quad4 head = null;
+        public int Count { get; private set; }
+
+        public void Add(Quad4 q)
+        {
+            q.Prev = null;
+            q.Next = head;
+            if (head != null)
+                head.Prev = q;
+            head = q;
+            Count += 1;
+        }
+
+        public void Remove(Quad4 q)
+        {
+            if (q.Prev == null)
+                head = q.Next;
+            else
+                q.Prev.Next = q.Next;
+            if (q.Next != null)
+                q.Next.Prev = q.Prev;
+            Count -= 1;
+        }
+
+        public void Clear()
+        {
+            head = null;
+            Count = 0;
+        }
+
+        public IEnumerator<Quad4> GetEnumerator()
+        {
+            // The quad might be removed from the current list during the enumeration,
+            // so cache the next link so we always know where to pick up when we execute
+            // the continuation of the yield.
+            Quad4 next; 
+            for (Quad4 q = head; q != null; q = next)
+            {
+                next = q.Next;
+                yield return q;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() =>
+            this.GetEnumerator();
+    }
+
     sealed class QuickLife : ILife
     {
         // A C# implementation of Alan Hensel's QuickLife algorithm,
@@ -51,13 +101,9 @@ namespace ConwaysLife.Hensel
         // * Quad4s that stay on the dead list are eventually deallocated.
         //
 
-        private Quad4 active;
-        private Quad4 stable;
-        private Quad4 dead;
-
-        private int activeCount;
-        private int stableCount;
-        private int deadCount;
+        private Quad4List active = new Quad4List();
+        private Quad4List stable = new Quad4List();
+        private Quad4List dead = new Quad4List();
 
         private Dictionary<(short, short), Quad4> quad4s;
 
@@ -68,8 +114,7 @@ namespace ConwaysLife.Hensel
 
         private Quad4 GetQuad4(int x, int y)
         {
-            Quad4 q = null;
-            quad4s.TryGetValue(((short)x, (short)y), out q);
+            quad4s.TryGetValue(((short)x, (short)y), out var q);
             return q;
         }
 
@@ -84,12 +129,9 @@ namespace ConwaysLife.Hensel
         {
             generation = 0;
             previousCorrect = false;
-            active = null;
-            stable = null;
-            dead = null;
-            activeCount = 0;
-            stableCount = 0;
-            deadCount = 0;
+            active.Clear();
+            stable.Clear();
+            dead.Clear();
             quad4s = new Dictionary<(short, short), Quad4>();
         }
 
@@ -106,12 +148,8 @@ namespace ConwaysLife.Hensel
       
         private void StepEven()
         {
-            Quad4 nextActive;
-            for (Quad4 c = active; c != null; c = nextActive)
+            foreach (Quad4 c in active)
             {
-                // The cell might go inactive, so we need to cache the next
-                // item in the list.
-                nextActive = c.Next;
                 StepEvenQuad4(c);
                 if (!previousCorrect)
                     c.SetOddQuad4AllRegionsActive();
@@ -120,12 +158,8 @@ namespace ConwaysLife.Hensel
 
         private void StepOdd()
         {
-            Quad4 nextActive;
-            for (Quad4 c = active; c != null; c = nextActive)
+            foreach (Quad4 c in active)
             {
-                // The cell might go inactive, so we need to cache the next
-                // item in the list.
-                nextActive = c.Next;
                 StepOddQuad4(c);
                 if (!previousCorrect)
                     c.SetEvenQuad4AllRegionsActive();
@@ -224,10 +258,8 @@ namespace ConwaysLife.Hensel
 
         private void RemoveDead()
         {
-            while (dead != null)
+            foreach(Quad4 current in dead)
             {
-                Quad4 current = dead;
-                dead = dead.Next;
                 if (current.S != null) 
                     current.S.N = null;
                 if (current.E != null) 
@@ -242,70 +274,7 @@ namespace ConwaysLife.Hensel
                     current.NW.SE = null;
                 quad4s.Remove((current.X, current.Y));
             }
-            deadCount = 0;
-        }
-
-        private void AddToActive(Quad4 c)
-        {
-            c.Prev = null;
-            c.Next = active;
-            if (active != null)
-                active.Prev = c;
-            active = c;
-            activeCount += 1;
-        }
-
-        private void RemoveFromActive(Quad4 c)
-        {
-            if (c.Prev == null)
-                active = c.Next;
-            else
-                c.Prev.Next = c.Next;
-            if (c.Next != null)
-                c.Next.Prev = c.Prev;
-            activeCount -= 1;
-        }
-
-        private void AddToDead(Quad4 c)
-        {
-            c.Prev = null;
-            c.Next = dead;            
-            if (dead != null)
-                dead.Prev = c;
-            dead = c;
-            deadCount += 1;
-        }
-
-        private void RemoveFromDead(Quad4 c)
-        {
-            if (c.Prev == null)
-                dead = c.Next;
-            else
-                c.Prev.Next = c.Next;
-            if (c.Next != null)
-                c.Next.Prev = c.Prev;
-            deadCount -= 1;
-        }
-
-        private void AddToStable(Quad4 c)
-        {
-            c.Prev = null;
-            c.Next = stable;
-            if (stable != null)
-                stable.Prev = c;
-            stable = c;
-            stableCount += 1;
-        }
-
-        private void RemoveFromStable(Quad4 c)
-        {
-            if (c.Prev == null)
-                stable = c.Next;
-            else
-                c.Prev.Next = c.Next;
-            if (c.Next != null)
-                c.Next.Prev = c.Prev;
-            stableCount -= 1;
+            dead.Clear();
         }
 
         private Quad4 AllocateQuad4(int x, int y)
@@ -329,25 +298,25 @@ namespace ConwaysLife.Hensel
             c.NW = GetQuad4(x - 1, y + 1);
             if (c.NW != null) 
                 c.NW.SE = c;
-            AddToActive(c);
+            active.Add(c);
             SetQuad4(x, y, c);
             return c;
         }
 
         private void MakeDead(Quad4 c)
         {
-            Debug.Assert(c.OnActiveList);                        
-            RemoveFromActive(c);
-            AddToDead(c);
-            c.SetOnDeadList(); // TODO: Move to AddToDead
+            Debug.Assert(c.OnActiveList);
+            active.Remove(c);
+            dead.Add(c);
+            c.SetOnDeadList();
         }
 
         private void MakeStable(Quad4 c)
         {
             Debug.Assert(c.OnActiveList);
-            RemoveFromActive(c);
-            AddToStable(c);
-            c.SetOnStableList(); // TODO: Move to AddToStable
+            active.Remove(c);
+            stable.Add(c);
+            c.SetOnStableList();
         }
 
         private void MakeActive(Quad4 c)
@@ -355,13 +324,12 @@ namespace ConwaysLife.Hensel
             c.SetStayActive();
             if (c.OnActiveList) 
                 return;
-
-            if (c.OnDeadList)
-                RemoveFromDead(c);
+            else if (c.OnDeadList)
+                dead.Remove(c);
             else
-                RemoveFromStable(c);
-            AddToActive(c);
-            c.BecomeActive(); // TODO: Move to AddToActive
+                stable.Remove(c);
+            active.Add(c);
+            c.BecomeActive();
         }
 
         const int maximum = short.MaxValue;
@@ -434,14 +402,12 @@ namespace ConwaysLife.Hensel
 
         private bool IsOdd => (generation & 0x1) != 0;
 
-        // TODO: Can we come up with a better policy than this? Maybe count size of dead list?
-        private bool ShouldRemoveDead => (generation & 0x7f) == 0;
+        private bool ShouldRemoveDead => (generation & 0x7f) == 0 && dead.Count > 100;
 
         public void Step()
         {
             // TODO: Stable list can have dead quad4s on it; this looks like a bug.
             // TODO: Come back to this after stepping is correct.
-            // TODO: Track size of active, stable and dead lists.
             if (ShouldRemoveDead) 
                 RemoveDead();
 

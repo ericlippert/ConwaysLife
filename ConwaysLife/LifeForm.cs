@@ -19,7 +19,7 @@ namespace ConwaysLife
         private Pen gridPen;
         private ILife life;
         private IPattern pattern;
-        private bool running = false;
+        private bool running = true;
         private bool dragging = false;
         private LifePoint dragStart;
         private OpenFileDialog fileDialog;
@@ -72,7 +72,7 @@ namespace ConwaysLife
         // event. If the speed is higher than 5 then we will calculate two to the 
         // speed - 5 ticks per timer event, and keep the timer at 30ms.
 
-        private const int defaultSpeed = 0;  // 32 ticks per second
+        private const int defaultSpeed = 5;  // 32 ticks per second
         private const int maximumTimerSpeed = 5;
         private const int maximumSpeed = 15; // 32K ticks per second
         private int speed = defaultSpeed;
@@ -187,10 +187,9 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            pattern = GliderGun;
+            pattern = Acorn;
             Reset();
-            if (running)
-                StartRunning();
+            StartRunning();
         }
 
         private void Reset()
@@ -425,8 +424,9 @@ namespace ConwaysLife
                     //PerfTest(new StaffordChangeList());
                     //PerfTest(new StaffordLookup());
                     PerfTest(new Stafford());
-                    PerfTest(new SparseArray());
-                    
+                    PerfTest(new QuickLife());
+                    // PerfTest(new SparseArray());
+
                     //// Run this one twice!
                     //PerfTest(new GosperSlow());
                     //PerfTest(new GosperSlow());
