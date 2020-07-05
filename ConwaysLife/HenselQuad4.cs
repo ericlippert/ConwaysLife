@@ -4,7 +4,7 @@
     using static HenselLookup;
     using static Quad2;
 
-    sealed class Quad4
+    sealed class Quad4 : IDoubleLink<Quad4>
     {
         // A quad4 represents a 16 x 16 grid located at coordinates (x * 16, y * 16).
         //
@@ -25,8 +25,8 @@
         // * Exactly one of the dead, stable and active lists; this is the Next and Prev references.
         // * The N/S, E/W and NW/SE references are a doubly-linked list to neighboring quad4s.
 
-        public Quad4 Next { get; set; }
-        public Quad4 Prev { get; set; }
+        Quad4 IDoubleLink<Quad4>.Next { get; set; }
+        Quad4 IDoubleLink<Quad4>.Prev { get; set; }
 
         public Quad4 S { get; set; }
         public Quad4 E { get; set; }

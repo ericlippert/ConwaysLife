@@ -1,14 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace ConwaysLife.Hensel
+namespace ConwaysLife
 {
-    sealed class Quad4List : IEnumerable<Quad4>
+    interface IDoubleLink<T> where T : class, IDoubleLink<T>
     {
-        private Quad4 head = null;
+        T Prev { get; set; }
+        T Next { get; set; }
+    }
+
+    sealed class DoubleLinkList<T> : IEnumerable<T> where T : class, IDoubleLink<T>
+    {
+        private T head = null;
         public int Count { get; private set; }
 
-        public void Add(Quad4 q)
+        public void Add(T q)
         {
             q.Prev = null;
             q.Next = head;
@@ -18,7 +24,7 @@ namespace ConwaysLife.Hensel
             Count += 1;
         }
 
-        public void Remove(Quad4 q)
+        public void Remove(T q)
         {
             if (q.Prev == null)
                 head = q.Next;
@@ -35,13 +41,13 @@ namespace ConwaysLife.Hensel
             Count = 0;
         }
 
-        public IEnumerator<Quad4> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
-            // The quad might be removed from the current list during the enumeration,
+            // The item might be removed from the current list during the enumeration,
             // so cache the next link so we always know where to pick up when we execute
             // the continuation of the yield.
-            Quad4 next;
-            for (Quad4 q = head; q != null; q = next)
+            T next;
+            for (T q = head; q != null; q = next)
             {
                 next = q.Next;
                 yield return q;

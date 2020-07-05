@@ -52,9 +52,9 @@ namespace ConwaysLife.Hensel
         // * Quad4s that stay on the dead list are eventually deallocated.
         //
 
-        private readonly Quad4List active = new Quad4List();
-        private readonly Quad4List stable = new Quad4List();
-        private readonly Quad4List dead = new Quad4List();
+        private readonly DoubleLinkList<Quad4> active = new DoubleLinkList<Quad4>();
+        private readonly DoubleLinkList<Quad4> stable = new DoubleLinkList<Quad4>();
+        private readonly DoubleLinkList<Quad4> dead = new DoubleLinkList<Quad4>();
         private Dictionary<(short, short), Quad4> quad4s;
         private int generation;
 
