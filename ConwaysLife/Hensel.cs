@@ -55,6 +55,10 @@ namespace ConwaysLife.Hensel
         private Quad4 stable;
         private Quad4 dead;
 
+        private int activeCount;
+        private int stableCount;
+        private int deadCount;
+
         private Dictionary<(short, short), Quad4> quad4s;
 
         // If we're on the even cycle, do we know that the odd state is correct? 
@@ -83,6 +87,9 @@ namespace ConwaysLife.Hensel
             active = null;
             stable = null;
             dead = null;
+            activeCount = 0;
+            stableCount = 0;
+            deadCount = 0;
             quad4s = new Dictionary<(short, short), Quad4>();
         }
 
@@ -235,6 +242,70 @@ namespace ConwaysLife.Hensel
                     current.NW.SE = null;
                 quad4s.Remove((current.X, current.Y));
             }
+            deadCount = 0;
+        }
+
+        private void AddToActive(Quad4 c)
+        {
+            c.Prev = null;
+            c.Next = active;
+            if (active != null)
+                active.Prev = c;
+            active = c;
+            activeCount += 1;
+        }
+
+        private void RemoveFromActive(Quad4 c)
+        {
+            if (c.Prev == null)
+                active = c.Next;
+            else
+                c.Prev.Next = c.Next;
+            if (c.Next != null)
+                c.Next.Prev = c.Prev;
+            activeCount -= 1;
+        }
+
+        private void AddToDead(Quad4 c)
+        {
+            c.Prev = null;
+            c.Next = dead;            
+            if (dead != null)
+                dead.Prev = c;
+            dead = c;
+            deadCount += 1;
+        }
+
+        private void RemoveFromDead(Quad4 c)
+        {
+            if (c.Prev == null)
+                dead = c.Next;
+            else
+                c.Prev.Next = c.Next;
+            if (c.Next != null)
+                c.Next.Prev = c.Prev;
+            deadCount -= 1;
+        }
+
+        private void AddToStable(Quad4 c)
+        {
+            c.Prev = null;
+            c.Next = stable;
+            if (stable != null)
+                stable.Prev = c;
+            stable = c;
+            stableCount += 1;
+        }
+
+        private void RemoveFromStable(Quad4 c)
+        {
+            if (c.Prev == null)
+                stable = c.Next;
+            else
+                c.Prev.Next = c.Next;
+            if (c.Next != null)
+                c.Next.Prev = c.Prev;
+            stableCount -= 1;
         }
 
         private Quad4 AllocateQuad4(int x, int y)
@@ -258,50 +329,25 @@ namespace ConwaysLife.Hensel
             c.NW = GetQuad4(x - 1, y + 1);
             if (c.NW != null) 
                 c.NW.SE = c;
-            c.Next = active;
-            if (active != null) 
-                active.Prev = c;
-            active = c;
+            AddToActive(c);
             SetQuad4(x, y, c);
             return c;
         }
 
         private void MakeDead(Quad4 c)
         {
-            Debug.Assert(c.OnActiveList);
-            
-            c.SetOnDeadList();
-
-            if (c.Prev == null) 
-                active = c.Next;
-            else 
-                c.Prev.Next = c.Next;
-            if (c.Next != null) 
-                c.Next.Prev = c.Prev;
-
-            c.Next = dead;
-            c.Prev = null;
-            if (dead != null) 
-                dead.Prev = c;
-            dead = c;
+            Debug.Assert(c.OnActiveList);                        
+            RemoveFromActive(c);
+            AddToDead(c);
+            c.SetOnDeadList(); // TODO: Move to AddToDead
         }
 
         private void MakeStable(Quad4 c)
         {
             Debug.Assert(c.OnActiveList);
-
-            c.SetOnStableList();
-            if (c.Prev == null) 
-                active = c.Next;
-            else 
-                c.Prev.Next = c.Next;
-            if (c.Next != null) 
-                c.Next.Prev = c.Prev;
-            c.Next = stable;
-            c.Prev = null;
-            if (stable != null) 
-                stable.Prev = c;
-            stable = c;
+            RemoveFromActive(c);
+            AddToStable(c);
+            c.SetOnStableList(); // TODO: Move to AddToStable
         }
 
         private void MakeActive(Quad4 c)
@@ -311,31 +357,11 @@ namespace ConwaysLife.Hensel
                 return;
 
             if (c.OnDeadList)
-            {
-                if (c.Prev == null) 
-                    dead = c.Next;
-                else 
-                    c.Prev.Next = c.Next;
-                if (c.Next != null) 
-                    c.Next.Prev = c.Prev;
-            }
+                RemoveFromDead(c);
             else
-            {
-                if (c.Prev == null) 
-                    stable = c.Next;
-                else 
-                    c.Prev.Next = c.Next;
-                if (c.Next != null) 
-                    c.Next.Prev = c.Prev;
-            }
-
-            c.Next = active;
-            c.Prev = null;
-            if (active != null) 
-                active.Prev = c;
-            active = c;
-
-            c.BecomeActive();
+                RemoveFromStable(c);
+            AddToActive(c);
+            c.BecomeActive(); // TODO: Move to AddToActive
         }
 
         const int maximum = short.MaxValue;
