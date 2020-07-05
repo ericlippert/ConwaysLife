@@ -187,7 +187,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            pattern = Acorn;
+            pattern = FourPuffer2s;
             Reset();
             StartRunning();
         }

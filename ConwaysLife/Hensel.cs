@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using static System.Math;
 
 namespace ConwaysLife.Hensel
 {
@@ -356,8 +357,6 @@ namespace ConwaysLife.Hensel
 
         public void Step()
         {
-            // TODO: Stable list can have dead quad4s on it; this looks like a bug.
-            // TODO: Come back to this after stepping is correct.
             if (ShouldRemoveDead) 
                 RemoveDead();
 
@@ -372,11 +371,33 @@ namespace ConwaysLife.Hensel
 
         public void Draw(LifeRect rect, Action<LifePoint> setPixel)
         {
-            // TODO: Do better
-            for (long x = rect.X; x < rect.X + rect.Width; x += 1)
-                for (long y = rect.Y; y > rect.Y - rect.Height; y -= 1)
-                    if (this[x, y])
-                        setPixel(new LifePoint(x, y));
+            long xmin = Max(minimum + 1, rect.X >> 4);
+            long xmax = Min(maximum - 1, (rect.X + rect.Width) >> 4);
+            long ymin = Max(minimum + 1, (rect.Y - rect.Height + 1) >> 4);
+            long ymax = Min(maximum - 1, (rect.Y + 1) >> 4);
+
+            long omin = IsOdd ? 1 : 0;
+            long omax = omin + 16;
+
+            for (long y = ymin - 1; y <= ymax; y += 1)
+            {
+                for (long x = xmin - 1; x <= xmax; x += 1)
+                {
+                    Quad4 q = GetQuad4((int)x, (int)y);
+                    if (q == null || q.OnDeadList)
+                        continue;
+                    for (long oy = omin; oy < omax; oy += 1)
+                    {
+                        long ry = (y << 4) + oy;
+                        for (long ox = omin; ox < omax; ox += 1)
+                        {
+                            long rx = (x << 4) + ox;
+                            if (this[rx, ry])
+                                setPixel(new LifePoint(rx, ry));
+                        }
+                    }
+                }
+            }
         }
 
         public void Step(int speed)
