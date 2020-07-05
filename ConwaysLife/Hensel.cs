@@ -52,24 +52,11 @@ namespace ConwaysLife.Hensel
         // * Quad4s that stay on the dead list are eventually deallocated.
         //
 
-        private Quad4List active = new Quad4List();
-        private Quad4List stable = new Quad4List();
-        private Quad4List dead = new Quad4List();
-
+        private readonly Quad4List active = new Quad4List();
+        private readonly Quad4List stable = new Quad4List();
+        private readonly Quad4List dead = new Quad4List();
         private Dictionary<(short, short), Quad4> quad4s;
-
-        // If we're on the even cycle, do we know that the odd state is correct? 
-        // And similarly if we are on the odd cycle.
-        public bool previousCorrect;
-        public int generation;
-
-        private Quad4 GetQuad4(int x, int y)
-        {
-            quad4s.TryGetValue(((short)x, (short)y), out var q);
-            return q;
-        }
-
-        private void SetQuad4(int x, int y, Quad4 q) => quad4s[((short)x, (short)y)] = q;
+        private int generation;
 
         public QuickLife()
         {
@@ -79,31 +66,37 @@ namespace ConwaysLife.Hensel
         public void Clear()
         {
             generation = 0;
-            previousCorrect = false;
             active.Clear();
             stable.Clear();
             dead.Clear();
             quad4s = new Dictionary<(short, short), Quad4>();
         }
 
+        private Quad4 GetQuad4(int x, int y)
+        {
+            quad4s.TryGetValue(((short)x, (short)y), out var q);
+            return q;
+        }
+
+        private void SetQuad4(int x, int y, Quad4 q) => quad4s[((short)x, (short)y)] = q;
+
         private Quad4 EnsureActive(Quad4 c, int x, int y)
         {
-            if (c != null)
-            {
-                MakeActive(c);
-                return c;
-            }
-            else
+            if (c == null)
                 return AllocateQuad4(x, y);
+            MakeActive(c);
+            return c;
         }
       
         private void StepEven()
         {
             foreach (Quad4 c in active)
             {
-                StepEvenQuad4(c);
-                if (!previousCorrect)
-                    c.SetOddQuad4AllRegionsActive();
+                if (!RemoveInactiveEvenQuad4(c))
+                {
+                    c.StepEvenQuad4();
+                    MakeOddNeighborsActive(c);
+                }
             }
         }
 
@@ -111,9 +104,11 @@ namespace ConwaysLife.Hensel
         {
             foreach (Quad4 c in active)
             {
-                StepOddQuad4(c);
-                if (!previousCorrect)
-                    c.SetEvenQuad4AllRegionsActive();
+                if (!RemoveInactiveOddQuad4(c))
+                { 
+                    c.StepOddQuad4();
+                    MakeEvenNeighborsActive(c);
+                }
             }
         }
 
@@ -127,14 +122,6 @@ namespace ConwaysLife.Hensel
                 EnsureActive(c.SE, c.X + 1, c.Y - 1);            
         }
 
-        private void StepEvenQuad4(Quad4 c)
-        {
-            if (RemoveInactiveEvenQuad4(c))
-                return;
-            c.StepEvenQuad4();
-            MakeOddNeighborsActive(c);
-        }
-
         private void MakeEvenNeighborsActive(Quad4 c)
         {
             if (c.EvenWestEdgeActive)
@@ -143,14 +130,6 @@ namespace ConwaysLife.Hensel
                 EnsureActive(c.N, c.X, c.Y + 1);
             if (c.EvenNorthwestCornerActive)
                 EnsureActive(c.NW, c.X - 1, c.Y + 1);
-        }
-
-        private void StepOddQuad4(Quad4 c)
-        {
-            if (RemoveInactiveOddQuad4(c))
-                return;
-            c.StepOddQuad4();
-            MakeEvenNeighborsActive(c);
         }
 
         // Try to remove an inactive quad4 on the even cycle.
@@ -162,7 +141,7 @@ namespace ConwaysLife.Hensel
 
         private bool RemoveInactiveEvenQuad4(Quad4 c)
         {
-            if (!c.EvenQuad4AndNeighborsAreInactive)
+            if (c.EvenQuad4OrNeighborsActive)
                 return false;
 
             if (c.EvenQuad4AndNeighborsAreDead)
@@ -186,7 +165,7 @@ namespace ConwaysLife.Hensel
         // Similar to above.
         private bool RemoveInactiveOddQuad4(Quad4 c)
         {
-            if (!c.OddQuad4AndNeighborsAreInactive)
+            if (c.OddQuad4OrNeighborsActive)
                 return false;
 
             if (c.OddQuad4AndNeighborsAreDead)
@@ -328,7 +307,7 @@ namespace ConwaysLife.Hensel
                 if (!IsValidPoint(x, y))
                     return;
 
-                previousCorrect = false;
+                // previousCorrect = false;
 
                 Quad4 q = EnsureActive(GetQuad4((int)(x >> 4), (int)(y >> 4)), (int)(x >> 4), (int)(y >> 4));
 
@@ -366,7 +345,7 @@ namespace ConwaysLife.Hensel
                 StepEven();                
 
             generation++;
-            previousCorrect = true;
+            // previousCorrect = true;
         }
 
         public void Draw(LifeRect rect, Action<LifePoint> setPixel)

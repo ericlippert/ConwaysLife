@@ -165,10 +165,7 @@
         public bool OddEastEdgeActive => (oddstate & 0x00000404) != 0x00000404;
         public bool OddSoutheastCornerActive => (oddstate & 0x00000001) != 0x00000001;
 
-        private bool EvenNorthwestCornerInactive => (evenstate & 0x01000000) == 0x01000000;
-        private bool EvenQuad4Inactive => (evenstate & 0x08080808) == 0x08080808;
-        private bool EvenNorthEdgeInactive => (evenstate & 0x02000200) == 0x02000200;
-        private bool EvenWestEdgeInactive => (evenstate & 0x04040000) == 0x04040000;
+        private bool EvenQuad4Active => (evenstate & 0x08080808) != 0x08080808;
         private bool EvenQuad4Dead => (evenstate & 0x80808080) == 0x80808080;
         private bool EvenNorthEdgeDead => (evenstate & 0x20002000) == 0x20002000;
         private bool EvenWestEdgeDead => (evenstate & 0x40400000) == 0x40400000;
@@ -184,10 +181,7 @@
         private bool EvenNorthEdge8EastActive => (evenstate & 0x00000200) != 0x00000200;
         private bool EvenWestEdge8SouthActive => (evenstate & 0x00040000) != 0x00040000;
 
-        private bool OddQuad4Inactive => (oddstate & 0x08080808) == 0x08080808;
-        private bool OddSouthEdgeInactive => (oddstate & 0x00020002) == 0x00020002;
-        private bool OddEastEdgeInactive => (oddstate & 0x00000404) == 0x00000404;
-        private bool OddSoutheastCornerInactive => (oddstate & 0x00000001) == 0x00000001;
+        private bool OddQuad4Active => (oddstate & 0x08080808) != 0x08080808;
         private bool OddQuad4Dead => (oddstate & 0x80808080) == 0x80808080;
         private bool OddSouthEdgeDead => (oddstate & 0x00200020) == 0x00200020;
         private bool OddEastEdgeDead => (oddstate & 0x00004040) == 0x00004040;
@@ -201,25 +195,23 @@
         private bool OddSouthEdge10EastActive => (oddstate & 0x00010002) != 0x00010002;
         private bool OddSoutheastOrBorderingActive => (oddstate & 0x01040208) != 0x01040208;
 
-        // If an entire even-cycle quad4 is inactive and the neighbouring quad4s to the 
-        // south and east are inactive on their edges, then this entire quad4 can be 
-        // moved to the stable list.
-
-        public bool EvenQuad4AndNeighborsAreInactive =>
-            EvenQuad4Inactive &&
-            (S == null || S.EvenNorthEdgeInactive) &&
-            (E == null || E.EvenWestEdgeInactive) &&
-            (SE == null || SE.EvenNorthwestCornerInactive);
+        // Is this quad active? Or do any of the neighboring quads have an active shared edge?
+        public bool EvenQuad4OrNeighborsActive =>
+            EvenQuad4Active ||
+            (S != null && S.EvenNorthEdgeActive) ||
+            (E != null && E.EvenWestEdgeActive) ||
+            (SE != null && SE.EvenNorthwestCornerActive);
 
         // Similarly for the odd cycle:
 
-        public bool OddQuad4AndNeighborsAreInactive =>
-            OddQuad4Inactive &&
-            (N == null || N.OddSouthEdgeInactive) &&
-            (W == null || W.OddEastEdgeInactive) &&
-            (NW == null || NW.OddSoutheastCornerInactive);
+        public bool OddQuad4OrNeighborsActive =>
+            OddQuad4Active ||
+            (N != null && N.OddSouthEdgeActive) ||
+            (W != null && W.OddEastEdgeActive) ||
+            (NW != null && NW.OddSoutheastCornerActive);
 
-        // And similarly for quads that are inactive because they are dead:
+        // And similarly for dead quads; is the entire quad and all its
+        // neighbors' shared edges dead?
 
         public bool EvenQuad4AndNeighborsAreDead =>
             EvenQuad4Dead &&
@@ -1303,7 +1295,6 @@
                 SetEvenNEAllRegionsActive();
             }
         }
-
 
         public bool GetOdd(int x, int y)
         {
