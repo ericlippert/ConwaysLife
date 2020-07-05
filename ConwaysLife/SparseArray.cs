@@ -14,11 +14,12 @@ namespace ConwaysLife
     // The recent births and deaths act as the change list for the next tick, when we 
     // accumulate a new recent births and deaths collection.
 
-    class SparseArray : ILife
+    class SparseArray : ILife, IReport
     {
         private HashSet<(long, long)> living;
         private HashSet<(long, long)> recentBirths;
         private HashSet<(long, long)> recentDeaths;
+        private int generation;
 
         public SparseArray()
         {
@@ -30,6 +31,7 @@ namespace ConwaysLife
             living = new HashSet<(long, long)>();
             recentBirths = new HashSet<(long, long)>();
             recentDeaths = new HashSet<(long, long)>();
+            generation = 0;
         }
 
         public bool this[long x, long y]
@@ -56,19 +58,6 @@ namespace ConwaysLife
             set => this[v.X, v.Y] = value;
         }
 
-        private int Count(long x, long y)
-        {
-            int nw = this[x - 1, y - 1] ? 1 : 0;
-            int n = this[x, y - 1] ? 1 : 0;
-            int ne = this[x + 1, y - 1] ? 1 : 0;
-            int w = this[x - 1, y] ? 1 : 0;
-            int e = this[x + 1, y] ? 1 : 0;
-            int sw = this[x - 1, y + 1] ? 1 : 0;
-            int s = this[x, y + 1] ? 1 : 0;
-            int se = this[x + 1, y + 1] ? 1 : 0;
-            return nw + n + ne + w + e + sw + s + se;
-        }
-
         private void CheckCellAndNeighbours(long x, long y)
         {
             for (int iy = -1; iy < 2; iy += 1)
@@ -78,7 +67,15 @@ namespace ConwaysLife
                 {
                     long cx = x + ix;
                     bool state = this[cx, cy];
-                    int count = Count(cx, cy);
+                    int nw = this[cx - 1, cy - 1] ? 1 : 0;
+                    int n = this[cx, cy - 1] ? 1 : 0;
+                    int ne = this[cx + 1, cy - 1] ? 1 : 0;
+                    int w = this[cx - 1, cy] ? 1 : 0;
+                    int e = this[cx + 1, cy] ? 1 : 0;
+                    int sw = this[cx - 1, cy + 1] ? 1 : 0;
+                    int s = this[cx, cy + 1] ? 1 : 0;
+                    int se = this[cx + 1, cy + 1] ? 1 : 0;
+                    int count = nw + n + ne + w + e + sw + s + se;
                     if (state & count != 2 & count != 3)
                         recentDeaths.Add((cx, cy));
                     else if (!state & count == 3)
@@ -89,9 +86,6 @@ namespace ConwaysLife
 
         public void Step()
         {
-
-            // First pass:
-            // 
             // For each *previously* changed cell and all the neighbors of 
             // those cells, compute whether the cell will change now
             // or not.  If not, we can ignore it. If it does change,
@@ -109,6 +103,7 @@ namespace ConwaysLife
 
             living.UnionWith(recentBirths);
             living.ExceptWith(recentDeaths);
+            generation += 1;
         }
 
         public void Step(int speed)
@@ -128,5 +123,8 @@ namespace ConwaysLife
                     if (this[x, y])
                         setPixel(new LifePoint(x, y));
         }
+
+        public string Report() => 
+            $"gen {generation}\n{living.Count} alive\n{recentBirths.Count + recentDeaths.Count} change\n";
     }
 }
