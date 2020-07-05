@@ -99,6 +99,7 @@ namespace ConwaysLife.Hensel
                     c.StepEvenQuad4();
                     MakeOddNeighborsActive(c);
                 }
+                c.StayActiveNextStep = false;
             }
         }
 
@@ -111,6 +112,7 @@ namespace ConwaysLife.Hensel
                     c.StepOddQuad4();
                     MakeEvenNeighborsActive(c);
                 }
+                c.StayActiveNextStep = false;
             }
         }
 
@@ -147,7 +149,6 @@ namespace ConwaysLife.Hensel
             {
                 c.EvenState = Active;
                 c.OddState = Active;
-                c.StayActiveNextStep = false;
                 return false;
             }
 
@@ -165,7 +166,6 @@ namespace ConwaysLife.Hensel
                 if (!c.StayActiveNextStep && c.OddState != Active)
                     MakeStable(c);
             }
-            c.StayActiveNextStep = false;
             return true;
         }
 
@@ -176,7 +176,6 @@ namespace ConwaysLife.Hensel
             {
                 c.EvenState = Active;
                 c.OddState = Active;
-                c.StayActiveNextStep = false;
                 return false;
             }
 
@@ -194,7 +193,6 @@ namespace ConwaysLife.Hensel
                 if (!c.StayActiveNextStep && c.EvenState != Active)
                     MakeStable(c);
             }
-            c.StayActiveNextStep = false;
             return true;
         }
 
