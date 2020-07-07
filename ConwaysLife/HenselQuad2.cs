@@ -39,10 +39,10 @@ namespace ConwaysLife.Hensel
             1 << 0xf, 1 << 0xe, 1 << 0x7, 1 << 0x6
         };
 
-        public const uint NWMask = 0xf000;
-        public const uint SWMask = 0x0f00;
-        public const uint NEMask = 0x00f0;
-        public const uint SEMask = 0x000f;
+        const uint NWMask = 0xf000;
+        const uint SWMask = 0x0f00;
+        const uint NEMask = 0x00f0;
+        const uint SEMask = 0x000f;
         const uint EastEdgeMask = NEMask | SEMask;
         const uint WestEdgeMask = NWMask | SWMask;
         const uint SouthEdgeMask = SWMask | SEMask;
@@ -62,13 +62,12 @@ namespace ConwaysLife.Hensel
         // Given a quad2 to my right, produce a quad2 that is in
         // the middle but mirrored in the vertical axis.
         public Quad2 HorizontalMiddleMirrored(Quad2 right) =>
-            new Quad2((ushort)((cells & EastEdgeMask) | (right.cells & WestEdgeMask)));
+            EastEdge | right.WestEdge;
 
         // Given a quad2 below me, produce a quad2 that is in the middle
         // but flipped in the horizontal axis.
-
         public Quad2 VerticalMiddleFlipped(Quad2 bottom) =>
-            new Quad2((ushort)((cells & SouthEdgeMask) | (bottom.cells & NorthEdgeMask)));
+            SouthEdge | bottom.NorthEdge;
 
         // Make a quad2 where all but the selected cells are dead.
         public Quad2 NorthEdge => new Quad2((ushort)(cells & NorthEdgeMask));

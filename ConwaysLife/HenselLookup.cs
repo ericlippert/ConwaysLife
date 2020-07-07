@@ -137,6 +137,9 @@
             }
         }
 
+        static Quad2 EvenLookup(Quad2 q) => evenLookup[(ushort)q];
+        static Quad2 OddLookup(Quad2 q) => oddLookup[(ushort)q];
+
         /*
 Given the nine quad2s shown, the next step of the shaded region is returned:
         nw    n     ne
@@ -161,48 +164,32 @@ Given the nine quad2s shown, the next step of the shaded region is returned:
             Quad2 n,
             Quad2 ne,
             Quad2 w,
-            Quad2 center,
+            Quad2 c,
             Quad2 e,
             Quad2 sw,
             Quad2 s,
             Quad2 se)
         {
-            Quad2 n_w_mirror = nw.HorizontalMiddleMirrored(n);
-            Quad2 w_n_flip = nw.VerticalMiddleFlipped(w);
-            Quad2 n_e_mirror = n.HorizontalMiddleMirrored(ne);
-            Quad2 center_n_flip = n.VerticalMiddleFlipped(center);
-            Quad2 center_w_mirror = w.HorizontalMiddleMirrored(center);
-            Quad2 w_s_flip = w.VerticalMiddleFlipped(sw);
-            Quad2 center_e_mirror = center.HorizontalMiddleMirrored(e);
-            Quad2 center_s_flip = center.VerticalMiddleFlipped(s);
+            Quad2 n_w = nw.HorizontalMiddleMirrored(n);
+            Quad2 n_e = n.HorizontalMiddleMirrored(ne);
+            Quad2 c_w = w.HorizontalMiddleMirrored(c);
+            Quad2 c_e = c.HorizontalMiddleMirrored(e);
 
-            Quad2 center_nw_flip_mirror = w_n_flip.HorizontalMiddleMirrored(center_n_flip);
-            Quad2 center_ne_flip_mirror = n_e_mirror.VerticalMiddleFlipped(center_e_mirror);
-            Quad2 center_sw_flip_mirror = w_s_flip.HorizontalMiddleMirrored(center_s_flip);
-            Quad2 center_se_flip_mirror = center_e_mirror.SouthEdge | center_s_flip.NE | se.NW;
+            Quad2 w_n = nw.VerticalMiddleFlipped(w);
+            Quad2 c_n = n.VerticalMiddleFlipped(c);
+            Quad2 w_s = w.VerticalMiddleFlipped(sw);
+            Quad2 c_s = c.VerticalMiddleFlipped(s);
 
-            Quad2 new_nw =
-                evenLookup[(ushort)nw].NW | 
-                evenLookup[(ushort)n_w_mirror].NE |
-                evenLookup[(ushort)w_n_flip].SW | 
-                evenLookup[(ushort)center_nw_flip_mirror].SE;
-            Quad2 new_ne = 
-                evenLookup[(ushort)n].NW | 
-                evenLookup[(ushort)n_e_mirror].NE |
-                evenLookup[(ushort)center_n_flip].SW | 
-                evenLookup[(ushort)center_ne_flip_mirror].SE;
-            Quad2 new_sw = 
-                evenLookup[(ushort)w].NW | 
-                evenLookup[(ushort)center_w_mirror].NE |
-                evenLookup[(ushort)w_s_flip].SW | 
-                evenLookup[(ushort)center_sw_flip_mirror].SE;
-            Quad2 new_se =
-                evenLookup[(ushort)center].NW |
-                evenLookup[(ushort)center_e_mirror].NE |
-                evenLookup[(ushort)center_s_flip].SW |
-                evenLookup[(ushort)center_se_flip_mirror].SE;
-            var r = new Quad3(new_nw, new_ne, new_sw, new_se);
-            return r;
+            Quad2 c_nw = w_n.HorizontalMiddleMirrored(c_n);
+            Quad2 c_ne = n_e.VerticalMiddleFlipped(c_e);
+            Quad2 c_sw = w_s.HorizontalMiddleMirrored(c_s);
+            Quad2 c_se = c_e.SouthEdge | c_s.NE | se.NW;
+
+            Quad2 newNW = EvenLookup(nw).NW | EvenLookup(n_w).NE | EvenLookup(w_n).SW | EvenLookup(c_nw).SE;
+            Quad2 newNE = EvenLookup(n).NW  | EvenLookup(n_e).NE | EvenLookup(c_n).SW | EvenLookup(c_ne).SE;
+            Quad2 newSW = EvenLookup(w).NW  | EvenLookup(c_w).NE | EvenLookup(w_s).SW | EvenLookup(c_sw).SE;
+            Quad2 newSE = EvenLookup(c).NW  | EvenLookup(c_e).NE | EvenLookup(c_s).SW | EvenLookup(c_se).SE;
+            return new Quad3(newNW, newNE, newSW, newSE);
         }
 
         /*
@@ -229,47 +216,32 @@ Given the nine quad2s shown, the next step of the shaded region is returned:
             Quad2 n,
             Quad2 ne,
             Quad2 w,
-            Quad2 center,
+            Quad2 c,
             Quad2 e,
             Quad2 sw,
             Quad2 s,
             Quad2 se)
         {
-            Quad2 center_e_mirror = center.HorizontalMiddleMirrored(e);
-            Quad2 s_e_mirror = s.HorizontalMiddleMirrored(se);
-            Quad2 center_s_flip = center.VerticalMiddleFlipped(s);
-            Quad2 e_s_flip = e.VerticalMiddleFlipped(se);
-            Quad2 center_n_flip = n.VerticalMiddleFlipped(center);
-            Quad2 e_n_flip = ne.VerticalMiddleFlipped(e);
-            Quad2 center_w_mirror = w.HorizontalMiddleMirrored(center);
-            Quad2 s_w_mirror = sw.HorizontalMiddleMirrored(s);
-            Quad2 center_ne_flip_mirror = center_n_flip.HorizontalMiddleMirrored(e_n_flip);
-            Quad2 center_sw_flip_mirror = center_w_mirror.VerticalMiddleFlipped(s_w_mirror);
-            Quad2 center_se_flip_mirror = center_s_flip.HorizontalMiddleMirrored(e_s_flip);
-            Quad2 center_nw_flip_mirror = center_w_mirror.NorthEdge | center_n_flip.SW | nw.SE;
+            Quad2 c_e = c.HorizontalMiddleMirrored(e);
+            Quad2 s_e = s.HorizontalMiddleMirrored(se);
+            Quad2 c_w = w.HorizontalMiddleMirrored(c);
+            Quad2 s_w = sw.HorizontalMiddleMirrored(s);
 
-            Quad2 new_nw =
-                oddLookup[(ushort)center].SE |
-                oddLookup[(ushort)center_n_flip].NE |
-                oddLookup[(ushort)center_w_mirror].SW |
-                oddLookup[(ushort)center_nw_flip_mirror].NW;
-            Quad2 new_ne =
-                oddLookup[(ushort)e].SE |
-                oddLookup[(ushort)e_n_flip].NE |
-                oddLookup[(ushort)center_e_mirror].SW |
-                oddLookup[(ushort)center_ne_flip_mirror].NW;
-            Quad2 new_sw =
-                oddLookup[(ushort)s].SE |
-                oddLookup[(ushort)center_s_flip].NE |
-                oddLookup[(ushort)s_w_mirror].SW |
-                oddLookup[(ushort)center_sw_flip_mirror].NW;
-            Quad2 new_se =
-                oddLookup[(ushort)se].SE |
-                oddLookup[(ushort)e_s_flip].NE |
-                oddLookup[(ushort)s_e_mirror].SW |
-                oddLookup[(ushort)center_se_flip_mirror].NW;
-            var r = new Quad3(new_nw, new_ne, new_sw, new_se);
-            return r;
+            Quad2 c_s = c.VerticalMiddleFlipped(s);
+            Quad2 e_s = e.VerticalMiddleFlipped(se);
+            Quad2 c_n = n.VerticalMiddleFlipped(c);
+            Quad2 e_n = ne.VerticalMiddleFlipped(e);
+
+            Quad2 c_ne = c_n.HorizontalMiddleMirrored(e_n);
+            Quad2 c_sw = c_w.VerticalMiddleFlipped(s_w);
+            Quad2 c_se = c_s.HorizontalMiddleMirrored(e_s);
+            Quad2 c_nw = c_w.NorthEdge | c_n.SW | nw.SE;
+
+            Quad2 newNW = OddLookup(c).SE  | OddLookup(c_n).NE | OddLookup(c_w).SW | OddLookup(c_nw).NW;
+            Quad2 newNE = OddLookup(e).SE  | OddLookup(e_n).NE | OddLookup(c_e).SW | OddLookup(c_ne).NW;
+            Quad2 newSW = OddLookup(s).SE  | OddLookup(c_s).NE | OddLookup(s_w).SW | OddLookup(c_sw).NW;
+            Quad2 newSE = OddLookup(se).SE | OddLookup(e_s).NE | OddLookup(s_e).SW | OddLookup(c_se).NW;
+            return new Quad3(newNW, newNE, newSW, newSE);
         }
     }
 }

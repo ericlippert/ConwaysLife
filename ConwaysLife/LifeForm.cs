@@ -195,7 +195,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new SparseArray();
+            life = new QuickLife();
 
             life.AddPattern(new LifePoint(43, 29), pattern);
 
