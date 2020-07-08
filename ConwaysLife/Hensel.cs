@@ -96,7 +96,7 @@ namespace ConwaysLife.Hensel
             {
                 if (!RemoveInactiveEvenQuad4(c))
                 {
-                    c.StepEvenQuad4();
+                    c.StepEven();
                     MakeOddNeighborsActive(c);
                 }
                 c.StayActiveNextStep = false;
@@ -109,7 +109,7 @@ namespace ConwaysLife.Hensel
             {
                 if (!RemoveInactiveOddQuad4(c))
                 { 
-                    c.StepOddQuad4();
+                    c.StepOdd();
                     MakeEvenNeighborsActive(c);
                 }
                 c.StayActiveNextStep = false;

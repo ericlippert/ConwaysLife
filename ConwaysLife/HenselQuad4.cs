@@ -1014,11 +1014,11 @@
 
         // Stepping
 
-        private void StepEvenNWQuad3()
+        private void StepEvenNW()
         {
             if (!EvenNWPossiblyActive())
                 return;
-            Quad3 new_odd_nw = Step9Quad2ToQuad3Even(
+            Quad3 newOddNW = Step9Quad2ToQuad3Even(
                 evenNW.NW,
                 evenNW.NE,
                 evenNE.NW,
@@ -1028,14 +1028,14 @@
                 evenSW.NW,
                 evenSW.NE,
                 evenSE.NW);
-            UpdateOddNW(new_odd_nw);
+            UpdateOddNW(newOddNW);
         }
 
-        private void StepEvenSWQuad3()
+        private void StepEvenSW()
         {
             if (!EvenSWPossiblyActive())
                 return;
-            Quad3 new_odd_sw = Step9Quad2ToQuad3Even(
+            Quad3 newOddSW = Step9Quad2ToQuad3Even(
                 evenSW.NW,
                 evenSW.NE,
                 evenSE.NW,
@@ -1045,14 +1045,14 @@
                 S == null ? AllDead : S.evenNW.NW,
                 S == null ? AllDead : S.evenNW.NE,
                 S == null ? AllDead : S.evenNE.NW);
-            UpdateOddSW(new_odd_sw);
+            UpdateOddSW(newOddSW);
         }
 
-        private void StepEvenNEQuad3()
+        private void StepEvenNE()
         {
             if (!EvenNEPossiblyActive())
                 return;
-            Quad3 new_odd_ne = Step9Quad2ToQuad3Even(
+            Quad3 newOddNE = Step9Quad2ToQuad3Even(
                 evenNE.NW,
                 evenNE.NE,
                 E == null ? AllDead : E.evenNW.NW,
@@ -1062,14 +1062,14 @@
                 evenSE.NW,
                 evenSE.NE,
                 E == null ? AllDead : E.evenSW.NW);
-            UpdateOddNE(new_odd_ne);
+            UpdateOddNE(newOddNE);
         }
 
-        private void StepEvenSEQuad3()
+        private void StepEvenSE()
         {
             if (!EvenSEPossiblyActive())
                 return;
-            Quad3 new_odd_se = Step9Quad2ToQuad3Even(
+            Quad3 newOddSE = Step9Quad2ToQuad3Even(
                 evenSE.NW,
                 evenSE.NE,
                 E == null ? AllDead : E.evenSW.NW,
@@ -1079,18 +1079,18 @@
                 S == null ? AllDead : S.evenNE.NW,
                 S == null ? AllDead : S.evenNE.NE,
                 SE == null ? AllDead : SE.evenNW.NW);
-            UpdateOddSE(new_odd_se);
+            UpdateOddSE(newOddSE);
         }
 
-        public void StepEvenQuad4()
+        public void StepEven()
         {
-            StepEvenNWQuad3();
-            StepEvenSWQuad3();
-            StepEvenNEQuad3();
-            StepEvenSEQuad3();
+            StepEvenNW();
+            StepEvenSW();
+            StepEvenNE();
+            StepEvenSE();
         }
 
-        private void StepOddNWQuad3()
+        private void StepOddNW()
         {
             if (!OddNWPossiblyActive())
                 return;
@@ -1108,7 +1108,7 @@
             UpdateEvenNW(new_even_nw);
         }
 
-        private void StepOddSWQuad3()
+        private void StepOddSW()
         {
             if (!OddSWPossiblyActive())
                 return;
@@ -1125,7 +1125,7 @@
             UpdateEvenSW(new_even_sw);
         }
 
-        private void StepOddNEQuad3()
+        private void StepOddNE()
         {
             if (!OddNEPossiblyActive())
                 return;
@@ -1142,7 +1142,7 @@
             UpdateEvenNE(new_even_ne);
         }
 
-        private void StepOddSEQuad3()
+        private void StepOddSE()
         {
             if (!OddSEPossiblyActive())
                 return;
@@ -1159,12 +1159,12 @@
             UpdateEvenSE(new_even_se);
         }
 
-        public void StepOddQuad4()
+        public void StepOdd()
         {
-            StepOddNWQuad3();
-            StepOddSWQuad3();
-            StepOddNEQuad3();
-            StepOddSEQuad3();
+            StepOddNW();
+            StepOddSW();
+            StepOddNE();
+            StepOddSE();
         }
 
         public bool StayActiveNextStep { get; set; }
