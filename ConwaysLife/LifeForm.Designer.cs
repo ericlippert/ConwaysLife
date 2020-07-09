@@ -39,7 +39,7 @@
             this.resetButton = new System.Windows.Forms.Label();
             this.playButton = new System.Windows.Forms.Label();
             this.title = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.reportBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.display)).BeginInit();
             this.panel.SuspendLayout();
             this.SuspendLayout();
@@ -65,7 +65,7 @@
             // 
             // panel
             // 
-            this.panel.Controls.Add(this.textBox1);
+            this.panel.Controls.Add(this.reportBox);
             this.panel.Controls.Add(this.speedLabel);
             this.panel.Controls.Add(this.slowerButton);
             this.panel.Controls.Add(this.fasterButton);
@@ -155,13 +155,13 @@
             // 
             // textBox1
             // 
-            this.textBox1.AcceptsReturn = true;
-            this.textBox1.Enabled = false;
-            this.textBox1.Location = new System.Drawing.Point(218, 3);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(222, 67);
-            this.textBox1.TabIndex = 8;
+            this.reportBox.AcceptsReturn = true;
+            this.reportBox.Enabled = false;
+            this.reportBox.Location = new System.Drawing.Point(218, 3);
+            this.reportBox.Multiline = true;
+            this.reportBox.Name = "textBox1";
+            this.reportBox.Size = new System.Drawing.Size(222, 67);
+            this.reportBox.TabIndex = 8;
             // 
             // LifeForm
             // 
@@ -195,7 +195,7 @@
         private System.Windows.Forms.Label speedLabel;
         private System.Windows.Forms.Label slowerButton;
         private System.Windows.Forms.Label fasterButton;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox reportBox;
     }
 }
 

@@ -276,9 +276,9 @@ namespace ConwaysLife
         {
             DrawDisplay();
             if (life is IReport r)
-                textBox1.Lines = r.Report().Split('\n');
+                reportBox.Lines = r.Report().Split('\n');
             else
-                textBox1.Text = life.GetType().Name;
+                reportBox.Text = life.GetType().Name;
         }
 
         private void ClearDisplay()
