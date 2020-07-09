@@ -18,4 +18,9 @@ namespace ConwaysLife
         // eight ticks, and so on.
         void Step(int speed);
     }
+
+    interface IReport
+    {
+        string Report();
+    }
 }
