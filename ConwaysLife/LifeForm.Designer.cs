@@ -32,13 +32,14 @@
             this.display = new System.Windows.Forms.PictureBox();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.panel = new System.Windows.Forms.Panel();
+            this.speedLabel = new System.Windows.Forms.Label();
+            this.slowerButton = new System.Windows.Forms.Label();
+            this.fasterButton = new System.Windows.Forms.Label();
             this.loadButton = new System.Windows.Forms.Label();
             this.resetButton = new System.Windows.Forms.Label();
             this.playButton = new System.Windows.Forms.Label();
             this.title = new System.Windows.Forms.Label();
-            this.fasterButton = new System.Windows.Forms.Label();
-            this.slowerButton = new System.Windows.Forms.Label();
-            this.speedLabel = new System.Windows.Forms.Label();
+            this.reportBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.display)).BeginInit();
             this.panel.SuspendLayout();
             this.SuspendLayout();
@@ -64,6 +65,7 @@
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.reportBox);
             this.panel.Controls.Add(this.speedLabel);
             this.panel.Controls.Add(this.slowerButton);
             this.panel.Controls.Add(this.fasterButton);
@@ -75,6 +77,38 @@
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(560, 70);
             this.panel.TabIndex = 1;
+            // 
+            // speedLabel
+            // 
+            this.speedLabel.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.speedLabel.Location = new System.Drawing.Point(132, 27);
+            this.speedLabel.Name = "speedLabel";
+            this.speedLabel.Size = new System.Drawing.Size(45, 29);
+            this.speedLabel.TabIndex = 7;
+            this.speedLabel.Text = "15";
+            this.speedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // slowerButton
+            // 
+            this.slowerButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.slowerButton.Location = new System.Drawing.Point(108, 25);
+            this.slowerButton.Name = "slowerButton";
+            this.slowerButton.Size = new System.Drawing.Size(29, 29);
+            this.slowerButton.TabIndex = 6;
+            this.slowerButton.Text = "⏬";
+            this.slowerButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.slowerButton.Click += new System.EventHandler(this.slowerButton_Click);
+            // 
+            // fasterButton
+            // 
+            this.fasterButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fasterButton.Location = new System.Drawing.Point(183, 25);
+            this.fasterButton.Name = "fasterButton";
+            this.fasterButton.Size = new System.Drawing.Size(29, 29);
+            this.fasterButton.TabIndex = 5;
+            this.fasterButton.Text = "⏫";
+            this.fasterButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.fasterButton.Click += new System.EventHandler(this.fasterButton_Click);
             // 
             // loadButton
             // 
@@ -119,37 +153,15 @@
             this.title.TabIndex = 0;
             this.title.Text = "Life is Fabulous";
             // 
-            // fasterButton
+            // textBox1
             // 
-            this.fasterButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fasterButton.Location = new System.Drawing.Point(183, 25);
-            this.fasterButton.Name = "fasterButton";
-            this.fasterButton.Size = new System.Drawing.Size(29, 29);
-            this.fasterButton.TabIndex = 5;
-            this.fasterButton.Text = "⏫";
-            this.fasterButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.fasterButton.Click += new System.EventHandler(this.fasterButton_Click);
-            // 
-            // slowerButton
-            // 
-            this.slowerButton.Font = new System.Drawing.Font("Lucida Console", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.slowerButton.Location = new System.Drawing.Point(108, 25);
-            this.slowerButton.Name = "slowerButton";
-            this.slowerButton.Size = new System.Drawing.Size(29, 29);
-            this.slowerButton.TabIndex = 6;
-            this.slowerButton.Text = "⏬";
-            this.slowerButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.slowerButton.Click += new System.EventHandler(this.slowerButton_Click);
-            // 
-            // speedLabel
-            // 
-            this.speedLabel.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.speedLabel.Location = new System.Drawing.Point(132, 27);
-            this.speedLabel.Name = "speedLabel";
-            this.speedLabel.Size = new System.Drawing.Size(45, 29);
-            this.speedLabel.TabIndex = 7;
-            this.speedLabel.Text = "15";
-            this.speedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.reportBox.AcceptsReturn = true;
+            this.reportBox.Enabled = false;
+            this.reportBox.Location = new System.Drawing.Point(218, 3);
+            this.reportBox.Multiline = true;
+            this.reportBox.Name = "textBox1";
+            this.reportBox.Size = new System.Drawing.Size(222, 67);
+            this.reportBox.TabIndex = 8;
             // 
             // LifeForm
             // 
@@ -183,6 +195,7 @@
         private System.Windows.Forms.Label speedLabel;
         private System.Windows.Forms.Label slowerButton;
         private System.Windows.Forms.Label fasterButton;
+        private System.Windows.Forms.TextBox reportBox;
     }
 }
 
