@@ -272,6 +272,10 @@ namespace ConwaysLife
         private void Draw()
         {
             DrawDisplay();
+            if (life is IReport r)
+                reportBox.Lines = r.Report().Split('\n');
+            else
+                reportBox.Text = life.GetType().Name;
         }
 
         private void ClearDisplay()
