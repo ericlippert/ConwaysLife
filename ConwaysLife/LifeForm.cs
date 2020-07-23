@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConwaysLife.Hensel;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -194,7 +195,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new SparseArray();
+            life = new ProtoQuickLife();
             life.AddPattern(new LifePoint(128, 128), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
@@ -378,13 +379,14 @@ namespace ConwaysLife
                     break;
                 case Keys.P:
                     Debug.Fail("FYI you are performance testing in the debug build.");
-                    PerfTest(new Abrash());
-                    PerfTest(new AbrashChangeList());
-                    PerfTest(new AbrashOneArray());
-                    PerfTest(new StaffordOne());
-                    PerfTest(new StaffordTwo());
-                    PerfTest(new Stafford());
-                    PerfTest(new SparseArray());
+                    // PerfTest(new Abrash());
+                    // PerfTest(new AbrashChangeList());
+                    // PerfTest(new AbrashOneArray());
+                    // PerfTest(new StaffordOne());
+                    // PerfTest(new StaffordTwo());
+                    // PerfTest(new Stafford());
+                    // PerfTest(new SparseArray());
+                    PerfTest(new ProtoQuickLife());
                     break;
                 case Keys.R:
                     Reset();
