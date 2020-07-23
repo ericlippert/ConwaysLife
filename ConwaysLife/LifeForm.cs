@@ -195,12 +195,12 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new QuickLife();
+            life = new ProtoQuickLife();
 
-            life.AddPattern(new LifePoint(43, 29), pattern);
+            life.AddPattern(new LifePoint(128, 128), pattern);
 
             scale = defaultScale;
-            corner = new LifePoint(20, 50);
+            corner = new LifePoint(40, 200);
 
             Draw();
         }
@@ -427,7 +427,8 @@ namespace ConwaysLife
                     //PerfTest(new AbrashOneArray());
                     //PerfTest(new StaffordChangeList());
                     //PerfTest(new StaffordLookup());
-                    PerfTest(new Stafford());
+                    // PerfTest(new Stafford());
+                    PerfTest(new ProtoQuickLife());
                     PerfTest(new QuickLife());
                     // PerfTest(new SparseArray());
 
