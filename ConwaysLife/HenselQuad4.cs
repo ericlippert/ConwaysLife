@@ -68,7 +68,7 @@
         // There are three possible states: 
         //
         // * active: cells have changed recently.
-        // * inactive: the new state is the same as the previous state.
+        // * stable: the new state is the same as the previous state.
         // * dead: the new state is the same as the previous state, and moreover,
         //   all the cells in the region are dead.
 
@@ -76,7 +76,7 @@
         // in every quad3:
         //
         // * both bits on is dead
-        // * low bit on, high bit off is inactive
+        // * low bit on, high bit off is stable
         // * both bits off is active
 
         // The regions we track in each even-cycle quad3 are:
@@ -91,34 +91,34 @@
         // 30: NW W edge dead
         // 29: NW N edge dead
         // 28: NW NW corner dead
-        // 27: NW all inactive
-        // 26: NW W edge inactive
-        // 25: NW N edge inactive
-        // 24: NW NW corner inactive
+        // 27: NW all stable
+        // 26: NW W edge stable
+        // 25: NW N edge stable
+        // 24: NW NW corner stable
         // 23: SW all dead
         // 22: SW W edge dead
         // 21: SW N edge dead
         // 20: SW NW corner dead
-        // 19: SW all inactive
-        // 18: SW W edge inactive
-        // 17: SW N edge inactive
-        // 16: SW NW corner inactive
+        // 19: SW all stable
+        // 18: SW W edge stable
+        // 17: SW N edge stable
+        // 16: SW NW corner stable
         // 15: NE all dead
         // 14: NE W edge dead
         // 13: NE N edge dead
         // 12: NE NW corner dead
-        // 11: NE all inactive
-        // 10: NE W edge inactive
-        //  9: NE N edge inactive
-        //  8: NE NW corner inactive
+        // 11: NE all stable
+        // 10: NE W edge stable
+        //  9: NE N edge stable
+        //  8: NE NW corner stable
         //  7: SE all dead
         //  6: SE W edge dead
         //  5: SE N edge dead
         //  4: SE NW corner dead
-        //  3: SE all inactive
-        //  2: SE W edge inactive
-        //  1: SE N edge inactive
-        //  0: SE NW corner inactive
+        //  3: SE all stable
+        //  2: SE W edge stable
+        //  1: SE N edge stable
+        //  0: SE NW corner stable
 
         // We similarly track these regions in each odd-cycle quad3:
 
@@ -134,34 +134,34 @@
         // 30: NW E edge dead
         // 29: NW S edge dead
         // 28: NW SE corner dead
-        // 27: NW all inactive
-        // 26: NW E edge inactive
-        // 25: NW S edge inactive
-        // 24: NW SE corner inactive
+        // 27: NW all stable
+        // 26: NW E edge stable
+        // 25: NW S edge stable
+        // 24: NW SE corner stable
         // 23: SW all dead
         // 22: SW E edge dead
         // 21: SW S edge dead
         // 20: SW SE corner dead
-        // 19: SW all inactive
-        // 18: SW E edge inactive
-        // 17: SW S edge inactive
-        // 16: SW SE corner inactive
+        // 19: SW all stable
+        // 18: SW E edge stable
+        // 17: SW S edge stable
+        // 16: SW SE corner stable
         // 15: NE all dead
         // 14: NE E edge dead
         // 13: NE S edge dead
         // 12: NE SE corner dead
-        // 11: NE all inactive
-        // 10: NE E edge inactive
-        //  9: NE S edge inactive
-        //  8: NE SE corner inactive
+        // 11: NE all stable
+        // 10: NE E edge stable
+        //  9: NE S edge stable
+        //  8: NE SE corner stable
         //  7: SE all dead
         //  6: SE E edge dead
         //  5: SE S edge dead
         //  4: SE SE corner dead
-        //  3: SE all inactive
-        //  2: SE E edge inactive
-        //  1: SE S edge inactive
-        //  0: SE SE corner inactive
+        //  3: SE all stable
+        //  2: SE E edge stable
+        //  1: SE S edge stable
+        //  0: SE SE corner stable
 
         // Getters
 
@@ -283,57 +283,57 @@
         private void SetOddSEQuad3Active() => oddstate &= 0xffffff77;
         private void SetOddNEQuad3Active() => oddstate &= 0xffff77ff;
 
-        // Inactive
+        // Stable
 
         // Calling any of these setters on a region which is dead keeps it dead,
         // which is what we want.
 
-        public void SetEvenQuad4AllRegionsInactive() => evenstate |= 0x0f0f0f0f;
-        public void SetOddQuad4AllRegionsInactive() => oddstate |= 0x0f0f0f0f;
+        public void SetEvenQuad4AllRegionsStable() => evenstate |= 0x0f0f0f0f;
+        public void SetOddQuad4AllRegionsStable() => oddstate |= 0x0f0f0f0f;
 
-        private void SetEvenNWAllRegionsInactive() => evenstate |= 0x0f000000;
-        private void SetEvenSWAllRegionsInactive() => evenstate |= 0x000f0000;
-        private void SetEvenNEAllRegionsInactive() => evenstate |= 0x00000f00;
-        private void SetEvenSEAllRegionsInactive() => evenstate |= 0x0000000f;
+        private void SetEvenNWAllRegionsStable() => evenstate |= 0x0f000000;
+        private void SetEvenSWAllRegionsStable() => evenstate |= 0x000f0000;
+        private void SetEvenNEAllRegionsStable() => evenstate |= 0x00000f00;
+        private void SetEvenSEAllRegionsStable() => evenstate |= 0x0000000f;
 
-        private void SetOddNWAllRegionsInactive() => oddstate |= 0x0f000000;
-        private void SetOddSWAllRegionsInactive() => oddstate |= 0x000f0000;
-        private void SetOddNEAllRegionsInactive() => oddstate |= 0x00000f00;
-        private void SetOddSEAllRegionsInactive() => oddstate |= 0x0000000f;
+        private void SetOddNWAllRegionsStable() => oddstate |= 0x0f000000;
+        private void SetOddSWAllRegionsStable() => oddstate |= 0x000f0000;
+        private void SetOddNEAllRegionsStable() => oddstate |= 0x00000f00;
+        private void SetOddSEAllRegionsStable() => oddstate |= 0x0000000f;
 
-        // We could also set the corner to be inactive, because if the edge is
-        // inactive then the corner is too.  However, on every code path
+        // We could also set the corner to be stable, because if the edge is
+        // stable then the corner is too.  However, on every code path
         // where these are called, the corner bit has already been set.
 
-        private void SetEvenNWWestEdgeInactive() => evenstate |= 0x04000000;
-        private void SetEvenSWWestEdgeInactive() => evenstate |= 0x00040000;
-        private void SetEvenNEWestEdgeInactive() => evenstate |= 0x00000400;
-        private void SetEvenSEWestEdgeInactive() => evenstate |= 0x00000004;
+        private void SetEvenNWWestEdgeStable() => evenstate |= 0x04000000;
+        private void SetEvenSWWestEdgeStable() => evenstate |= 0x00040000;
+        private void SetEvenNEWestEdgeStable() => evenstate |= 0x00000400;
+        private void SetEvenSEWestEdgeStable() => evenstate |= 0x00000004;
 
-        private void SetOddNWEastEdgeInactive() => oddstate |= 0x04000000;
-        private void SetOddSWEastEdgeInactive() => oddstate |= 0x00040000;
-        private void SetOddNEEastEdgeInactive() => oddstate |= 0x00000400;
-        private void SetOddSEEastEdgeInactive() => oddstate |= 0x00000004;
+        private void SetOddNWEastEdgeStable() => oddstate |= 0x04000000;
+        private void SetOddSWEastEdgeStable() => oddstate |= 0x00040000;
+        private void SetOddNEEastEdgeStable() => oddstate |= 0x00000400;
+        private void SetOddSEEastEdgeStable() => oddstate |= 0x00000004;
 
-        private void SetEvenNWNorthEdgeInactive() => evenstate |= 0x02000000;
-        private void SetEvenSWNorthEdgeInactive() => evenstate |= 0x00020000;
-        private void SetEvenNENorthEdgeInactive() => evenstate |= 0x00000200;
-        private void SetEvenSENorthEdgeInactive() => evenstate |= 0x00000002;
+        private void SetEvenNWNorthEdgeStable() => evenstate |= 0x02000000;
+        private void SetEvenSWNorthEdgeStable() => evenstate |= 0x00020000;
+        private void SetEvenNENorthEdgeStable() => evenstate |= 0x00000200;
+        private void SetEvenSENorthEdgeStable() => evenstate |= 0x00000002;
 
-        private void SetOddNWSouthEdgeInactive() => oddstate |= 0x02000000;
-        private void SetOddSWSouthEdgeInactive() => oddstate |= 0x00020000;
-        private void SetOddNESouthEdgeInactive() => oddstate |= 0x00000200;
-        private void SetOddSESouthEdgeInactive() => oddstate |= 0x00000002;
+        private void SetOddNWSouthEdgeStable() => oddstate |= 0x02000000;
+        private void SetOddSWSouthEdgeStable() => oddstate |= 0x00020000;
+        private void SetOddNESouthEdgeStable() => oddstate |= 0x00000200;
+        private void SetOddSESouthEdgeStable() => oddstate |= 0x00000002;
 
-        private void SetEvenNWNWCornerInactive() => evenstate |= 0x01000000;
-        private void SetEvenSWNWCornerInactive() => evenstate |= 0x00010000;
-        private void SetEvenNENWCornerInactive() => evenstate |= 0x00000100;
-        private void SetEvenSENWCornerInactive() => evenstate |= 0x00000001;
+        private void SetEvenNWNWCornerStable() => evenstate |= 0x01000000;
+        private void SetEvenSWNWCornerStable() => evenstate |= 0x00010000;
+        private void SetEvenNENWCornerStable() => evenstate |= 0x00000100;
+        private void SetEvenSENWCornerStable() => evenstate |= 0x00000001;
 
-        private void SetOddNWSECornerInactive() => oddstate |= 0x01000000;
-        private void SetOddSWSECornerInactive() => oddstate |= 0x00010000;
-        private void SetOddNESECornerInactive() => oddstate |= 0x00000100;
-        private void SetOddSESECornerInactive() => oddstate |= 0x00000001;
+        private void SetOddNWSECornerStable() => oddstate |= 0x01000000;
+        private void SetOddSWSECornerStable() => oddstate |= 0x00010000;
+        private void SetOddNESECornerStable() => oddstate |= 0x00000100;
+        private void SetOddSESECornerStable() => oddstate |= 0x00000001;
 
         // Dead
 
@@ -384,12 +384,12 @@
         private void SetOddNESECornerDead() => oddstate |= 0x00001100;
         private void SetOddSESECornerDead() => oddstate |= 0x00000011;
 
-        // If we know a quad3 is inactive, we can also check to see if 
+        // If we know a quad3 is stable, we can also check to see if 
         // some of it can be made dead.
 
-        private void SetEvenNWQuad3FullyInactiveMaybeDead()
+        private void SetEvenNWQuad3FullyStableMaybeDead()
         {
-            SetEvenNWAllRegionsInactive();
+            SetEvenNWAllRegionsStable();
             if (evenNW.NorthwestCornerDead)
                 SetEvenNWNWCornerDead();
             if (evenNW.NorthEdgeDead)
@@ -400,9 +400,9 @@
                 SetEvenNWAllRegionsDead();
         }
 
-        private void SetEvenNEQuad3FullyInactiveMaybeDead()
+        private void SetEvenNEQuad3FullyStableMaybeDead()
         {
-            SetEvenNEAllRegionsInactive();
+            SetEvenNEAllRegionsStable();
             if (evenNE.NorthwestCornerDead)
                 SetEvenNENWCornerDead();
             if (evenNE.NorthEdgeDead)
@@ -413,9 +413,9 @@
                 SetEvenNEAllRegionsDead();
         }
 
-        private void SetEvenSWQuad3FullyInactiveMaybeDead()
+        private void SetEvenSWQuad3FullyStableMaybeDead()
         {
-            SetEvenSWAllRegionsInactive();
+            SetEvenSWAllRegionsStable();
             if (evenSW.NorthwestCornerDead)
                 SetEvenSWNWCornerDead();
             if (evenSW.NorthEdgeDead)
@@ -426,9 +426,9 @@
                 SetEvenSWAllRegionsDead();
         }
 
-        private void SetEvenSEQuad3FullyInactiveMaybeDead()
+        private void SetEvenSEQuad3FullyStableMaybeDead()
         {
-            SetEvenSEAllRegionsInactive();
+            SetEvenSEAllRegionsStable();
             if (evenSE.NorthwestCornerDead)
                 SetEvenSENWCornerDead();
             if (evenSE.NorthEdgeDead)
@@ -439,9 +439,9 @@
                 SetEvenSEAllRegionsDead();
         }
 
-        private void SetOddNWQuad3FullyInactiveMaybeDead()
+        private void SetOddNWQuad3FullyStableMaybeDead()
         {
-            SetOddNWAllRegionsInactive();
+            SetOddNWAllRegionsStable();
             if (oddNW.SoutheastCornerDead)
                 SetOddNWSECornerDead();
             if (oddNW.SouthEdgeDead)
@@ -452,9 +452,9 @@
                 SetOddNWAllRegionsDead();
         }
 
-        private void SetOddSWQuad3FullyInactiveMaybeDead()
+        private void SetOddSWQuad3FullyStableMaybeDead()
         {
-            SetOddSWAllRegionsInactive();
+            SetOddSWAllRegionsStable();
             if (oddSW.SoutheastCornerDead)
                 SetOddSWSECornerDead();
             if (oddSW.SouthEdgeDead)
@@ -465,9 +465,9 @@
                 SetOddSWAllRegionsDead();
         }
 
-        private void SetOddNEQuad3FullyInactiveMaybeDead()
+        private void SetOddNEQuad3FullyStableMaybeDead()
         {
-            SetOddNEAllRegionsInactive();
+            SetOddNEAllRegionsStable();
             if (oddNE.SoutheastCornerDead)
                 SetOddNESECornerDead();
             if (oddNE.SouthEdgeDead)
@@ -478,9 +478,9 @@
                 SetOddNEAllRegionsDead();
         }
 
-        private void SetOddSEQuad3FullyInactiveMaybeDead()
+        private void SetOddSEQuad3FullyStableMaybeDead()
         {
-            SetOddSEAllRegionsInactive();
+            SetOddSEAllRegionsStable();
             if (oddSE.SoutheastCornerDead)
                 SetOddSESECornerDead();
             if (oddSE.SouthEdgeDead)
@@ -494,7 +494,7 @@
         // Is the given quad3 possibly active, either because it is active or because
         // a neighboring quad4 has an active adjoining edge?  If yes, return true.
         // If no, then we know that the corresponding next generation will 
-        // be inactive, and possibly dead, so we set those bits.
+        // be stable, and possibly dead, so we set those bits.
 
         // Yes, I know I always say that you don't want to make a predicate that causes
         // a side effect, but we'll live with it.
@@ -503,7 +503,7 @@
         {
             if (EvenNorthwestOrBorderingActive)
                 return true;
-            SetOddNWQuad3FullyInactiveMaybeDead();
+            SetOddNWQuad3FullyStableMaybeDead();
             return false;
         }
 
@@ -513,7 +513,7 @@
                 return true;
             if (S != null && S.EvenNorthEdge10WestActive)
                 return true;
-            SetOddSWQuad3FullyInactiveMaybeDead();
+            SetOddSWQuad3FullyStableMaybeDead();
             return false;
         }
 
@@ -523,7 +523,7 @@
                 return true;
             if (E != null && E.EvenWestEdge10NorthActive)
                 return true;
-            SetOddNEQuad3FullyInactiveMaybeDead();
+            SetOddNEQuad3FullyStableMaybeDead();
             return false;
         }
 
@@ -537,7 +537,7 @@
                 return true;
             if (SE != null && SE.EvenNorthwestCornerActive)
                 return true;
-            SetOddSEQuad3FullyInactiveMaybeDead();
+            SetOddSEQuad3FullyStableMaybeDead();
             return false;
         }
 
@@ -551,7 +551,7 @@
                 return true;
             if (NW != null && NW.OddSoutheastCornerActive)
                 return true;
-            SetEvenNWQuad3FullyInactiveMaybeDead();
+            SetEvenNWQuad3FullyStableMaybeDead();
             return false;
         }
 
@@ -561,7 +561,7 @@
                 return true;
             if (N != null && N.OddSouthEdge10EastActive)
                 return true;
-            SetEvenNEQuad3FullyInactiveMaybeDead();
+            SetEvenNEQuad3FullyStableMaybeDead();
             return false;
         }
 
@@ -569,7 +569,7 @@
         {
             if (OddSoutheastOrBorderingActive)
                 return true;
-            SetEvenSEQuad3FullyInactiveMaybeDead();
+            SetEvenSEQuad3FullyStableMaybeDead();
             return false;
         }
 
@@ -579,7 +579,7 @@
                 return true;
             if (W != null && W.OddEastEdge10SouthActive)
                 return true;
-            SetEvenSWQuad3FullyInactiveMaybeDead();
+            SetEvenSWQuad3FullyStableMaybeDead();
             return false;
         }
 
@@ -593,14 +593,14 @@
                 if (newEvenNW.NorthwestCornerDead)
                     SetEvenNWNWCornerDead();
                 else
-                    SetEvenNWNWCornerInactive();
+                    SetEvenNWNWCornerStable();
 
                 if (changes.NorthEdgeNoChange)
                 {
                     if (newEvenNW.NorthEdgeDead)
                         SetEvenNWNorthEdgeDead();
                     else
-                        SetEvenNWNorthEdgeInactive();
+                        SetEvenNWNorthEdgeStable();
                 }
                 else
                 {
@@ -612,14 +612,14 @@
                     if (newEvenNW.WestEdgeDead)
                         SetEvenNWWestEdgeDead();
                     else
-                        SetEvenNWWestEdgeInactive();
+                        SetEvenNWWestEdgeStable();
 
                     if (changes.NoChange)
                     {
                         if (newEvenNW.AllDead)
                             SetEvenNWAllRegionsDead();
                         else
-                            SetEvenNWAllRegionsInactive();
+                            SetEvenNWAllRegionsStable();
                     }
                     else
                     {
@@ -646,14 +646,14 @@
                 if (newEvenSW.NorthwestCornerDead)
                     SetEvenSWNWCornerDead();
                 else
-                    SetEvenSWNWCornerInactive();
+                    SetEvenSWNWCornerStable();
 
                 if (changes.NorthEdgeNoChange)
                 {
                     if (newEvenSW.NorthEdgeDead)
                         SetEvenSWNorthEdgeDead();
                     else
-                        SetEvenSWNorthEdgeInactive();
+                        SetEvenSWNorthEdgeStable();
                 }
                 else
                 {
@@ -665,14 +665,14 @@
                     if (newEvenSW.WestEdgeDead)
                         SetEvenSWWestEdgeDead();
                     else
-                        SetEvenSWWestEdgeInactive();
+                        SetEvenSWWestEdgeStable();
 
                     if (changes.NoChange)
                     {
                         if (newEvenSW.AllDead)
                             SetEvenSWAllRegionsDead();
                         else
-                            SetEvenSWAllRegionsInactive();
+                            SetEvenSWAllRegionsStable();
                     }
                     else
                     {
@@ -700,14 +700,14 @@
                 if (newEvenNE.NorthwestCornerDead)
                     SetEvenNENWCornerDead();
                 else
-                    SetEvenNENWCornerInactive();
+                    SetEvenNENWCornerStable();
 
                 if (changes.NorthEdgeNoChange)
                 {
                     if (newEvenNE.NorthEdgeDead)
                         SetEvenNENorthEdgeDead();
                     else
-                        SetEvenNENorthEdgeInactive();
+                        SetEvenNENorthEdgeStable();
                 }
                 else
                 {
@@ -719,14 +719,14 @@
                     if (newEvenNE.WestEdgeDead)
                         SetEvenNEWestEdgeDead();
                     else
-                        SetEvenNEWestEdgeInactive();
+                        SetEvenNEWestEdgeStable();
 
                     if (changes.NoChange)
                     {
                         if (newEvenNE.AllDead)
                             SetEvenNEAllRegionsDead();
                         else
-                            SetEvenNEAllRegionsInactive();
+                            SetEvenNEAllRegionsStable();
                     }
                     else
                     {
@@ -754,14 +754,14 @@
                 if (newEvenSE.NorthwestCornerDead)
                     SetEvenSENWCornerDead();
                 else
-                    SetEvenSENWCornerInactive();
+                    SetEvenSENWCornerStable();
 
                 if (changes.NorthEdgeNoChange)
                 {
                     if (newEvenSE.NorthEdgeDead)
                         SetEvenSENorthEdgeDead();
                     else
-                        SetEvenSENorthEdgeInactive();
+                        SetEvenSENorthEdgeStable();
                 }
                 else
                 {
@@ -773,14 +773,14 @@
                     if (newEvenSE.WestEdgeDead)
                         SetEvenSEWestEdgeDead();
                     else
-                        SetEvenSEWestEdgeInactive();
+                        SetEvenSEWestEdgeStable();
 
                     if (changes.NoChange)
                     {
                         if (newEvenSE.AllDead)
                             SetEvenSEAllRegionsDead();
                         else
-                            SetEvenSEAllRegionsInactive();
+                            SetEvenSEAllRegionsStable();
                     }
                     else
                     {
@@ -807,14 +807,14 @@
                 if (newOddNW.SoutheastCornerDead)
                     SetOddNWSECornerDead();
                 else
-                    SetOddNWSECornerInactive();
+                    SetOddNWSECornerStable();
 
                 if (changes.SouthEdgeNoChange)
                 {
                     if (newOddNW.SouthEdgeDead)
                         SetOddNWSouthEdgeDead();
                     else
-                        SetOddNWSouthEdgeInactive();
+                        SetOddNWSouthEdgeStable();
                 }
                 else
                 {
@@ -826,14 +826,14 @@
                     if (newOddNW.EastEdgeDead)
                         SetOddNWEastEdgeDead();
                     else
-                        SetOddNWEastEdgeInactive();
+                        SetOddNWEastEdgeStable();
 
                     if (changes.NoChange)
                     {
                         if (newOddNW.AllDead)
                             SetOddNWAllRegionsDead();
                         else
-                            SetOddNWAllRegionsInactive();
+                            SetOddNWAllRegionsStable();
                     }
                     else
                     {
@@ -861,14 +861,14 @@
                 if (newOddSW.SoutheastCornerDead)
                     SetOddSWSECornerDead();
                 else
-                    SetOddSWSECornerInactive();
+                    SetOddSWSECornerStable();
 
                 if (changes.SouthEdgeNoChange)
                 {
                     if (newOddSW.SouthEdgeDead)
                         SetOddSWSouthEdgeDead();
                     else
-                        SetOddSWSouthEdgeInactive();
+                        SetOddSWSouthEdgeStable();
                 }
                 else
                 {
@@ -880,14 +880,14 @@
                     if (newOddSW.EastEdgeDead)
                         SetOddSWEastEdgeDead();
                     else
-                        SetOddSWEastEdgeInactive();
+                        SetOddSWEastEdgeStable();
 
                     if (changes.NoChange)
                     {
                         if (newOddSW.AllDead)
                             SetOddSWAllRegionsDead();
                         else
-                            SetOddSWAllRegionsInactive();
+                            SetOddSWAllRegionsStable();
                     }
                     else
                     {
@@ -915,14 +915,14 @@
                 if (newOddNE.SoutheastCornerDead)
                     SetOddNESECornerDead();
                 else
-                    SetOddNESECornerInactive();
+                    SetOddNESECornerStable();
 
                 if (changes.SouthEdgeNoChange)
                 {
                     if (newOddNE.SouthEdgeDead)
                         SetOddNESouthEdgeDead();
                     else
-                        SetOddNESouthEdgeInactive();
+                        SetOddNESouthEdgeStable();
                 }
                 else
                 {
@@ -934,14 +934,14 @@
                     if (newOddNE.EastEdgeDead)
                         SetOddNEEastEdgeDead();
                     else
-                        SetOddNEEastEdgeInactive();
+                        SetOddNEEastEdgeStable();
 
                     if (changes.NoChange)
                     {
                         if (newOddNE.AllDead)
                             SetOddNEAllRegionsDead();
                         else
-                            SetOddNEAllRegionsInactive();
+                            SetOddNEAllRegionsStable();
                     }
                     else
                     {
@@ -969,13 +969,13 @@
                 if (newOddSE.SoutheastCornerDead)
                     SetOddSESECornerDead();
                 else
-                    SetOddSESECornerInactive();
+                    SetOddSESECornerStable();
                 if (changes.SouthEdgeNoChange)
                 {
                     if (newOddSE.SouthEdgeDead)
                         SetOddSESouthEdgeDead();
                     else
-                        SetOddSESouthEdgeInactive();
+                        SetOddSESouthEdgeStable();
                 }
                 else
                 {
@@ -986,14 +986,14 @@
                     if (newOddSE.EastEdgeDead)
                         SetOddSEEastEdgeDead();
                     else
-                        SetOddSEEastEdgeInactive();
+                        SetOddSEEastEdgeStable();
 
                     if (changes.NoChange)
                     {
                         if (newOddSE.AllDead)
                             SetOddSEAllRegionsDead();
                         else
-                            SetOddSEAllRegionsInactive();
+                            SetOddSEAllRegionsStable();
                     }
                     else
                     {

@@ -94,7 +94,7 @@ namespace ConwaysLife.Hensel
         {
             foreach (Quad4 c in active)
             {
-                if (!RemoveInactiveEvenQuad4(c))
+                if (!RemoveStableEvenQuad4(c))
                 {
                     c.StepEven();
                     MakeOddNeighborsActive(c);
@@ -107,7 +107,7 @@ namespace ConwaysLife.Hensel
         {
             foreach (Quad4 c in active)
             {
-                if (!RemoveInactiveOddQuad4(c))
+                if (!RemoveStableOddQuad4(c))
                 { 
                     c.StepOdd();
                     MakeEvenNeighborsActive(c);
@@ -136,14 +136,14 @@ namespace ConwaysLife.Hensel
                 EnsureActive(c.NW, c.X - 1, c.Y + 1);
         }
 
-        // Try to remove an inactive quad4 on the even cycle.
+        // Try to remove a stable quad4 on the even cycle.
         // If the quad4 cannot be removed because either the
         // even quad4 is active, or a neighboring edge is active,
         // this returns false; if it successfully make the quad4
         // dead or stable, it returns true and the quad4 should
         // not be processed further.
 
-        private bool RemoveInactiveEvenQuad4(Quad4 c)
+        private bool RemoveStableEvenQuad4(Quad4 c)
         {
             if (c.EvenQuad4OrNeighborsActive)
             {
@@ -162,7 +162,7 @@ namespace ConwaysLife.Hensel
             else
             {
                 c.EvenState = Stable;
-                c.SetOddQuad4AllRegionsInactive();
+                c.SetOddQuad4AllRegionsStable();
                 if (!c.StayActiveNextStep && c.OddState != Active)
                     MakeStable(c);
             }
@@ -170,7 +170,7 @@ namespace ConwaysLife.Hensel
         }
 
         // Similar to above.
-        private bool RemoveInactiveOddQuad4(Quad4 c)
+        private bool RemoveStableOddQuad4(Quad4 c)
         {
             if (c.OddQuad4OrNeighborsActive)
             {
@@ -189,7 +189,7 @@ namespace ConwaysLife.Hensel
             else
             {
                 c.OddState = Stable;
-                c.SetEvenQuad4AllRegionsInactive();
+                c.SetEvenQuad4AllRegionsStable();
                 if (!c.StayActiveNextStep && c.EvenState != Active)
                     MakeStable(c);
             }
