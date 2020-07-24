@@ -1095,7 +1095,7 @@
             if (!OddNWPossiblyActive())
                 return;
 
-            Quad3 new_even_nw = Step9Quad2ToQuad3Odd(
+            Quad3 newEvenNW = Step9Quad2ToQuad3Odd(
                 NW == null ? AllDead : NW.oddSE.SE,
                 N == null ? AllDead : N.oddSW.SW,
                 N == null ? AllDead : N.oddSW.SE,
@@ -1105,14 +1105,14 @@
                 W == null ? AllDead : W.oddNE.SE,
                 oddNW.SW,
                 oddNW.SE);
-            UpdateEvenNW(new_even_nw);
+            UpdateEvenNW(newEvenNW);
         }
 
         private void StepOddSW()
         {
             if (!OddSWPossiblyActive())
                 return;
-            Quad3 new_even_sw = Step9Quad2ToQuad3Odd(
+            Quad3 newEvenSW = Step9Quad2ToQuad3Odd(
                 W == null ? AllDead : W.oddNE.SE,
                 oddNW.SW,
                 oddNW.SE,
@@ -1122,14 +1122,14 @@
                 W == null ? AllDead : W.oddSE.SE,
                 oddSW.SW,
                 oddSW.SE);
-            UpdateEvenSW(new_even_sw);
+            UpdateEvenSW(newEvenSW);
         }
 
         private void StepOddNE()
         {
             if (!OddNEPossiblyActive())
                 return;
-            Quad3 new_even_ne = Step9Quad2ToQuad3Odd(
+            Quad3 newEvenNE = Step9Quad2ToQuad3Odd(
                 N == null ? AllDead : N.oddSW.SE,
                 N == null ? AllDead : N.oddSE.SW,
                 N == null ? AllDead : N.oddSE.SE,
@@ -1139,14 +1139,14 @@
                 oddNW.SE,
                 oddNE.SW,
                 oddNE.SE);
-            UpdateEvenNE(new_even_ne);
+            UpdateEvenNE(newEvenNE);
         }
 
         private void StepOddSE()
         {
             if (!OddSEPossiblyActive())
                 return;
-            Quad3 new_even_se = Step9Quad2ToQuad3Odd(
+            Quad3 newOddSE = Step9Quad2ToQuad3Odd(
                 oddNW.SE,
                 oddNE.SW,
                 oddNE.SE,
@@ -1156,7 +1156,7 @@
                 oddSW.SE,
                 oddSE.SW,
                 oddSE.SE);
-            UpdateEvenSE(new_even_se);
+            UpdateEvenSE(newOddSE);
         }
 
         public void StepOdd()
