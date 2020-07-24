@@ -17,16 +17,16 @@ namespace ConwaysLife.Hensel
         public Quad2 SW { get; }
         public Quad2 SE { get; }
 
-        public bool AllDead => (NW | NE | SW | SE).Dead;
-        public bool NorthwestCornerDead => NW.NW.Dead;
-        public bool SoutheastCornerDead => SE.SE.Dead;
+        private bool AllDead => (NW | NE | SW | SE).Dead;
+        private bool NorthwestCornerDead => NW.NW.Dead;
+        private bool SoutheastCornerDead => SE.SE.Dead;
 
-        public bool NorthEdgeDead => (NW | NE).NorthEdge.Dead;
-        public bool WestEdgeDead => (SW | NW).WestEdge.Dead;
-        public bool SouthEdgeDead => (SW | SE).SouthEdge.Dead;
-        public bool EastEdgeDead => (NE | SE).EastEdge.Dead;
+        private bool NorthEdgeDead => (NW | NE).NorthEdge.Dead;
+        private bool WestEdgeDead => (SW | NW).WestEdge.Dead;
+        private bool SouthEdgeDead => (SW | SE).SouthEdge.Dead;
+        private bool EastEdgeDead => (NE | SE).EastEdge.Dead;
 
-        public Quad3ChangeReport Compare(Quad3 q) => new Quad3ChangeReport(this, q);
+        private Quad3ChangeReport Compare(Quad3 q) => new Quad3ChangeReport(this, q);
 
         public bool Get(int x, int y)
         {
@@ -87,23 +87,157 @@ namespace ConwaysLife.Hensel
             }
             return s;
         }
-    }
 
-    struct Quad3ChangeReport
-    {
-        public Quad3ChangeReport(Quad3 x, Quad3 y)
+        public Quad3State UpdateEvenQuad3State(Quad3 newQ3, Quad3State s)
         {
-            q3 = new Quad3(x.NW ^ y.NW, x.NE ^ y.NE, x.SW ^ y.SW, x.SE ^ y.SE);
+            Quad3ChangeReport changes = newQ3.Compare(this);
+            if (changes.NorthwestCornerNoChange)
+            {
+                if (newQ3.NorthwestCornerDead)
+                    s = s.SetCornerDead();
+                else
+                    s = s.SetCornerStable();
+
+                if (changes.NorthEdgeNoChange)
+                {
+                    if (newQ3.NorthEdgeDead)
+                        s = s.SetHorizontalEdgeDead();
+                    else
+                        s = s.SetHorizontalEdgeStable();
+                }
+                else
+                {
+                    s = s.SetHorizontalEdgeAndQuadActive();
+                }
+
+                if (changes.WestEdgeNoChange)
+                {
+                    if (newQ3.WestEdgeDead)
+                        s = s.SetVerticalEdgeDead();
+                    else
+                        s = s.SetVerticalEdgeStable();
+
+                    if (changes.NoChange)
+                    {
+                        if (newQ3.AllDead)
+                            s = s.SetAllRegionsDead();
+                        else
+                            s = s.SetAllRegionsStable();
+                    }
+                    else
+                    {
+                        s = s.SetQuad3Active();
+                    }
+                }
+                else
+                {
+                    s = s.SetVerticalEdgeAndQuadActive();
+                }
+            }
+            else
+            {
+                s = s.SetAllRegionsActive();
+            }
+            return s;
         }
 
-        private readonly Quad3 q3;
+        public Quad3State MakeEvenStableOrDead(Quad3State s)
+        {
+            s = s.SetAllRegionsStable();
+            if (NorthwestCornerDead)
+                s = s.SetCornerDead();
+            if (NorthEdgeDead)
+                s = s.SetHorizontalEdgeDead();
+            if (WestEdgeDead)
+                s = s.SetVerticalEdgeDead();
+            if (AllDead)
+                s = s.SetAllRegionsDead();
+            return s;
+        }
 
-        public bool NoChange => q3.AllDead;
-        public bool NorthwestCornerNoChange => q3.NorthwestCornerDead;
-        public bool SoutheastCornerNoChange => q3.SoutheastCornerDead;
-        public bool NorthEdgeNoChange => q3.NorthEdgeDead;
-        public bool WestEdgeNoChange => q3.WestEdgeDead;
-        public bool SouthEdgeNoChange => q3.SouthEdgeDead;
-        public bool EastEdgeNoChange => q3.EastEdgeDead;
+        public Quad3State UpdateOddQuad3State(Quad3 newQ3, Quad3State s)
+        {
+            Quad3ChangeReport changes = newQ3.Compare(this);
+            if (changes.SoutheastCornerNoChange)
+            {
+                if (newQ3.SoutheastCornerDead)
+                    s = s.SetCornerDead();
+                else
+                    s = s.SetCornerStable();
+
+                if (changes.SouthEdgeNoChange)
+                {
+                    if (newQ3.SouthEdgeDead)
+                        s = s.SetHorizontalEdgeDead();
+                    else
+                        s = s.SetHorizontalEdgeStable();
+                }
+                else
+                {
+                    s = s.SetHorizontalEdgeAndQuadActive();
+                }
+
+                if (changes.EastEdgeNoChange)
+                {
+                    if (newQ3.EastEdgeDead)
+                        s = s.SetVerticalEdgeDead();
+                    else
+                        s = s.SetVerticalEdgeStable();
+
+                    if (changes.NoChange)
+                    {
+                        if (newQ3.AllDead)
+                            s = s.SetAllRegionsDead();
+                        else
+                            s = s.SetAllRegionsStable();
+                    }
+                    else
+                    {
+                        s = s.SetQuad3Active();
+                    }
+                }
+                else
+                {
+                    s = s.SetVerticalEdgeAndQuadActive();
+                }
+            }
+            else
+            {
+                s = s.SetAllRegionsActive();
+            }
+            return s;
+        }
+
+        public Quad3State MakeOddStableOrDead(Quad3State s)
+        {
+            s = s.SetAllRegionsStable();
+            if (SoutheastCornerDead)
+                s = s.SetCornerDead();
+            if (SouthEdgeDead)
+                s = s.SetHorizontalEdgeDead();
+            if (EastEdgeDead)
+                s = s.SetVerticalEdgeDead();
+            if (AllDead)
+                s = s.SetAllRegionsDead();
+            return s;
+        }
+
+        private struct Quad3ChangeReport
+        {
+            public Quad3ChangeReport(Quad3 x, Quad3 y)
+            {
+                q3 = new Quad3(x.NW ^ y.NW, x.NE ^ y.NE, x.SW ^ y.SW, x.SE ^ y.SE);
+            }
+
+            private readonly Quad3 q3;
+
+            public bool NoChange => q3.AllDead;
+            public bool NorthwestCornerNoChange => q3.NorthwestCornerDead;
+            public bool SoutheastCornerNoChange => q3.SoutheastCornerDead;
+            public bool NorthEdgeNoChange => q3.NorthEdgeDead;
+            public bool WestEdgeNoChange => q3.WestEdgeDead;
+            public bool SouthEdgeNoChange => q3.SouthEdgeDead;
+            public bool EastEdgeNoChange => q3.EastEdgeDead;
+        }
     }
 }

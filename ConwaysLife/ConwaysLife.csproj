@@ -61,6 +61,7 @@
     <Compile Include="HenselQuad2.cs" />
     <Compile Include="HenselQuad3.cs" />
     <Compile Include="DoubleLinkList.cs" />
+    <Compile Include="HenselQuad3State.cs" />
     <Compile Include="ILife.cs" />
     <Compile Include="HenselQuad4.cs" />
     <Compile Include="LifeForm.cs">

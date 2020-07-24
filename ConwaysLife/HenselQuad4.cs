@@ -12,43 +12,6 @@
         Dead
     }
     
-    struct Quad3State
-    {
-        //  7: all dead
-        //  6: W (even) or E (odd) edge dead
-        //  5: N (even) or S (odd) edge dead
-        //  4: NW (even) or SE (odd) corner dead
-        //  3: all stable
-        //  2: W (even) or E (odd) edge stable
-        //  1: N (even) or S (odd) edge stable
-        //  0: NW (even) or SE (odd) corner stable
-        readonly private uint b;
-        public Quad3State(int b) => this.b = (uint)b;
-        public Quad3State(uint b) => this.b = b;
-        public Quad3State SetAllRegionsActive() => new Quad3State(0x00);
-        public Quad3State SetVerticalEdgeAndQuadActive() => new Quad3State(b & 0x33);
-        public Quad3State SetHorizontalEdgeAndQuadActive() => new Quad3State(b & 0x55);
-        public Quad3State SetQuad3Active() => new Quad3State(b & 0x77);
-        // Calling any of the stable setters on a region which is dead keeps it dead,
-        // which is what we want.
-        public Quad3State SetAllRegionsStable() => new Quad3State(b | 0xf);
-        // We could also set the corner to be stable, because if the edge is
-        // stable then the corner is too.  However, on every code path
-        // where these are called, the corner bit has already been set.
-        public Quad3State SetVerticalEdgeStable() => new Quad3State(b | 0x04);
-        public Quad3State SetHorizontalEdgeStable() => new Quad3State(b | 0x02);
-        public Quad3State SetCornerStable() => new Quad3State(b | 0x01);
-        public Quad3State SetAllRegionsDead() => new Quad3State(0xff);
-        // We could also set the corner to be dead, because if the edge is
-        // dead then the corner is too.  However, on every code path
-        // where these are called, the corner bit has already been set.
-        public Quad3State SetVerticalEdgeDead() => new Quad3State(b | 0x44);
-        public Quad3State SetHorizontalEdgeDead() => new Quad3State(b | 0x22);
-        public Quad3State SetCornerDead() => new Quad3State(b | 0x11);
-
-        public static explicit operator uint(Quad3State s) => s.b;
-    }
-
     sealed class Quad4 : IDoubleLink<Quad4>
     {
         // A quad4 represents a 16 x 16 grid located at coordinates (x * 16, y * 16).
@@ -328,8 +291,6 @@
         public void SetEvenQuad4AllRegionsDead() => evenstate = 0xffffffff;
         public void SetOddQuad4AllRegionsDead() => oddstate = 0xffffffff;
 
-
-
         // Is the given quad3 possibly active, either because it is active or because
         // a neighboring quad4 has an active adjoining edge?  If yes, return true.
         // If no, then we know that the corresponding next generation will 
@@ -342,7 +303,7 @@
         {
             if (EvenNorthwestOrBorderingActive)
                 return true;
-            OddNWState = MakeOddStableOrDead(oddNW, OddNWState);
+            OddNWState = oddNW.MakeOddStableOrDead(OddNWState);
             return false;
         }
 
@@ -352,7 +313,7 @@
                 return true;
             if (S != null && S.EvenNorthEdge10WestActive)
                 return true;
-            OddSWState = MakeOddStableOrDead(oddSW, OddSWState);
+            OddSWState = oddSW.MakeOddStableOrDead(OddSWState);
             return false;
         }
 
@@ -362,7 +323,7 @@
                 return true;
             if (E != null && E.EvenWestEdge10NorthActive)
                 return true;
-            OddNEState = MakeOddStableOrDead(oddNE, OddNEState);
+            OddNEState = oddNE.MakeOddStableOrDead(OddNEState);
             return false;
         }
 
@@ -376,7 +337,7 @@
                 return true;
             if (SE != null && SE.EvenNorthwestCornerActive)
                 return true;
-            OddSEState = MakeOddStableOrDead(oddSE, OddSEState);
+            OddSEState = oddSE.MakeOddStableOrDead(OddSEState);
             return false;
         }
 
@@ -390,7 +351,7 @@
                 return true;
             if (NW != null && NW.OddSoutheastCornerActive)
                 return true;
-            EvenNWState = MakeEvenStableOrDead(evenNW, EvenNWState);
+            EvenNWState = evenNW.MakeEvenStableOrDead(EvenNWState);
             return false;
         }
 
@@ -400,7 +361,7 @@
                 return true;
             if (N != null && N.OddSouthEdge10EastActive)
                 return true;
-            EvenNEState = MakeEvenStableOrDead(evenNE, EvenNEState);
+            EvenNEState = evenNE.MakeEvenStableOrDead(EvenNEState);
             return false;
         }
 
@@ -408,7 +369,7 @@
         {
             if (OddSoutheastOrBorderingActive)
                 return true;
-            EvenSEState = MakeEvenStableOrDead(evenSE, EvenSEState);
+            EvenSEState = evenSE.MakeEvenStableOrDead(EvenSEState);
             return false;
         }
 
@@ -418,150 +379,9 @@
                 return true;
             if (W != null && W.OddEastEdge10SouthActive)
                 return true;
-            EvenSWState = MakeEvenStableOrDead(evenSW, EvenSWState);
+            EvenSWState = evenSW.MakeEvenStableOrDead(EvenSWState);
             return false;
         }
-
-        // Helpers that update a Quad3State
-
-        private static Quad3State UpdateEvenQuad3State(Quad3 oldQ3, Quad3 newQ3, Quad3State s)
-        {
-            Quad3ChangeReport changes = newQ3.Compare(oldQ3);
-            if (changes.NorthwestCornerNoChange)
-            {
-                if (newQ3.NorthwestCornerDead)
-                    s = s.SetCornerDead();
-                else
-                    s = s.SetCornerStable();
-
-                if (changes.NorthEdgeNoChange)
-                {
-                    if (newQ3.NorthEdgeDead)
-                        s = s.SetHorizontalEdgeDead();
-                    else
-                        s = s.SetHorizontalEdgeStable();
-                }
-                else
-                {
-                    s = s.SetHorizontalEdgeAndQuadActive();
-                }
-
-                if (changes.WestEdgeNoChange)
-                {
-                    if (newQ3.WestEdgeDead)
-                        s = s.SetVerticalEdgeDead();
-                    else
-                        s = s.SetVerticalEdgeStable();
-
-                    if (changes.NoChange)
-                    {
-                        if (newQ3.AllDead)
-                            s = s.SetAllRegionsDead();
-                        else
-                            s = s.SetAllRegionsStable();
-                    }
-                    else
-                    {
-                        s = s.SetQuad3Active();
-                    }
-                }
-                else
-                {
-                    s = s.SetVerticalEdgeAndQuadActive();
-                }
-            }
-            else
-            {
-                s = s.SetAllRegionsActive();
-            }
-            return s;
-        }
-
-        private static Quad3State UpdateOddQuad3State(Quad3 oldQ3, Quad3 newQ3, Quad3State s)
-        {
-            Quad3ChangeReport changes = newQ3.Compare(oldQ3);
-            if (changes.SoutheastCornerNoChange)
-            {
-                if (newQ3.SoutheastCornerDead)
-                    s = s.SetCornerDead();
-                else
-                    s = s.SetCornerStable();
-
-                if (changes.SouthEdgeNoChange)
-                {
-                    if (newQ3.SouthEdgeDead)
-                        s = s.SetHorizontalEdgeDead();
-                    else
-                        s = s.SetHorizontalEdgeStable();
-                }
-                else
-                {
-                    s = s.SetHorizontalEdgeAndQuadActive();
-                }
-
-                if (changes.EastEdgeNoChange)
-                {
-                    if (newQ3.EastEdgeDead)
-                        s = s.SetVerticalEdgeDead();
-                    else
-                        s = s.SetVerticalEdgeStable();
-
-                    if (changes.NoChange)
-                    {
-                        if (newQ3.AllDead)
-                            s = s.SetAllRegionsDead();
-                        else
-                            s = s.SetAllRegionsStable();
-                    }
-                    else
-                    {
-                        s = s.SetQuad3Active();
-                    }
-                }
-                else
-                {
-                    s = s.SetVerticalEdgeAndQuadActive();
-                }
-            }
-            else
-            {
-                s = s.SetAllRegionsActive();
-            }
-            return s;
-        }
-
-
-        // If we know a quad3 is stable, we can also check to see if 
-        // some of it can be made dead.
-
-        private static Quad3State MakeEvenStableOrDead(Quad3 q, Quad3State s)
-        {
-            s = s.SetAllRegionsStable();
-            if (q.NorthwestCornerDead)
-                s = s.SetCornerDead();
-            if (q.NorthEdgeDead)
-                s = s.SetHorizontalEdgeDead();
-            if (q.WestEdgeDead)
-                s = s.SetVerticalEdgeDead();
-            if (q.AllDead)
-                s = s.SetAllRegionsDead();
-            return s;
-        }
-
-        private static Quad3State MakeOddStableOrDead(Quad3 q, Quad3State s)
-        {
-            s = s.SetAllRegionsStable();
-            if (q.SoutheastCornerDead)
-                s = s.SetCornerDead();
-            if (q.SouthEdgeDead)
-                s = s.SetHorizontalEdgeDead();
-            if (q.EastEdgeDead)
-                s = s.SetVerticalEdgeDead();
-            if (q.AllDead)
-                s = s.SetAllRegionsDead();
-            return s;
-        }
-
 
         // Stepping
 
@@ -580,7 +400,7 @@
                 evenSW.NE,
                 evenSE.NW);
 
-            OddNWState = UpdateOddQuad3State(oddNW, newOddNW, OddNWState);
+            OddNWState = oddNW.UpdateOddQuad3State(newOddNW, OddNWState);
             oddNW = newOddNW;
         }
 
@@ -599,7 +419,7 @@
                 S == null ? AllDead : S.evenNW.NE,
                 S == null ? AllDead : S.evenNE.NW);
 
-            OddSWState = UpdateOddQuad3State(oddSW, newOddSW, OddSWState);
+            OddSWState = oddSW.UpdateOddQuad3State(newOddSW, OddSWState);
             oddSW = newOddSW;
         }
 
@@ -617,7 +437,7 @@
                 evenSE.NW,
                 evenSE.NE,
                 E == null ? AllDead : E.evenSW.NW);
-            OddNEState = UpdateOddQuad3State(oddNE, newOddNE, OddNEState);
+            OddNEState = oddNE.UpdateOddQuad3State(newOddNE, OddNEState);
             oddNE = newOddNE;
         }
 
@@ -636,7 +456,7 @@
                 S == null ? AllDead : S.evenNE.NE,
                 SE == null ? AllDead : SE.evenNW.NW);
 
-            OddSEState = UpdateOddQuad3State(oddSE, newOddSE, OddSEState);
+            OddSEState = oddSE.UpdateOddQuad3State(newOddSE, OddSEState);
             oddSE = newOddSE;
         }
 
@@ -663,7 +483,7 @@
                 W == null ? AllDead : W.oddNE.SE,
                 oddNW.SW,
                 oddNW.SE);
-            EvenNWState = UpdateEvenQuad3State(evenNW, newEvenNW, EvenNWState);
+            EvenNWState = evenNW.UpdateEvenQuad3State(newEvenNW, EvenNWState);
             evenNW = newEvenNW;
         }
 
@@ -681,7 +501,7 @@
                 W == null ? AllDead : W.oddSE.SE,
                 oddSW.SW,
                 oddSW.SE);
-            EvenSWState = UpdateEvenQuad3State(evenSW, newEvenSW, EvenSWState);
+            EvenSWState = evenSW.UpdateEvenQuad3State(newEvenSW, EvenSWState);
             evenSW = newEvenSW;
         }
 
@@ -699,7 +519,7 @@
                 oddNW.SE,
                 oddNE.SW,
                 oddNE.SE);
-            EvenNEState = UpdateEvenQuad3State(evenNE, newEvenNE, EvenNEState);
+            EvenNEState = evenNE.UpdateEvenQuad3State(newEvenNE, EvenNEState);
             evenNE = newEvenNE;
         }
 
@@ -717,7 +537,7 @@
                 oddSW.SE,
                 oddSE.SW,
                 oddSE.SE);
-            EvenSEState = UpdateEvenQuad3State(evenSE, newEvenSE, EvenSEState);
+            EvenSEState = evenSE.UpdateEvenQuad3State(newEvenSE, EvenSEState);
             evenSE = newEvenSE;
         }
 
