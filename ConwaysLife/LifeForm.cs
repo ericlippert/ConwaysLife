@@ -195,7 +195,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new ProtoQuickLife();
+            life = new QuickLife();
 
             life.AddPattern(new LifePoint(128, 128), pattern);
 
