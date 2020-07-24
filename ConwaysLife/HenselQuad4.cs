@@ -319,193 +319,16 @@
             (W == null || W.OddEastEdgeDead) &&
             (NW == null || NW.OddSoutheastCornerDead);
 
-        // Setters
-
-        // Active
+        // Setters that affect all four Quad3s.
 
         private void SetEvenQuad4AllRegionsActive() => evenstate = 0x00000000;
         private void SetOddQuad4AllRegionsActive() => oddstate = 0x00000000;
-
-        private void SetEvenNWAllRegionsActive() => evenstate &= 0x00ffffff;
-        private void SetEvenSWAllRegionsActive() => evenstate &= 0xff00ffff;
-        private void SetEvenNEAllRegionsActive() => evenstate &= 0xffff00ff;
-        private void SetEvenSEAllRegionsActive() => evenstate &= 0xffffff00;
-
-        // Stable
-
-        // Calling any of these setters on a region which is dead keeps it dead,
-        // which is what we want.
-
         public void SetEvenQuad4AllRegionsStable() => evenstate |= 0x0f0f0f0f;
         public void SetOddQuad4AllRegionsStable() => oddstate |= 0x0f0f0f0f;
-
-        private void SetEvenNWAllRegionsStable() => evenstate |= 0x0f000000;
-        private void SetEvenSWAllRegionsStable() => evenstate |= 0x000f0000;
-        private void SetEvenNEAllRegionsStable() => evenstate |= 0x00000f00;
-        private void SetEvenSEAllRegionsStable() => evenstate |= 0x0000000f;
-
-        private void SetOddNWAllRegionsStable() => oddstate |= 0x0f000000;
-        private void SetOddSWAllRegionsStable() => oddstate |= 0x000f0000;
-        private void SetOddNEAllRegionsStable() => oddstate |= 0x00000f00;
-        private void SetOddSEAllRegionsStable() => oddstate |= 0x0000000f;
-
-        // Dead
-
         public void SetEvenQuad4AllRegionsDead() => evenstate = 0xffffffff;
         public void SetOddQuad4AllRegionsDead() => oddstate = 0xffffffff;
 
-        private void SetEvenNWAllRegionsDead() => evenstate |= 0xff000000;
-        private void SetEvenSWAllRegionsDead() => evenstate |= 0x00ff0000;
-        private void SetEvenNEAllRegionsDead() => evenstate |= 0x0000ff00;
-        private void SetEvenSEAllRegionsDead() => evenstate |= 0x000000ff;
 
-        private void SetOddNWAllRegionsDead() => oddstate |= 0xff000000;
-        private void SetOddSWAllRegionsDead() => oddstate |= 0x00ff0000;
-        private void SetOddNEAllRegionsDead() => oddstate |= 0x0000ff00;
-        private void SetOddSEAllRegionsDead() => oddstate |= 0x000000ff;
-
-        // We could also set the corner to be dead, because if the edge is
-        // dead then the corner is too.  However, on every code path
-        // where these are called, the corner bit has already been set.
-
-        private void SetEvenNWWestEdgeDead() => evenstate |= 0x44000000;
-        private void SetEvenSWWestEdgeDead() => evenstate |= 0x00440000;
-        private void SetEvenNEWestEdgeDead() => evenstate |= 0x00004400;
-        private void SetEvenSEWestEdgeDead() => evenstate |= 0x00000044;
-
-        private void SetOddNWEastEdgeDead() => oddstate |= 0x44000000;
-        private void SetOddSWEastEdgeDead() => oddstate |= 0x00440000;
-        private void SetOddNEEastEdgeDead() => oddstate |= 0x00004400;
-        private void SetOddSEEastEdgeDead() => oddstate |= 0x00000044;
-
-        private void SetEvenNWNorthEdgeDead() => evenstate |= 0x22000000;
-        private void SetEvenSWNorthEdgeDead() => evenstate |= 0x00220000;
-        private void SetEvenNENorthEdgeDead() => evenstate |= 0x00002200;
-        private void SetEvenSENorthEdgeDead() => evenstate |= 0x00000022;
-
-        private void SetOddNWSouthEdgeDead() => oddstate |= 0x22000000;
-        private void SetOddSWSouthEdgeDead() => oddstate |= 0x00220000;
-        private void SetOddNESouthEdgeDead() => oddstate |= 0x00002200;
-        private void SetOddSESouthEdgeDead() => oddstate |= 0x00000022;
-
-        private void SetEvenNWNWCornerDead() => evenstate |= 0x11000000;
-        private void SetEvenSWNWCornerDead() => evenstate |= 0x00110000;
-        private void SetEvenNENWCornerDead() => evenstate |= 0x00001100;
-        private void SetEvenSENWCornerDead() => evenstate |= 0x00000011;
-
-        private void SetOddNWSECornerDead() => oddstate |= 0x11000000;
-        private void SetOddSWSECornerDead() => oddstate |= 0x00110000;
-        private void SetOddNESECornerDead() => oddstate |= 0x00001100;
-        private void SetOddSESECornerDead() => oddstate |= 0x00000011;
-
-        // If we know a quad3 is stable, we can also check to see if 
-        // some of it can be made dead.
-
-        // TODO: These can be deduplicated
-
-        private void SetEvenNWQuad3FullyStableMaybeDead()
-        {
-            SetEvenNWAllRegionsStable();
-            if (evenNW.NorthwestCornerDead)
-                SetEvenNWNWCornerDead();
-            if (evenNW.NorthEdgeDead)
-                SetEvenNWNorthEdgeDead();
-            if (evenNW.WestEdgeDead)
-                SetEvenNWWestEdgeDead();
-            if (evenNW.AllDead)
-                SetEvenNWAllRegionsDead();
-        }
-
-        private void SetEvenNEQuad3FullyStableMaybeDead()
-        {
-            SetEvenNEAllRegionsStable();
-            if (evenNE.NorthwestCornerDead)
-                SetEvenNENWCornerDead();
-            if (evenNE.NorthEdgeDead)
-                SetEvenNENorthEdgeDead();
-            if (evenNE.WestEdgeDead)
-                SetEvenNEWestEdgeDead();
-            if (evenNE.AllDead)
-                SetEvenNEAllRegionsDead();
-        }
-
-        private void SetEvenSWQuad3FullyStableMaybeDead()
-        {
-            SetEvenSWAllRegionsStable();
-            if (evenSW.NorthwestCornerDead)
-                SetEvenSWNWCornerDead();
-            if (evenSW.NorthEdgeDead)
-                SetEvenSWNorthEdgeDead();
-            if (evenSW.WestEdgeDead)
-                SetEvenSWWestEdgeDead();
-            if (evenSW.AllDead)
-                SetEvenSWAllRegionsDead();
-        }
-
-        private void SetEvenSEQuad3FullyStableMaybeDead()
-        {
-            SetEvenSEAllRegionsStable();
-            if (evenSE.NorthwestCornerDead)
-                SetEvenSENWCornerDead();
-            if (evenSE.NorthEdgeDead)
-                SetEvenSENorthEdgeDead();
-            if (evenSE.WestEdgeDead)
-                SetEvenSEWestEdgeDead();
-            if (evenSE.AllDead)
-                SetEvenSEAllRegionsDead();
-        }
-
-        private void SetOddNWQuad3FullyStableMaybeDead()
-        {
-            SetOddNWAllRegionsStable();
-            if (oddNW.SoutheastCornerDead)
-                SetOddNWSECornerDead();
-            if (oddNW.SouthEdgeDead)
-                SetOddNWSouthEdgeDead();
-            if (oddNW.EastEdgeDead)
-                SetOddNWEastEdgeDead();
-            if (oddNW.AllDead)
-                SetOddNWAllRegionsDead();
-        }
-
-        private void SetOddSWQuad3FullyStableMaybeDead()
-        {
-            SetOddSWAllRegionsStable();
-            if (oddSW.SoutheastCornerDead)
-                SetOddSWSECornerDead();
-            if (oddSW.SouthEdgeDead)
-                SetOddSWSouthEdgeDead();
-            if (oddSW.EastEdgeDead)
-                SetOddSWEastEdgeDead();
-            if (oddSW.AllDead)
-                SetOddSWAllRegionsDead();
-        }
-
-        private void SetOddNEQuad3FullyStableMaybeDead()
-        {
-            SetOddNEAllRegionsStable();
-            if (oddNE.SoutheastCornerDead)
-                SetOddNESECornerDead();
-            if (oddNE.SouthEdgeDead)
-                SetOddNESouthEdgeDead();
-            if (oddNE.EastEdgeDead)
-                SetOddNEEastEdgeDead();
-            if (oddNE.AllDead)
-                SetOddNEAllRegionsDead();
-        }
-
-        private void SetOddSEQuad3FullyStableMaybeDead()
-        {
-            SetOddSEAllRegionsStable();
-            if (oddSE.SoutheastCornerDead)
-                SetOddSESECornerDead();
-            if (oddSE.SouthEdgeDead)
-                SetOddSESouthEdgeDead();
-            if (oddSE.EastEdgeDead)
-                SetOddSEEastEdgeDead();
-            if (oddSE.AllDead)
-                SetOddSEAllRegionsDead();
-        }
 
         // Is the given quad3 possibly active, either because it is active or because
         // a neighboring quad4 has an active adjoining edge?  If yes, return true.
@@ -519,7 +342,7 @@
         {
             if (EvenNorthwestOrBorderingActive)
                 return true;
-            SetOddNWQuad3FullyStableMaybeDead();
+            OddNWState = MakeOddStableOrDead(oddNW, OddNWState);
             return false;
         }
 
@@ -529,7 +352,7 @@
                 return true;
             if (S != null && S.EvenNorthEdge10WestActive)
                 return true;
-            SetOddSWQuad3FullyStableMaybeDead();
+            OddSWState = MakeOddStableOrDead(oddSW, OddSWState);
             return false;
         }
 
@@ -539,7 +362,7 @@
                 return true;
             if (E != null && E.EvenWestEdge10NorthActive)
                 return true;
-            SetOddNEQuad3FullyStableMaybeDead();
+            OddNEState = MakeOddStableOrDead(oddNE, OddNEState);
             return false;
         }
 
@@ -553,7 +376,7 @@
                 return true;
             if (SE != null && SE.EvenNorthwestCornerActive)
                 return true;
-            SetOddSEQuad3FullyStableMaybeDead();
+            OddSEState = MakeOddStableOrDead(oddSE, OddSEState);
             return false;
         }
 
@@ -567,7 +390,7 @@
                 return true;
             if (NW != null && NW.OddSoutheastCornerActive)
                 return true;
-            SetEvenNWQuad3FullyStableMaybeDead();
+            EvenNWState = MakeEvenStableOrDead(evenNW, EvenNWState);
             return false;
         }
 
@@ -577,7 +400,7 @@
                 return true;
             if (N != null && N.OddSouthEdge10EastActive)
                 return true;
-            SetEvenNEQuad3FullyStableMaybeDead();
+            EvenNEState = MakeEvenStableOrDead(evenNE, EvenNEState);
             return false;
         }
 
@@ -585,7 +408,7 @@
         {
             if (OddSoutheastOrBorderingActive)
                 return true;
-            SetEvenSEQuad3FullyStableMaybeDead();
+            EvenSEState = MakeEvenStableOrDead(evenSE, EvenSEState);
             return false;
         }
 
@@ -595,11 +418,11 @@
                 return true;
             if (W != null && W.OddEastEdge10SouthActive)
                 return true;
-            SetEvenSWQuad3FullyStableMaybeDead();
+            EvenSWState = MakeEvenStableOrDead(evenSW, EvenSWState);
             return false;
         }
 
-        // Update quad3s
+        // Helpers that update a Quad3State
 
         private static Quad3State UpdateEvenQuad3State(Quad3 oldQ3, Quad3 newQ3, Quad3State s)
         {
@@ -706,6 +529,39 @@
             }
             return s;
         }
+
+
+        // If we know a quad3 is stable, we can also check to see if 
+        // some of it can be made dead.
+
+        private static Quad3State MakeEvenStableOrDead(Quad3 q, Quad3State s)
+        {
+            s = s.SetAllRegionsStable();
+            if (q.NorthwestCornerDead)
+                s = s.SetCornerDead();
+            if (q.NorthEdgeDead)
+                s = s.SetHorizontalEdgeDead();
+            if (q.WestEdgeDead)
+                s = s.SetVerticalEdgeDead();
+            if (q.AllDead)
+                s = s.SetAllRegionsDead();
+            return s;
+        }
+
+        private static Quad3State MakeOddStableOrDead(Quad3 q, Quad3State s)
+        {
+            s = s.SetAllRegionsStable();
+            if (q.SoutheastCornerDead)
+                s = s.SetCornerDead();
+            if (q.SouthEdgeDead)
+                s = s.SetHorizontalEdgeDead();
+            if (q.EastEdgeDead)
+                s = s.SetVerticalEdgeDead();
+            if (q.AllDead)
+                s = s.SetAllRegionsDead();
+            return s;
+        }
+
 
         // Stepping
 
@@ -916,30 +772,15 @@
             if (x < 8)
             {
                 if (y < 8)
-                {
                     evenSW = evenSW.Set(x, y);
-                    // TODO: Could be more specific
-                    SetEvenSWAllRegionsActive();
-                }
                 else
-                {
                     evenNW = evenNW.Set(x, y - 8);
-                    // TODO: Could be more specific
-                    SetEvenNWAllRegionsActive();
-                }
             }
             else if (y < 8)
-            {
                 evenSE = evenSE.Set(x - 8, y);
-                // TODO: Could be more specific
-                SetEvenSEAllRegionsActive();
-            }
             else
-            {                
                 evenNE = evenNE.Set(x - 8, y - 8);
-                // TODO: Could be more specific
-                SetEvenSEAllRegionsActive();
-            }
+            SetEvenQuad4AllRegionsActive();
         }
 
         public void ClearEven(int x, int y)
@@ -949,30 +790,15 @@
             if (x < 8)
             {
                 if (y < 8)
-                {
                     evenSW = evenSW.Clear(x, y);
-                    // TODO: Could be more specific
-                    SetEvenSWAllRegionsActive();
-                }
                 else
-                {
                     evenNW = evenNW.Clear(x, y - 8);
-                    // TODO: Could be more specific
-                    SetEvenNWAllRegionsActive();
-                }
             }
             else if (y < 8)
-            {
                 evenSE = evenSE.Clear(x - 8, y);
-                // TODO: Could be more specific
-                SetEvenSEAllRegionsActive();
-            }
             else
-            {
                 evenNE = evenNE.Clear(x - 8, y - 8);
-                // TODO: Could be more specific
-                SetEvenNEAllRegionsActive();
-            }
+            SetEvenQuad4AllRegionsActive();
         }
 
         public bool GetOdd(int x, int y)
@@ -1006,6 +832,7 @@
                 oddSE = oddSE.Set(x - 8, y);
             else
                 oddNE = oddNE.Set(x - 8, y - 8);
+            SetOddQuad4AllRegionsActive();
         }
 
         public void ClearOdd(int x, int y)
@@ -1023,6 +850,7 @@
                 oddSE = oddSE.Clear(x - 8, y);
             else
                 oddNE = oddNE.Clear(x - 8, y - 8);
+            SetOddQuad4AllRegionsActive();
         }
 
         public override string ToString()
