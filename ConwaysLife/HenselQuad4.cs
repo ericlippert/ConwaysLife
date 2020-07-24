@@ -3,9 +3,9 @@
     using System.Diagnostics;
     using static HenselLookup;
     using static Quad2;
-    using static QuadState;
+    using static Quad4State;
 
-    enum QuadState
+    enum Quad4State
     {
         Active,
         Stable,
@@ -296,41 +296,69 @@
         public void SetEvenQuad4AllRegionsDead() => evenstate = 0xffffffff;
         public void SetOddQuad4AllRegionsDead() => oddstate = 0xffffffff;
 
-        // For each Quad3, is it possible that it could be active?  That is,
-        // was there any previous activity in this Quad3 or a Quad3 which
-        // is on either the northeast (even) or southwest (odd) borders?
+        // Suppose we are in an even generation K and we wish to know if there is
+        // any point in computing the next odd generation K+1 of a particular Quad3,
+        // say the NW Quad3. Recall that the odd generation will be one cell to
+        // the southeast of the even generation:
+        //
+        //   +......+..-----+  
+        //   .+------+.     |
+        //   .|      |.     |
+        //   .| o NW |.e NE |
+        //   .|      |.     |
+        //   .|      |.     |
+        //   .|      |.     |
+        //   +|      |.-----+
+        //   .+------+.     |
+        //   ..........     |
+        //   | e SW | e SE  |
+        //
+        // It suffices to know if anything in the 10x10 region which surrounds
+        // the odd NW quad3 -- edged with dots -- is active. If none of it is, 
+        // then the odd NW quad3 will be stable or dead. Remember, if those even 
+        // regions are marked as stable, that's because in generation K-1 we
+        // compared generation K-2 to generation K and determined there was no
+        // change, so we can have confidence that if nothing in the dotted
+        // region changed recently, then the next state of odd NW will be the same
+        // also.
+        //
+        // We check this 10x10 region by checking the even NW entire Quad3,
+        // the even NE west edge, the even SW north edge, and the even
+        // SE northwest corner for activity; if any were active, then 
+        // we must compute the next state of odd NW. If not, we can re-use the
+        // current state.
 
-        private bool EvenNWPossiblyActive() => 
+        private bool OddNWPossiblyActive() => 
             EvenNorthwestOrBorderingActive;
 
-        private bool EvenSWPossiblyActive() =>
+        private bool OddSWPossiblyActive() =>
             EvenSouthwestOrBorderingActive ||
             S != null && S.EvenNorthEdge10WestActive;
 
-        private bool EvenNEPossiblyActive() =>
+        private bool OddNEPossiblyActive() =>
             EvenNortheastOrBorderingActive ||
             E != null && E.EvenWestEdge10NorthActive;
 
-        private bool EvenSEPossiblyActive() =>
+        private bool OddSEPossiblyActive() =>
             EvenSoutheastActive ||
             S != null && S.EvenNorthEdge8EastActive ||
             E != null && E.EvenWestEdge8SouthActive ||
             SE != null && SE.EvenNorthwestCornerActive;
 
-        private bool OddNWPossiblyActive() =>
+        private bool EvenNWPossiblyActive() =>
             OddNorthwestActive ||
             N != null && N.OddSouthEdge8WestActive ||
             W != null && W.OddEastEdge8NorthActive ||
             NW != null && NW.OddSoutheastCornerActive;
 
-        private bool OddNEPossiblyActive() =>
+        private bool EvenNEPossiblyActive() =>
             OddNortheastOrBorderingActive ||
             N != null && N.OddSouthEdge10EastActive;
 
-        private bool OddSEPossiblyActive() =>
+        private bool EvenSEPossiblyActive() =>
             OddSoutheastOrBorderingActive;
 
-        private bool OddSWPossiblyActive() =>
+        private bool EvenSWPossiblyActive() =>
             OddSouthwestOrBorderingActive ||
             W != null && W.OddEastEdge10SouthActive;
 
@@ -338,7 +366,7 @@
 
         private void StepEvenNW()
         {
-            if (EvenNWPossiblyActive())
+            if (OddNWPossiblyActive())
             {
                 Quad3 newOddNW = Step9Quad2ToQuad3Even(
                     evenNW.NW,
@@ -361,7 +389,7 @@
 
         private void StepEvenSW()
         {
-            if (EvenSWPossiblyActive())
+            if (OddSWPossiblyActive())
             {
                 Quad3 newOddSW = Step9Quad2ToQuad3Even(
                     evenSW.NW,
@@ -382,7 +410,7 @@
 
         private void StepEvenNE()
         {
-            if (EvenNEPossiblyActive())
+            if (OddNEPossiblyActive())
             {
                 Quad3 newOddNE = Step9Quad2ToQuad3Even(
                     evenNE.NW,
@@ -403,7 +431,7 @@
 
         private void StepEvenSE()
         {
-            if (EvenSEPossiblyActive())
+            if (OddSEPossiblyActive())
             {
                 Quad3 newOddSE = Step9Quad2ToQuad3Even(
                     evenSE.NW,
@@ -432,7 +460,7 @@
 
         private void StepOddNW()
         {
-            if (OddNWPossiblyActive())
+            if (EvenNWPossiblyActive())
             {
                 Quad3 newEvenNW = Step9Quad2ToQuad3Odd(
                     NW == null ? AllDead : NW.oddSE.SE,
@@ -453,7 +481,7 @@
 
         private void StepOddSW()
         {
-            if (OddSWPossiblyActive())
+            if (EvenSWPossiblyActive())
             {
                 Quad3 newEvenSW = Step9Quad2ToQuad3Odd(
                     W == null ? AllDead : W.oddNE.SE,
@@ -474,7 +502,7 @@
 
         private void StepOddNE()
         {
-            if (OddNEPossiblyActive())
+            if (EvenNEPossiblyActive())
             {
                 Quad3 newEvenNE = Step9Quad2ToQuad3Odd(
                     N == null ? AllDead : N.oddSW.SE,
@@ -495,7 +523,7 @@
 
         private void StepOddSE()
         {
-            if (OddSEPossiblyActive())
+            if (EvenSEPossiblyActive())
             {
                 Quad3 newEvenSE = Step9Quad2ToQuad3Odd(
                     oddNW.SE,
@@ -524,8 +552,8 @@
 
         public bool StayActiveNextStep { get; set; }
 
-        private QuadState state; 
-        public QuadState State { 
+        private Quad4State state; 
+        public Quad4State State { 
             get => state; 
             set
             {
@@ -539,8 +567,8 @@
                 state = value;
             }
         }
-        public QuadState EvenState { get; set; }
-        public QuadState OddState { get; set; }
+        public Quad4State EvenState { get; set; }
+        public Quad4State OddState { get; set; }
 
         public bool GetEven(int x, int y)
         {

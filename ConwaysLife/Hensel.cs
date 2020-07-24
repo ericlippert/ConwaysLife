@@ -5,7 +5,7 @@ using static System.Math;
 
 namespace ConwaysLife.Hensel
 {
-    using static QuadState;
+    using static Quad4State;
 
     sealed class QuickLife : ILife, IReport
     {
