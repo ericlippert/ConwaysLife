@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConwaysLife
 {
-    interface IDoubleLink<T> where T : class, IDoubleLink<T>
+    interface IDoubleLink<T> where T : class
     {
         T Prev { get; set; }
         T Next { get; set; }
