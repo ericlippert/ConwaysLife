@@ -5,14 +5,16 @@ using static ConwaysLife.Quad;
 namespace ConwaysLife
 {
     // Implementation of Gosper's algorithm without "hyper speed".
-    sealed class GosperSlow : ILife
+    sealed class GosperSlow : ILife, IReport, ILog
     {
         static GosperSlow()
         {
             CacheManager.StepMemoizer = new Memoizer<Quad, Quad>(UnmemoizedStep);
         }
 
-        Quad cells;
+        private Quad cells;
+        private long generation;
+
 
         public GosperSlow()
         {
@@ -22,6 +24,7 @@ namespace ConwaysLife
         public void Clear()
         {
             cells = Empty(9);
+            generation = 0;
         }
 
         public bool this[LifePoint p]
@@ -187,5 +190,15 @@ namespace ConwaysLife
 
         private static Quad Step(Quad q) => 
             CacheManager.StepMemoizer.MemoizedFunc(q);
+
+        public string Report() =>
+            $"gen {generation}\n" +
+            $"step {CacheManager.StepMemoizer.Count}\n" +
+            $"make {CacheManager.MakeQuadMemoizer.Count}\n";
+
+        public string Log() =>
+            $"{generation}," +
+            $"{CacheManager.StepMemoizer.Count}," +
+            $"{CacheManager.MakeQuadMemoizer.Count}";
     }
 }

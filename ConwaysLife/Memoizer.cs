@@ -20,4 +20,5 @@ sealed class Memoizer<A, R>
             return r;
         };
     }
+    public int Count => dict.Count;
 }

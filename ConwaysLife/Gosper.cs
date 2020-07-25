@@ -5,7 +5,7 @@ using static ConwaysLife.Quad;
 namespace ConwaysLife
 {
     // Implementation of Gosper's algorithm
-    sealed class Gosper : ILife
+    sealed class Gosper : ILife, IReport, ILog
     {
         static Gosper()
         {
@@ -13,6 +13,7 @@ namespace ConwaysLife
         }
 
         Quad cells;
+        long generation;
 
         public Gosper()
         {
@@ -22,6 +23,7 @@ namespace ConwaysLife
         public void Clear()
         {
             cells = Empty(9);
+            generation = 0;
         }
 
         public bool this[LifePoint p]
@@ -72,6 +74,8 @@ namespace ConwaysLife
             // We might as well bump it up; we're just going to check
             // its edges for emptiness on the next tick again.
             cells = next.Embiggen();
+
+            generation += 1L << speed;
         }
 
         // One more time, the life rule. Given a level-zero quad
@@ -213,7 +217,17 @@ namespace ConwaysLife
             return r;
         }
 
-        private static Quad Step(Quad q, int speed) => UnmemoizedStep((q, speed));
-            // CacheManager.StepSpeedMemoizer.MemoizedFunc((q, speed));
+        private static Quad Step(Quad q, int speed) =>
+            CacheManager.StepSpeedMemoizer.MemoizedFunc((q, speed));
+
+        public string Report() => 
+            $"gen {generation}\n" + 
+            $"step {CacheManager.StepSpeedMemoizer.Count}\n" +
+            $"make {CacheManager.MakeQuadMemoizer.Count}\n";
+
+        public string Log() =>
+            $"{generation}," +
+            $"{CacheManager.StepSpeedMemoizer.Count}," +
+            $"{CacheManager.MakeQuadMemoizer.Count}";
     }
 }

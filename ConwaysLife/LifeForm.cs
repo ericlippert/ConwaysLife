@@ -197,7 +197,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new QuickLife();
+            life = new Gosper();
 
             life.AddPattern(new LifePoint(128, 128), pattern);
 
