@@ -214,7 +214,7 @@
         private Quad3State OddNWState
         {
             get => new Quad3State((oddstate & 0xff000000) >> 24);
-            set => oddstate &= (oddstate & 0x00ffffff) | ((uint)value << 24);
+            set => oddstate = (oddstate & 0x00ffffff) | ((uint)value << 24);
         }
 
         // Getters
