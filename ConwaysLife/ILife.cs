@@ -23,4 +23,9 @@ namespace ConwaysLife
     {
         string Report();
     }
+
+    interface ILog
+    {
+        string Log();
+    }
 }

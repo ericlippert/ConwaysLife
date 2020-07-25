@@ -23,6 +23,8 @@ namespace ConwaysLife
         private bool dragging = false;
         private LifePoint dragStart;
         private OpenFileDialog fileDialog;
+        private bool logging = false;
+        private static string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
         // Record when we start up how much space was left
         // around the display box on the form, so that we can
@@ -279,6 +281,12 @@ namespace ConwaysLife
                 reportBox.Lines = r.Report().Split('\n');
             else
                 reportBox.Text = life.GetType().Name;
+            if (logging && life is ILog log)
+            {
+                string path = Path.Combine(desktop, "lifelog.txt");
+                using (var file = File.AppendText(path))
+                    file.WriteLine(log.Log());
+            }
         }
 
         private void ClearDisplay()
@@ -362,7 +370,6 @@ namespace ConwaysLife
             for (int i = 0; i < ticks; i += 1)
                 perf.Step();
             stopwatch.Stop();
-            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string path = Path.Combine(desktop, "lifeperf.txt");
             using (var file = File.AppendText(path))
             {
@@ -418,6 +425,9 @@ namespace ConwaysLife
             {
                 case Keys.L:
                     LoadFile();
+                    break;
+                case Keys.G:
+                    logging = !logging;
                     break;
                 case Keys.P:
                     Debug.Fail("FYI you are performance testing in the debug build.");

@@ -7,7 +7,7 @@ namespace ConwaysLife.Hensel
 {
     using static Quad4State;
 
-    sealed class QuickLife : ILife, IReport
+    sealed class QuickLife : ILife, IReport, ILog
     {
         // A C# implementation of Alan Hensel's QuickLife algorithm,
         // based on his 1996 source code at:
@@ -393,5 +393,8 @@ namespace ConwaysLife.Hensel
 
         public string Report() => 
             $"gen {generation}\n{active.Count} active\n{stable.Count} stable\n{dead.Count} dead\n";
+
+        public string Log() =>
+            $"{generation},{active.Count},{stable.Count},{dead.Count}";
     }
 }
