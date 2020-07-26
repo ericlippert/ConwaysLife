@@ -31,6 +31,21 @@ namespace ConwaysLife
 
         static Quad()
         {
+            // The Make memoizer and the empty memoizer must agree, but aside from that
+            // we do not have a semantic restriction on use of the memoizer.
+            //
+            // The Empty memoizer never has more than 60 entries so there is no need
+            // to optimize it.  
+            //
+            // I ran 10K ticks of acorn and got 367K entries and 3.1M hits; this is similar in 
+            // magnitude and average hits per entry to the step-speed memoizer.
+            //
+            // Also similar: 97% of entries are accessed <= 20 times.
+            // Also similar: top 10 entries make up 30% of all hits
+            // (though it gets up to 50% much faster)
+            // 
+            // Conclusion: Try just throwing away everything except empty entries.
+
             CacheManager.EmptyMemoizer = new Memoizer<int, Quad>(UnmemoizedEmpty);
             CacheManager.MakeQuadMemoizer = new Memoizer<(Quad, Quad, Quad, Quad), Quad>(UnmemoizedMake);
         }

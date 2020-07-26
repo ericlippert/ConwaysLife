@@ -9,6 +9,23 @@ namespace ConwaysLife
     {
         static Gosper()
         {
+            // In testing Acorn for 10000 generations:
+            // * memoizer had 340K entries and had been hit 3.6M times, so on average
+            //   each entry is hit 10 times, but that average is misleading.
+            // * 97% of memoizer entries are hit 20 times or less
+            // * top 10 items are responsible for 30% of hits, but it ramps down
+            //   very slowly after that; need to go to top many hundreds to get
+            //   to 50% of hits.
+            // 
+            // Conclusion: Two possible strategies:
+            // * One: throw away the 97% of entries that are hit 20 times or less.
+            // That would reduce cache size to ~10K without losing performance.
+            // Down side is: we need to keep track of which are hit more than 20 times
+            // which has perf cost.
+            // * Two: Periodically just throw away all of them. The step-speed memoizer
+            //   is only a performance optimization. The top ten items will be back in
+            //   a few generations.
+
             CacheManager.StepSpeedMemoizer = new Memoizer<(Quad, int), Quad>(UnmemoizedStep);
         }
 
