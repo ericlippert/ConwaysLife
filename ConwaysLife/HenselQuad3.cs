@@ -141,6 +141,20 @@ namespace ConwaysLife.Hensel
             return s;
         }
 
+        public Quad3State MakeEvenStableOrDead(Quad3State s)
+        {
+            s = s.SetAllRegionsStable();
+            if (NorthwestCornerDead)
+                s = s.SetCornerDead();
+            if (NorthEdgeDead)
+                s = s.SetHorizontalEdgeDead();
+            if (WestEdgeDead)
+                s = s.SetVerticalEdgeDead();
+            if (AllDead)
+                s = s.SetAllRegionsDead();
+            return s;
+        }
+
         public Quad3State UpdateOddQuad3State(Quad3 newQ3, Quad3State s)
         {
             Quad3ChangeReport changes = newQ3.Compare(this);
@@ -191,6 +205,20 @@ namespace ConwaysLife.Hensel
             {
                 s = s.SetAllRegionsActive();
             }
+            return s;
+        }
+
+        public Quad3State MakeOddStableOrDead(Quad3State s)
+        {
+            s = s.SetAllRegionsStable();
+            if (SoutheastCornerDead)
+                s = s.SetCornerDead();
+            if (SouthEdgeDead)
+                s = s.SetHorizontalEdgeDead();
+            if (EastEdgeDead)
+                s = s.SetVerticalEdgeDead();
+            if (AllDead)
+                s = s.SetAllRegionsDead();
             return s;
         }
 
