@@ -54,6 +54,7 @@
     <Compile Include="BoolArrayOpt.cs" />
     <Compile Include="AbrashChangeList.cs" />
     <Compile Include="DoubleLinkList.cs" />
+    <Compile Include="Hensel.cs" />
     <Compile Include="HenselLookup.cs" />
     <Compile Include="HenselQuad2.cs" />
     <Compile Include="HenselQuad3.cs" />

@@ -195,7 +195,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new ProtoQuickLife();
+            life = new QuickLife();
             life.AddPattern(new LifePoint(128, 128), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
@@ -387,6 +387,7 @@ namespace ConwaysLife
                     // PerfTest(new Stafford());
                     // PerfTest(new SparseArray());
                     PerfTest(new ProtoQuickLife());
+                    PerfTest(new QuickLife());
                     break;
                 case Keys.R:
                     Reset();
