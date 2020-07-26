@@ -3,6 +3,14 @@
     using System.Diagnostics;
     using static HenselLookup;
     using static Quad2;
+    using static Quad4State;
+
+    enum Quad4State
+    {
+        Active,
+        Stable,
+        Dead
+    }
 
     sealed class Quad4 
     {
