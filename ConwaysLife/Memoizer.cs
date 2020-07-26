@@ -18,9 +18,11 @@ sealed class Memoizer<A, R>
             hits.Add(a, 1);
     }
 
-    private readonly Dictionary<A, R> dict;
+    private Dictionary<A, R> dict;
     private Dictionary<A, int> hits;
+    
     public Func<A, R> MemoizedFunc { get; }
+    
     public Memoizer(Func<A, R> f)
     {
         dict = new Dictionary<A, R>();
@@ -35,8 +37,19 @@ sealed class Memoizer<A, R>
             return r;
         };
     }
+
+    public void Clear(Dictionary<A, R> newDict = null)
+    {
+        dict = newDict ?? new Dictionary<A, R>();
+        hits = null;
+    }
+    
     public int Count => dict.Count;
+    
     public string Report() => 
         hits == null ? "" :
         string.Join("\n", from v in hits.Values group v by v into g select $"{g.Key},{g.Count()}");
+
+
+
 }

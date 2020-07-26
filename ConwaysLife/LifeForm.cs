@@ -76,7 +76,7 @@ namespace ConwaysLife
 
         private const int defaultSpeed = 5;  // 32 ticks per second
         private const int maximumTimerSpeed = 5;
-        private const int maximumSpeed = 15; // 32K ticks per second
+        private const int maximumSpeed = 50; // 
         private int speed = defaultSpeed;
 
         private void SetTimer()
@@ -197,7 +197,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new Gosper();
+            life = new GosperSlow();
 
             life.AddPattern(new LifePoint(128, 128), pattern);
 
@@ -367,8 +367,16 @@ namespace ConwaysLife
             const int ticks = 5000;
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            for (int i = 0; i < ticks; i += 1)
-                perf.Step();
+            if (perf is Gosper)
+            {
+                perf.Step(12); // 4096
+                perf.Step(10); // 1024
+            }
+            else
+            {
+                for (int i = 0; i < ticks; i += 1)
+                    perf.Step();
+            }
             stopwatch.Stop();
             string path = Path.Combine(desktop, "lifeperf.txt");
             using (var file = File.AppendText(path))
@@ -440,6 +448,8 @@ namespace ConwaysLife
                     // PerfTest(new Stafford());
                     PerfTest(new ProtoQuickLife());
                     PerfTest(new QuickLife());
+                    PerfTest(new Gosper());
+                    PerfTest(new Gosper());
                     // PerfTest(new SparseArray());
 
                     //// Run this one twice!

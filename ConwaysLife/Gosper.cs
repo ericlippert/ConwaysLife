@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 using static ConwaysLife.Quad;
+using static System.Math;
+using static System.Linq.Enumerable;
 
 namespace ConwaysLife
 {
@@ -31,6 +34,7 @@ namespace ConwaysLife
 
         Quad cells;
         long generation;
+        long maxCache = 200000;
 
         public Gosper()
         {
@@ -71,9 +75,29 @@ namespace ConwaysLife
             Step(0);
         }
 
+        private void Rememoize()
+        {
+            CacheManager.StepSpeedMemoizer.Clear();
+            var d = new Dictionary<(Quad, Quad, Quad, Quad), Quad>();
+            for (int i = 0; i < MaxLevel; i += 1)
+            {
+                var q = Empty(i);
+                d[(q, q, q, q)] = Empty(i + 1);
+            }
+            CacheManager.MakeQuadMemoizer.Clear(d);
+        }
+
         // Step forward 2 to the n ticks.
         public void Step(int speed)
         {
+            bool resetMaxCache = false;
+            long cacheSize = CacheManager.MakeQuadMemoizer.Count + CacheManager.StepSpeedMemoizer.Count;
+            if (cacheSize > maxCache)
+            {
+                resetMaxCache = true;
+                Rememoize();
+            }
+
             const int MaxSpeed = MaxLevel - 2;
             Debug.Assert(speed >= 0);
             Debug.Assert(speed <= MaxSpeed);
@@ -93,6 +117,12 @@ namespace ConwaysLife
             cells = next.Embiggen();
 
             generation += 1L << speed;
+
+            if (resetMaxCache)
+            {
+                cacheSize = CacheManager.MakeQuadMemoizer.Count + CacheManager.StepSpeedMemoizer.Count;
+                maxCache = Max(maxCache, cacheSize * 2);
+            }
         }
 
         // One more time, the life rule. Given a level-zero quad
@@ -234,13 +264,14 @@ namespace ConwaysLife
             return r;
         }
 
-        private static Quad Step(Quad q, int speed) =>
-            CacheManager.StepSpeedMemoizer.MemoizedFunc((q, speed));
+        private static Quad Step(Quad q, int speed) => 
+            CacheManager.StepSpeedMemoizer.MemoizedFunc((q, speed));           
 
         public string Report() => 
             $"gen {generation}\n" + 
             $"step {CacheManager.StepSpeedMemoizer.Count}\n" +
-            $"make {CacheManager.MakeQuadMemoizer.Count}\n";
+            $"make {CacheManager.MakeQuadMemoizer.Count}\n" +
+            $"max  {maxCache}\n";
 
         public string Log() =>
             $"{generation}," +
