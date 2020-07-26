@@ -254,68 +254,88 @@
 
         private void StepEvenNW()
         {
-            Quad3 newOddNW = Step9Quad2ToQuad3Even(
-                evenNW.NW,
-                evenNW.NE,
-                evenNE.NW,
-                evenNW.SW,
-                evenNW.SE,
-                evenNE.SW,
-                evenSW.NW,
-                evenSW.NE,
-                evenSE.NW);
-            OddNWState = oddNW.UpdateOddQuad3State(newOddNW, OddNWState);
-            oddNW = newOddNW;
+            if (OddNWPossiblyActive())
+            {
+                Quad3 newOddNW = Step9Quad2ToQuad3Even(
+                    evenNW.NW,
+                    evenNW.NE,
+                    evenNE.NW,
+                    evenNW.SW,
+                    evenNW.SE,
+                    evenNE.SW,
+                    evenSW.NW,
+                    evenSW.NE,
+                    evenSE.NW);
+                OddNWState = oddNW.UpdateOddQuad3State(newOddNW, OddNWState);
+                oddNW = newOddNW;
+            }
+            else
+            {
+                OddNWState = oddNW.MakeOddStableOrDead(OddNWState);
+            }
         }
 
         private void StepEvenSW()
         {
-            Quad3 newOddSW = Step9Quad2ToQuad3Even(
-                evenSW.NW,
-                evenSW.NE,
-                evenSE.NW,
-                evenSW.SW,
-                evenSW.SE,
-                evenSE.SW,
-                S == null ? AllDead : S.evenNW.NW,
-                S == null ? AllDead : S.evenNW.NE,
-                S == null ? AllDead : S.evenNE.NW);
-            OddSWState = oddSW.UpdateOddQuad3State(newOddSW, OddSWState);
-            oddSW = newOddSW;
+            if (OddSWPossiblyActive())
+            {
+                Quad3 newOddSW = Step9Quad2ToQuad3Even(
+                    evenSW.NW,
+                    evenSW.NE,
+                    evenSE.NW,
+                    evenSW.SW,
+                    evenSW.SE,
+                    evenSE.SW,
+                    S == null ? AllDead : S.evenNW.NW,
+                    S == null ? AllDead : S.evenNW.NE,
+                    S == null ? AllDead : S.evenNE.NW);
+                OddSWState = oddSW.UpdateOddQuad3State(newOddSW, OddSWState);
+                oddSW = newOddSW;
+            }
+            else
+                OddSWState = oddSW.MakeOddStableOrDead(OddSWState);
         }
 
         private void StepEvenNE()
         {
-            Quad3 newOddNE = Step9Quad2ToQuad3Even(
-                evenNE.NW,
-                evenNE.NE,
-                E == null ? AllDead : E.evenNW.NW,
-                evenNE.SW,
-                evenNE.SE,
-                E == null ? AllDead : E.evenNW.SW,
-                evenSE.NW,
-                evenSE.NE,
-                E == null ? AllDead : E.evenSW.NW);
-
-            OddNEState = oddNE.UpdateOddQuad3State(newOddNE, OddNEState);
-            oddNE = newOddNE;
+            if (OddNEPossiblyActive())
+            {
+                Quad3 newOddNE = Step9Quad2ToQuad3Even(
+                    evenNE.NW,
+                    evenNE.NE,
+                    E == null ? AllDead : E.evenNW.NW,
+                    evenNE.SW,
+                    evenNE.SE,
+                    E == null ? AllDead : E.evenNW.SW,
+                    evenSE.NW,
+                    evenSE.NE,
+                    E == null ? AllDead : E.evenSW.NW);
+                OddNEState = oddNE.UpdateOddQuad3State(newOddNE, OddNEState);
+                oddNE = newOddNE;
+            }
+            else
+                OddNEState = oddNE.MakeOddStableOrDead(OddNEState);
         }
 
         private void StepEvenSE()
         {
-            Quad3 newOddSE = Step9Quad2ToQuad3Even(
-                evenSE.NW,
-                evenSE.NE,
-                E == null ? AllDead : E.evenSW.NW,
-                evenSE.SW,
-                evenSE.SE,
-                E == null ? AllDead : E.evenSW.SW,
-                S == null ? AllDead : S.evenNE.NW,
-                S == null ? AllDead : S.evenNE.NE,
-                SE == null ? AllDead : SE.evenNW.NW);
-
-            OddSEState = oddSE.UpdateOddQuad3State(newOddSE, OddSEState);
-            oddSE = newOddSE;
+            if (OddSEPossiblyActive())
+            {
+                Quad3 newOddSE = Step9Quad2ToQuad3Even(
+                    evenSE.NW,
+                    evenSE.NE,
+                    E == null ? AllDead : E.evenSW.NW,
+                    evenSE.SW,
+                    evenSE.SE,
+                    E == null ? AllDead : E.evenSW.SW,
+                    S == null ? AllDead : S.evenNE.NW,
+                    S == null ? AllDead : S.evenNE.NE,
+                    SE == null ? AllDead : SE.evenNW.NW);
+                OddSEState = oddSE.UpdateOddQuad3State(newOddSE, OddSEState);
+                oddSE = newOddSE;
+            }
+            else
+                OddSEState = oddSE.MakeOddStableOrDead(OddSEState);
         }
 
         public void StepEven()
@@ -328,70 +348,86 @@
 
         private void StepOddNW()
         {
-            Quad3 newEvenNW = Step9Quad2ToQuad3Odd(
-                NW == null ? AllDead : NW.oddSE.SE,
-                N == null ? AllDead : N.oddSW.SW,
-                N == null ? AllDead : N.oddSW.SE,
-                W == null ? AllDead : W.oddNE.NE,
-                oddNW.NW,
-                oddNW.NE,
-                W == null ? AllDead : W.oddNE.SE,
-                oddNW.SW,
-                oddNW.SE);
-
-            EvenNWState = evenNW.UpdateEvenQuad3State(newEvenNW, EvenNWState);
-            evenNW = newEvenNW;
+            if (EvenNWPossiblyActive())
+            {
+                Quad3 newEvenNW = Step9Quad2ToQuad3Odd(
+                    NW == null ? AllDead : NW.oddSE.SE,
+                    N == null ? AllDead : N.oddSW.SW,
+                    N == null ? AllDead : N.oddSW.SE,
+                    W == null ? AllDead : W.oddNE.NE,
+                    oddNW.NW,
+                    oddNW.NE,
+                    W == null ? AllDead : W.oddNE.SE,
+                    oddNW.SW,
+                    oddNW.SE);
+                EvenNWState = evenNW.UpdateEvenQuad3State(newEvenNW, EvenNWState);
+                evenNW = newEvenNW;
+            }
+            else
+                EvenNWState = evenNW.MakeEvenStableOrDead(EvenNWState);
         }
 
         private void StepOddSW()
         {
-            Quad3 newEvenSW = Step9Quad2ToQuad3Odd(
-                W == null ? AllDead : W.oddNE.SE,
-                oddNW.SW,
-                oddNW.SE,
-                W == null ? AllDead : W.oddSE.NE,
-                oddSW.NW,
-                oddSW.NE,
-                W == null ? AllDead : W.oddSE.SE,
-                oddSW.SW,
-                oddSW.SE);
-
-            EvenSWState = evenSW.UpdateEvenQuad3State(newEvenSW, EvenSWState);
-            evenSW = newEvenSW;
+            if (EvenSWPossiblyActive())
+            {
+                Quad3 newEvenSW = Step9Quad2ToQuad3Odd(
+                    W == null ? AllDead : W.oddNE.SE,
+                    oddNW.SW,
+                    oddNW.SE,
+                    W == null ? AllDead : W.oddSE.NE,
+                    oddSW.NW,
+                    oddSW.NE,
+                    W == null ? AllDead : W.oddSE.SE,
+                    oddSW.SW,
+                    oddSW.SE);
+                EvenSWState = evenSW.UpdateEvenQuad3State(newEvenSW, EvenSWState);
+                evenSW = newEvenSW;
+            }
+            else
+                EvenSWState = evenSW.MakeEvenStableOrDead(EvenSWState);
         }
 
         private void StepOddNE()
         {
-            Quad3 newEvenNE = Step9Quad2ToQuad3Odd(
-                N == null ? AllDead : N.oddSW.SE,
-                N == null ? AllDead : N.oddSE.SW,
-                N == null ? AllDead : N.oddSE.SE,
-                oddNW.NE,
-                oddNE.NW,
-                oddNE.NE,
-                oddNW.SE,
-                oddNE.SW,
-                oddNE.SE);
-
-            EvenNEState = evenNE.UpdateEvenQuad3State(newEvenNE, EvenNEState);
-            evenNE = newEvenNE;
+            if (EvenNEPossiblyActive())
+            {
+                Quad3 newEvenNE = Step9Quad2ToQuad3Odd(
+                    N == null ? AllDead : N.oddSW.SE,
+                    N == null ? AllDead : N.oddSE.SW,
+                    N == null ? AllDead : N.oddSE.SE,
+                    oddNW.NE,
+                    oddNE.NW,
+                    oddNE.NE,
+                    oddNW.SE,
+                    oddNE.SW,
+                    oddNE.SE);
+                EvenNEState = evenNE.UpdateEvenQuad3State(newEvenNE, EvenNEState);
+                evenNE = newEvenNE;
+            }
+            else
+                EvenNEState = evenNE.MakeEvenStableOrDead(EvenNEState);
         }
 
         private void StepOddSE()
         {
-            Quad3 newEvenSE = Step9Quad2ToQuad3Odd(
-                oddNW.SE,
-                oddNE.SW,
-                oddNE.SE,
-                oddSW.NE,
-                oddSE.NW,
-                oddSE.NE,
-                oddSW.SE,
-                oddSE.SW,
-                oddSE.SE);
-
-            EvenSEState = evenSE.UpdateEvenQuad3State(newEvenSE, EvenSEState);
-            evenSE = newEvenSE;
+            if (EvenSEPossiblyActive())
+            {
+                Quad3 newEvenSE = Step9Quad2ToQuad3Odd(
+                    oddNW.SE,
+                    oddNE.SW,
+                    oddNE.SE,
+                    oddSW.NE,
+                    oddSE.NW,
+                    oddSE.NE,
+                    oddSW.SE,
+                    oddSE.SW,
+                    oddSE.SE);
+                EvenSEState = evenSE.UpdateEvenQuad3State(newEvenSE, EvenSEState);
+                evenSE = newEvenSE;
+            }
+            else
+                EvenSEState = evenSE.MakeEvenStableOrDead(EvenSEState);
         }
 
         public void StepOdd()
@@ -401,6 +437,8 @@
             StepOddNE();
             StepOddSE();
         }
+
+        // Reading and writing individual cells
 
         public bool GetEven(int x, int y)
         {
