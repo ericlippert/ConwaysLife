@@ -15,7 +15,6 @@ namespace ConwaysLife
         private Quad cells;
         private long generation;
 
-
         public GosperSlow()
         {
             Clear();
