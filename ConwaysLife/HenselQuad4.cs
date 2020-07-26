@@ -43,6 +43,125 @@
         private Quad3 oddNE;
         private Quad3 oddSE;
 
+        private uint evenstate;
+
+        // This is an array of 32 bits which tracks change information for regions of
+        // a quad4, broken down into regions of the individual quad3s. That is, each bit
+        // gives the state of a rectangular region of one of the quad3s in the quad4.
+        //
+        // There are three possible states: 
+        //
+        // * active: cells have changed recently.
+        // * stable: the new state is the same as the previous state.
+        // * dead: the new state is the same as the previous state, and moreover,
+        //   all the cells in the region are dead.
+
+        // We represent these three states in two bits for each of four regions
+        // in every quad3:
+        //
+        // * both bits on is dead
+        // * low bit on, high bit off is stable
+        // * both bits off is active
+
+        // The regions we track in each even-cycle quad3 are:
+        //
+        // * The entire 8x8 quad3
+        // * The 2x8 western edge of the quad3
+        // * the 8x2 northern edge of the quad3
+        // * the 2x2 northwestern corner of the quad3
+        //
+        // The details of setting these bits are handled by Quad3 and
+        // Quad3State. However, when we get the bits, we usually want
+        // to get them in combination; it's efficient to do so with a
+        // single masking operation across all four Quad3s.
+        //
+        // Bit meanings are:
+        //
+        //  7: SE all dead
+        //  6: SE W edge dead
+        //  5: SE N edge dead
+        //  4: SE NW corner dead
+        //  3: SE all stable
+        //  2: SE W edge stable
+        //  1: SE N edge stable
+        //  0: SE NW corner stable
+        // 
+        // Bits 8-15: same, but for NE
+        // Bits 16-23: same, but for SW
+        // Bits 24-31: same, but for NW
+        //
+        // We similarly track these regions in each odd-cycle quad3:
+        //
+        // * The entire 8x8 quad3
+        // * The 2x8 eastern edge of the quad3
+        // * the 8x2 southern edge of the quad3
+        // * the 2x2 southeastern corner of the quad3
+        //
+        // Bit meanings are:
+        //
+        //  7: SE all dead
+        //  6: SE E edge dead
+        //  5: SE S edge dead
+        //  4: SE SE corner dead
+        //  3: SE all stable
+        //  2: SE E edge stable
+        //  1: SE S edge stable
+        //  0: SE SE corner stable
+        // 
+        // Bits 8-15: same, but for NE
+        // Bits 16-23: same, but for SW
+        // Bits 24-31: same, but for NW
+
+        private Quad3State EvenSEState
+        {
+            get => new Quad3State(evenstate & 0x000000ff);
+            set => evenstate = (evenstate & 0xffffff00) | (uint)value;
+        }
+
+        private Quad3State EvenNEState
+        {
+            get => new Quad3State((evenstate & 0x0000ff00) >> 8);
+            set => evenstate = (evenstate & 0xffff00ff) | ((uint)value << 8);
+        }
+
+        private Quad3State EvenSWState
+        {
+            get => new Quad3State((evenstate & 0x00ff0000) >> 16);
+            set => evenstate = (evenstate & 0xff00ffff) | ((uint)value << 16);
+        }
+
+        private Quad3State EvenNWState
+        {
+            get => new Quad3State((evenstate & 0x00ff0000) >> 24);
+            set => evenstate = (evenstate & 0x00ffffff) | ((uint)value << 24);
+        }
+
+        private uint oddstate;
+
+        private Quad3State OddSEState
+        {
+            get => new Quad3State(oddstate & 0x000000ff);
+            set => oddstate = (oddstate & 0xffffff00) | (uint)value;
+        }
+
+        private Quad3State OddNEState
+        {
+            get => new Quad3State((oddstate & 0x0000ff00) >> 8);
+            set => oddstate = (oddstate & 0xffff00ff) | ((uint)value << 8);
+        }
+
+        private Quad3State OddSWState
+        {
+            get => new Quad3State((oddstate & 0x00ff0000) >> 16);
+            set => oddstate = (oddstate & 0xff00ffff) | ((uint)value << 16);
+        }
+
+        private Quad3State OddNWState
+        {
+            get => new Quad3State((oddstate & 0xff000000) >> 24);
+            set => oddstate = (oddstate & 0x00ffffff) | ((uint)value << 24);
+        }
+
         // Stepping
 
         private void StepEvenNW()
