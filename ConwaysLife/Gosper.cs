@@ -8,7 +8,7 @@ using static System.Linq.Enumerable;
 namespace ConwaysLife
 {
     // Implementation of Gosper's algorithm
-    sealed class Gosper : ILife, IReport, ILog
+    sealed class Gosper : ILife, IReport, ILog, IDrawScale
     {
         static Gosper()
         {
@@ -67,8 +67,15 @@ namespace ConwaysLife
 
         public void Draw(LifeRect rect, Action<LifePoint> setPixel)
         {
-            cells.Draw(rect, setPixel);
+            Draw(rect, setPixel, 0);
         }
+
+        public void Draw(LifeRect rect, Action<LifePoint> setPixel, int scale)
+        {
+            cells.Draw(rect, setPixel, scale);
+        }
+
+        public int MaxScale => 50;
 
         public void Step()
         {

@@ -55,10 +55,12 @@ namespace ConwaysLife
         // scale == -2 means a cell is 4 pixels wide
         // scale == -1 means a cell is 2 pixels wide
         // scale ==  0 means a cell is 1 pixel wide
+        // scale ==  1 means one pixel is 2 cells wide
+        // scale ==  2 means one pixel is 4 cells wide
+        // scale ==  3 means one pixel is 8 cells wide
 
-        // TODO: Positive scales are not yet implemented.
 
-        private const int maxScale = 0;
+        private int MaxScale => life is IDrawScale d ? d.MaxScale : 0;
         private const int minScale = -6;
         private const int defaultScale = -1;
         private int scale = defaultScale;
@@ -99,11 +101,11 @@ namespace ConwaysLife
         }
 
         // This operation divides v by the scale factor.
-        private long ScaleDown(long l)
+        private long ScaleDown(long v)
         {
             if (scale >= 0)
-                return l >> scale;
-            return l << -scale;
+                return v >> scale;
+            return v << -scale;
         }
 
         // This is the Life coordinate of the upper left corner of the display.
@@ -138,7 +140,7 @@ namespace ConwaysLife
 
         private void ZoomOut(LifePoint v)
         {
-            if (scale < maxScale)
+            if (scale < MaxScale)
             {
                 corner = new LifePoint(2 * corner.X - v.X, 2 * corner.Y - v.Y);
                 scale += 1;

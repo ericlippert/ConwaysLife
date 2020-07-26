@@ -278,16 +278,17 @@ namespace ConwaysLife
         // Assuming that this quad is a grid centered on the origin, 
         // call setPixel for every living cell inside the given
         // rectangle.
-        public void Draw(LifeRect r, Action<LifePoint> setPixel)
+        public void Draw(LifeRect r, Action<LifePoint> setPixel, int scale)
         {
-            Draw(new LifePoint(-Width / 2, -Width / 2), r, setPixel);
+            Draw(new LifePoint(-Width / 2, -Width / 2), r, setPixel, scale);
         }
 
         // Assuming that this quad is a grid whose bottom left corner
         // has the given coordinates, call setPixel for every living 
         // cell inside the given rectangle.
-        private void Draw(LifePoint lowerLeft, LifeRect rect, Action<LifePoint> setPixel)
+        private void Draw(LifePoint lowerLeft, LifeRect rect, Action<LifePoint> setPixel, int scale)
         {
+            Debug.Assert(scale >= 0);
             // Easy out; if we're an empty grid then there are no pixels to draw.
             if (IsEmpty)
                 return;
@@ -301,17 +302,17 @@ namespace ConwaysLife
             if (!rect.Overlaps(new LifeRect(lowerLeft.X, lowerLeft.Y + Width - 1, Width, Width)))
                 return;
 
-            if (Level == 0)
+            if (Level <= scale)
             {
                 setPixel(lowerLeft);
                 return;
             }
 
             long w = Width / 2;
-            NW.Draw(new LifePoint(lowerLeft.X, lowerLeft.Y + w), rect, setPixel);
-            NE.Draw(new LifePoint(lowerLeft.X + w, lowerLeft.Y + w), rect, setPixel);
-            SE.Draw(new LifePoint(lowerLeft.X + w, lowerLeft.Y), rect, setPixel);
-            SW.Draw(lowerLeft, rect, setPixel);
+            NW.Draw(new LifePoint(lowerLeft.X, lowerLeft.Y + w), rect, setPixel, scale);
+            NE.Draw(new LifePoint(lowerLeft.X + w, lowerLeft.Y + w), rect, setPixel, scale);
+            SE.Draw(new LifePoint(lowerLeft.X + w, lowerLeft.Y), rect, setPixel, scale);
+            SW.Draw(lowerLeft, rect, setPixel, scale);
         }
 
         // Given an n-quad, give me back an (n+1) quad with the original
