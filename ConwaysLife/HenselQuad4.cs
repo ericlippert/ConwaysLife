@@ -291,6 +291,8 @@
         // Quad4s that stay on the dead list long enough get orphaned and 
         // collected.
 
+        public bool StayActiveNextStep { get; set; }
+
         private Quad4State state;
         public Quad4State State
         {
