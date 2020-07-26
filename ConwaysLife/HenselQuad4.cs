@@ -271,6 +271,45 @@
             OddSouthwestOrBorderingActive ||
             W != null && W.OddEastEdge10SouthActive;
 
+        // Quad4 state
+        //
+        // A Quad4 is either on the active, stable or dead list.
+        // This property tells us which.
+        //
+        // An active Quad4 becomes dead if:
+        // * We are not temporarily keeping it active
+        // * Both the even and odd cycles vote for it to be dead
+        //
+        // An active Quad4 becomes stable if:
+        // * We are not temporarily keeping it active
+        // * One of the even or odd cycles votes for it to be stable
+        // * The other votes for it to be stable or dead.
+        //
+        // A stable or dead Quad4 becomes active if a nearby Quad4
+        // has an active adjoining edge.
+        //
+        // Quad4s that stay on the dead list long enough get orphaned and 
+        // collected.
+
+        private Quad4State state;
+        public Quad4State State
+        {
+            get => state;
+            set
+            {
+                if (value == Active)
+                {
+                    EvenState = Active;
+                    OddState = Active;
+                    SetEvenQuad4AllRegionsActive();
+                    SetOddQuad4AllRegionsActive();
+                }
+                state = value;
+            }
+        }
+        public Quad4State EvenState { get; set; }
+        public Quad4State OddState { get; set; }
+
         // Stepping
 
         private void StepEvenNW()
