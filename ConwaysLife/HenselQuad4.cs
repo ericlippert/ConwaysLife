@@ -202,6 +202,8 @@
         private bool EvenWestEdge10NorthActive => (evenstate & 0x04010000) != 0x04010000;
         private bool EvenQuad4Active => (evenstate & 0x08080808) != 0x08080808;
         private bool EvenQuad4Dead => (evenstate & 0x80808080) == 0x80808080;
+        private bool EvenNorthEdgeDead => (evenstate & 0x20002000) == 0x20002000;
+        private bool EvenWestEdgeDead => (evenstate & 0x40400000) == 0x40400000;
 
         public bool OddSoutheastCornerActive => (oddstate & 0x00000001) != 0x00000001;
         public bool OddEastEdgeActive => (oddstate & 0x00000404) != 0x00000404;
@@ -216,6 +218,8 @@
         private bool OddEastEdge10SouthActive => (oddstate & 0x00000104) != 0x00000104;
         private bool OddQuad4Active => (oddstate & 0x08080808) != 0x08080808;
         private bool OddQuad4Dead => (oddstate & 0x80808080) == 0x80808080;
+        private bool OddSouthEdgeDead => (oddstate & 0x00200020) == 0x00200020;
+        private bool OddEastEdgeDead => (oddstate & 0x00004040) == 0x00004040;
 
         // Suppose we are in an even generation K and we wish to know if there is
         // any point in computing the next odd generation K+1 of a particular Quad3,
