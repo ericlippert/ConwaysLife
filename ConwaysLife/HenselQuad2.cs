@@ -79,6 +79,7 @@ namespace ConwaysLife.Hensel
         public Quad2 SW => new Quad2((ushort)(cells & SWMask));
         public Quad2 SE => new Quad2((ushort)(cells & SEMask));
         public static Quad2 operator |(Quad2 x, Quad2 y) => new Quad2((ushort)(x.cells | y.cells));
+        public static Quad2 operator ^(Quad2 x, Quad2 y) => new Quad2((ushort)(x.cells ^ y.cells));
         public static explicit operator ushort(Quad2 x) => x.cells;
 
         public Quad2 Flip => new Quad2((ushort)(((cells & SouthEdgeMask) << 4) | ((cells & NorthEdgeMask) >> 4)));
