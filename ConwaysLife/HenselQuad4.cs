@@ -162,6 +162,94 @@
             set => oddstate = (oddstate & 0x00ffffff) | ((uint)value << 24);
         }
 
+        // Getters
+
+        private bool EvenSoutheastActive => (evenstate & 0x00000008) != 0x00000008;
+        private bool EvenNorthwestCornerActive => (evenstate & 0x01000000) != 0x01000000;
+        private bool EvenNorthwestOrBorderingActive => (evenstate & 0x08020401) != 0x08020401;
+        private bool EvenSouthwestOrBorderingActive => (evenstate & 0x00080004) != 0x00080004;
+        private bool EvenNortheastOrBorderingActive => (evenstate & 0x00000802) != 0x00000802;
+        private bool EvenNorthEdge8EastActive => (evenstate & 0x00000200) != 0x00000200;
+        private bool EvenWestEdge8SouthActive => (evenstate & 0x00040000) != 0x00040000;
+        private bool EvenNorthEdge10WestActive => (evenstate & 0x02000100) != 0x02000100;
+        private bool EvenWestEdge10NorthActive => (evenstate & 0x04010000) != 0x04010000;
+
+        private bool OddNorthwestActive => (oddstate & 0x08000000) != 0x08000000;
+        private bool OddSoutheastCornerActive => (oddstate & 0x00000001) != 0x00000001;
+        private bool OddSoutheastOrBorderingActive => (oddstate & 0x01040208) != 0x01040208;
+        private bool OddNortheastOrBorderingActive => (oddstate & 0x04000800) != 0x04000800;
+        private bool OddSouthwestOrBorderingActive => (oddstate & 0x02080000) != 0x02080000;
+        private bool OddSouthEdge8WestActive => (oddstate & 0x00020000) != 0x00020000;
+        private bool OddEastEdge8NorthActive => (oddstate & 0x00000400) != 0x00000400;
+        private bool OddSouthEdge10EastActive => (oddstate & 0x00010002) != 0x00010002;
+        private bool OddEastEdge10SouthActive => (oddstate & 0x00000104) != 0x00000104;        
+
+        // Suppose we are in an even generation K and we wish to know if there is
+        // any point in computing the next odd generation K+1 of a particular Quad3,
+        // say the NW Quad3. Recall that the odd generation will be one cell to
+        // the southeast of the even generation:
+        //
+        //   +......+..-----+  
+        //   .+------+.     |
+        //   .|      |.     |
+        //   .| o NW |.e NE |
+        //   .|      |.     |
+        //   .|      |.     |
+        //   .|      |.     |
+        //   +|      |.-----+
+        //   .+------+.     |
+        //   ..........     |
+        //   | e SW | e SE  |
+        //
+        // It suffices to know if anything in the 10x10 region which surrounds
+        // the odd NW quad3 -- edged with dots -- is active. If none of it is, 
+        // then the odd NW quad3 will be stable or dead. Remember, if those even 
+        // regions are marked as stable, that's because in generation K-1 we
+        // compared generation K-2 to generation K and determined there was no
+        // change, so we can have confidence that if nothing in the dotted
+        // region changed recently, then the next state of odd NW will be the same
+        // also.
+        //
+        // We check this 10x10 region by checking the even NW entire Quad3,
+        // the even NE west edge, the even SW north edge, and the even
+        // SE northwest corner for activity; if any were active, then 
+        // we must compute the next state of odd NW. If not, we can re-use the
+        // current state.
+
+        private bool OddNWPossiblyActive() =>
+            EvenNorthwestOrBorderingActive;
+
+        private bool OddSWPossiblyActive() =>
+            EvenSouthwestOrBorderingActive ||
+            S != null && S.EvenNorthEdge10WestActive;
+
+        private bool OddNEPossiblyActive() =>
+            EvenNortheastOrBorderingActive ||
+            E != null && E.EvenWestEdge10NorthActive;
+
+        private bool OddSEPossiblyActive() =>
+            EvenSoutheastActive ||
+            S != null && S.EvenNorthEdge8EastActive ||
+            E != null && E.EvenWestEdge8SouthActive ||
+            SE != null && SE.EvenNorthwestCornerActive;
+
+        private bool EvenNWPossiblyActive() =>
+            OddNorthwestActive ||
+            N != null && N.OddSouthEdge8WestActive ||
+            W != null && W.OddEastEdge8NorthActive ||
+            NW != null && NW.OddSoutheastCornerActive;
+
+        private bool EvenNEPossiblyActive() =>
+            OddNortheastOrBorderingActive ||
+            N != null && N.OddSouthEdge10EastActive;
+
+        private bool EvenSEPossiblyActive() =>
+            OddSoutheastOrBorderingActive;
+
+        private bool EvenSWPossiblyActive() =>
+            OddSouthwestOrBorderingActive ||
+            W != null && W.OddEastEdge10SouthActive;
+
         // Stepping
 
         private void StepEvenNW()
