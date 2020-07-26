@@ -289,6 +289,32 @@
             OddSouthwestOrBorderingActive ||
             W != null && W.OddEastEdge10SouthActive;
 
+        // Similarly we want to know if an 18x18 region is active or dead:
+
+        public bool EvenQuad4OrNeighborsActive =>
+            EvenQuad4Active ||
+            (S != null && S.EvenNorthEdgeActive) ||
+            (E != null && E.EvenWestEdgeActive) ||
+            (SE != null && SE.EvenNorthwestCornerActive);
+
+        public bool OddQuad4OrNeighborsActive =>
+            OddQuad4Active ||
+            (N != null && N.OddSouthEdgeActive) ||
+            (W != null && W.OddEastEdgeActive) ||
+            (NW != null && NW.OddSoutheastCornerActive);
+
+        public bool EvenQuad4AndNeighborsAreDead =>
+            EvenQuad4Dead &&
+            (S == null || S.EvenNorthEdgeDead) &&
+            (E == null || E.EvenWestEdgeDead) &&
+            (SE == null || SE.EvenNorthwestCornerDead);
+
+        public bool OddQuad4AndNeighborsAreDead =>
+            OddQuad4Dead &&
+            (N == null || N.OddSouthEdgeDead) &&
+            (W == null || W.OddEastEdgeDead) &&
+            (NW == null || NW.OddSoutheastCornerDead);
+
         // Quad4 state
         //
         // A Quad4 is either on the active, stable or dead list.
