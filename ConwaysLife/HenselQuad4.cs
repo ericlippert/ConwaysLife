@@ -166,7 +166,7 @@
 
         private void StepEvenNW()
         {
-            oddNW = Step9Quad2ToQuad3Even(
+            Quad3 newOddNW = Step9Quad2ToQuad3Even(
                 evenNW.NW,
                 evenNW.NE,
                 evenNE.NW,
@@ -176,11 +176,13 @@
                 evenSW.NW,
                 evenSW.NE,
                 evenSE.NW);
+            OddNWState = oddNW.UpdateOddQuad3State(newOddNW, OddNWState);
+            oddNW = newOddNW;
         }
 
         private void StepEvenSW()
         {
-            oddSW = Step9Quad2ToQuad3Even(
+            Quad3 newOddSW = Step9Quad2ToQuad3Even(
                 evenSW.NW,
                 evenSW.NE,
                 evenSE.NW,
@@ -190,11 +192,13 @@
                 S == null ? AllDead : S.evenNW.NW,
                 S == null ? AllDead : S.evenNW.NE,
                 S == null ? AllDead : S.evenNE.NW);
+            OddSWState = oddSW.UpdateOddQuad3State(newOddSW, OddSWState);
+            oddSW = newOddSW;
         }
 
         private void StepEvenNE()
         {
-            oddNE = Step9Quad2ToQuad3Even(
+            Quad3 newOddNE = Step9Quad2ToQuad3Even(
                 evenNE.NW,
                 evenNE.NE,
                 E == null ? AllDead : E.evenNW.NW,
@@ -204,11 +208,14 @@
                 evenSE.NW,
                 evenSE.NE,
                 E == null ? AllDead : E.evenSW.NW);
+
+            OddNEState = oddNE.UpdateOddQuad3State(newOddNE, OddNEState);
+            oddNE = newOddNE;
         }
 
         private void StepEvenSE()
         {
-            oddSE = Step9Quad2ToQuad3Even(
+            Quad3 newOddSE = Step9Quad2ToQuad3Even(
                 evenSE.NW,
                 evenSE.NE,
                 E == null ? AllDead : E.evenSW.NW,
@@ -218,6 +225,9 @@
                 S == null ? AllDead : S.evenNE.NW,
                 S == null ? AllDead : S.evenNE.NE,
                 SE == null ? AllDead : SE.evenNW.NW);
+
+            OddSEState = oddSE.UpdateOddQuad3State(newOddSE, OddSEState);
+            oddSE = newOddSE;
         }
 
         public void StepEven()
@@ -230,7 +240,7 @@
 
         private void StepOddNW()
         {
-            evenNW = Step9Quad2ToQuad3Odd(
+            Quad3 newEvenNW = Step9Quad2ToQuad3Odd(
                 NW == null ? AllDead : NW.oddSE.SE,
                 N == null ? AllDead : N.oddSW.SW,
                 N == null ? AllDead : N.oddSW.SE,
@@ -240,11 +250,14 @@
                 W == null ? AllDead : W.oddNE.SE,
                 oddNW.SW,
                 oddNW.SE);
+
+            EvenNWState = evenNW.UpdateEvenQuad3State(newEvenNW, EvenNWState);
+            evenNW = newEvenNW;
         }
 
         private void StepOddSW()
         {
-            evenSW = Step9Quad2ToQuad3Odd(
+            Quad3 newEvenSW = Step9Quad2ToQuad3Odd(
                 W == null ? AllDead : W.oddNE.SE,
                 oddNW.SW,
                 oddNW.SE,
@@ -254,11 +267,14 @@
                 W == null ? AllDead : W.oddSE.SE,
                 oddSW.SW,
                 oddSW.SE);
+
+            EvenSWState = evenSW.UpdateEvenQuad3State(newEvenSW, EvenSWState);
+            evenSW = newEvenSW;
         }
 
         private void StepOddNE()
         {
-            evenNE = Step9Quad2ToQuad3Odd(
+            Quad3 newEvenNE = Step9Quad2ToQuad3Odd(
                 N == null ? AllDead : N.oddSW.SE,
                 N == null ? AllDead : N.oddSE.SW,
                 N == null ? AllDead : N.oddSE.SE,
@@ -268,11 +284,14 @@
                 oddNW.SE,
                 oddNE.SW,
                 oddNE.SE);
+
+            EvenNEState = evenNE.UpdateEvenQuad3State(newEvenNE, EvenNEState);
+            evenNE = newEvenNE;
         }
 
         private void StepOddSE()
         {
-            evenSE = Step9Quad2ToQuad3Odd(
+            Quad3 newEvenSE = Step9Quad2ToQuad3Odd(
                 oddNW.SE,
                 oddNE.SW,
                 oddNE.SE,
@@ -282,6 +301,9 @@
                 oddSW.SE,
                 oddSE.SW,
                 oddSE.SE);
+
+            EvenSEState = evenSE.UpdateEvenQuad3State(newEvenSE, EvenSEState);
+            evenSE = newEvenSE;
         }
 
         public void StepOdd()
