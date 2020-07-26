@@ -164,8 +164,10 @@
 
         // Getters
 
+        public bool EvenNorthwestCornerActive => (evenstate & 0x01000000) != 0x01000000;
+        public bool EvenWestEdgeActive => (evenstate & 0x04040000) != 0x04040000;
+        public bool EvenNorthEdgeActive => (evenstate & 0x02000200) != 0x02000200;
         private bool EvenSoutheastActive => (evenstate & 0x00000008) != 0x00000008;
-        private bool EvenNorthwestCornerActive => (evenstate & 0x01000000) != 0x01000000;
         private bool EvenNorthwestOrBorderingActive => (evenstate & 0x08020401) != 0x08020401;
         private bool EvenSouthwestOrBorderingActive => (evenstate & 0x00080004) != 0x00080004;
         private bool EvenNortheastOrBorderingActive => (evenstate & 0x00000802) != 0x00000802;
@@ -174,8 +176,10 @@
         private bool EvenNorthEdge10WestActive => (evenstate & 0x02000100) != 0x02000100;
         private bool EvenWestEdge10NorthActive => (evenstate & 0x04010000) != 0x04010000;
 
+        public bool OddSoutheastCornerActive => (oddstate & 0x00000001) != 0x00000001;
+        public bool OddEastEdgeActive => (oddstate & 0x00000404) != 0x00000404;
+        public bool OddSouthEdgeActive => (oddstate & 0x00020002) != 0x00020002;
         private bool OddNorthwestActive => (oddstate & 0x08000000) != 0x08000000;
-        private bool OddSoutheastCornerActive => (oddstate & 0x00000001) != 0x00000001;
         private bool OddSoutheastOrBorderingActive => (oddstate & 0x01040208) != 0x01040208;
         private bool OddNortheastOrBorderingActive => (oddstate & 0x04000800) != 0x04000800;
         private bool OddSouthwestOrBorderingActive => (oddstate & 0x02080000) != 0x02080000;
