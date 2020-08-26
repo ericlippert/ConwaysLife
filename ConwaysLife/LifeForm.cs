@@ -23,6 +23,8 @@ namespace ConwaysLife
         private bool dragging = false;
         private LifePoint dragStart;
         private OpenFileDialog fileDialog;
+        private bool logging = false;
+        private static string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
         // Record when we start up how much space was left
         // around the display box on the form, so that we can
@@ -53,10 +55,12 @@ namespace ConwaysLife
         // scale == -2 means a cell is 4 pixels wide
         // scale == -1 means a cell is 2 pixels wide
         // scale ==  0 means a cell is 1 pixel wide
+        // scale ==  1 means one pixel is 2 cells wide
+        // scale ==  2 means one pixel is 4 cells wide
+        // scale ==  3 means one pixel is 8 cells wide
 
-        // TODO: Positive scales are not yet implemented.
 
-        private const int maxScale = 0;
+        private int MaxScale => life is IDrawScale d ? d.MaxScale : 0;
         private const int minScale = -6;
         private const int defaultScale = -1;
         private int scale = defaultScale;
@@ -97,11 +101,11 @@ namespace ConwaysLife
         }
 
         // This operation divides v by the scale factor.
-        private long ScaleDown(long l)
+        private long ScaleDown(long v)
         {
             if (scale >= 0)
-                return l >> scale;
-            return l << -scale;
+                return v >> scale;
+            return v << -scale;
         }
 
         // This is the Life coordinate of the upper left corner of the display.
@@ -136,7 +140,7 @@ namespace ConwaysLife
 
         private void ZoomOut(LifePoint v)
         {
-            if (scale < maxScale)
+            if (scale < MaxScale)
             {
                 corner = new LifePoint(2 * corner.X - v.X, 2 * corner.Y - v.Y);
                 scale += 1;
@@ -169,7 +173,7 @@ namespace ConwaysLife
                 .Parent
                 .EnumerateDirectories("Patterns")
                 .FirstOrDefault()
-                ?.FullName 
+                ?.FullName
                 ?? cd;
 
             UpdateSpeed();
@@ -187,7 +191,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            pattern = Acorn;
+            pattern = Puffer2;
             Reset();
             StartRunning();
         }
@@ -195,7 +199,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new QuickLife();
+            life = new Gosper();
             life.AddPattern(new LifePoint(128, 128), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
@@ -359,11 +363,11 @@ namespace ConwaysLife
             stopwatch.Start();
             for (int i = 0; i < ticks; i += 1)
                 perf.Step();
-            stopwatch.Stop();
+                stopwatch.Stop();
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string path = Path.Combine(desktop, "lifeperf.txt");
             using (var file = File.AppendText(path))
-            {
+            { 
                 file.WriteLine($"{DateTime.Now}:{perf.GetType()}:{stopwatch.ElapsedMilliseconds}");
             }
             timer.Enabled = save;
@@ -386,8 +390,8 @@ namespace ConwaysLife
                     // PerfTest(new StaffordTwo());
                     // PerfTest(new Stafford());
                     // PerfTest(new SparseArray());
-                    PerfTest(new ProtoQuickLife());
-                    PerfTest(new QuickLife());
+                    // PerfTest(new ProtoQuickLife());
+                    // PerfTest(new QuickLife());
                     break;
                 case Keys.R:
                     Reset();
