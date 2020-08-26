@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="LifePoint.cs" />
     <Compile Include="LifeRect.cs" />
+    <Compile Include="Memoizer.cs" />
     <Compile Include="Patterns.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
