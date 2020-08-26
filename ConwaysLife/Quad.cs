@@ -107,6 +107,22 @@ namespace ConwaysLife
 
         public bool IsEmpty => this == Empty(this.Level);
 
+        // Given an n-quad, give me back an (n+1) quad with the original
+        // quad in the center, and a ring of empty cells surrounding it.
+
+        public Quad Embiggen()
+        {
+            Debug.Assert(Level >= 1);
+            if (Level >= MaxLevel)
+                return this;
+            Quad q = Empty(this.Level - 1);
+            return Make(
+                Make(q, q, NW, q),
+                Make(q, q, q, NE),
+                Make(SE, q, q, q),
+                Make(q, SW, q, q));
+        }
+
         // Since we have memoized all quads, it is impossible to know given just a quad
         // what its coordinates are; multiple quads cannot both be referentially 
         // identical and also know their distinct locations. 
