@@ -199,7 +199,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new GosperSlow();
+            life = new QuickLife();
 
             life.AddPattern(new LifePoint(128, 128), pattern);
 
@@ -448,15 +448,11 @@ namespace ConwaysLife
                     //PerfTest(new StaffordChangeList());
                     //PerfTest(new StaffordLookup());
                     // PerfTest(new Stafford());
-                    PerfTest(new ProtoQuickLife());
-                    PerfTest(new QuickLife());
-                    PerfTest(new Gosper());
-                    PerfTest(new Gosper());
                     // PerfTest(new SparseArray());
-
-                    //// Run this one twice!
-                    //PerfTest(new GosperSlow());
-                    //PerfTest(new GosperSlow());
+                    // PerfTest(new ProtoQuickLife());
+                    // PerfTest(new QuickLife());
+                    PerfTest(new GosperSlow());
+                    // PerfTest(new Gosper());
                     break;
                 case Keys.R:
                     Reset();

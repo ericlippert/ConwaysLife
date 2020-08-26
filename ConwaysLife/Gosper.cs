@@ -34,7 +34,8 @@ namespace ConwaysLife
 
         Quad cells;
         long generation;
-        long maxCache = 200000;
+        int steps;
+        int maxCache = 200000;
 
         public Gosper()
         {
@@ -45,6 +46,7 @@ namespace ConwaysLife
         {
             cells = Empty(9);
             generation = 0;
+            steps = 0;
         }
 
         public bool this[LifePoint p]
@@ -82,7 +84,7 @@ namespace ConwaysLife
             Step(0);
         }
 
-        private void Rememoize()
+        private void ResetCaches()
         {
             CacheManager.StepSpeedMemoizer.Clear();
             var d = new Dictionary<(Quad, Quad, Quad, Quad), Quad>();
@@ -98,11 +100,16 @@ namespace ConwaysLife
         public void Step(int speed)
         {
             bool resetMaxCache = false;
-            long cacheSize = CacheManager.MakeQuadMemoizer.Count + CacheManager.StepSpeedMemoizer.Count;
-            if (cacheSize > maxCache)
+            steps += 1;
+            if ((steps & 0x3ff) == 0)
             {
-                resetMaxCache = true;
-                Rememoize();
+                
+                int cacheSize = CacheManager.MakeQuadMemoizer.Count + CacheManager.StepSpeedMemoizer.Count;
+                if (cacheSize > maxCache)
+                {
+                    resetMaxCache = true;
+                    ResetCaches();
+                }
             }
 
             const int MaxSpeed = MaxLevel - 2;
@@ -127,7 +134,7 @@ namespace ConwaysLife
 
             if (resetMaxCache)
             {
-                cacheSize = CacheManager.MakeQuadMemoizer.Count + CacheManager.StepSpeedMemoizer.Count;
+                int cacheSize = CacheManager.MakeQuadMemoizer.Count + CacheManager.StepSpeedMemoizer.Count;
                 maxCache = Max(maxCache, cacheSize * 2);
             }
         }
