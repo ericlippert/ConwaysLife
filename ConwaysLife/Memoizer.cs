@@ -20,9 +20,8 @@ sealed class Memoizer<A, R>
 
     private Dictionary<A, R> dict;
     private Dictionary<A, int> hits;
-    private Func<A, R> f;
+    private readonly Func<A, R> f;
 
-    public Func<A, R> memoized;
     public R MemoizedFunc(A a)
     {
         RecordHit(a);
@@ -51,7 +50,4 @@ sealed class Memoizer<A, R>
     public string Report() => 
         hits == null ? "" :
         string.Join("\n", from v in hits.Values group v by v into g select $"{g.Key},{g.Count()}");
-
-
-
 }
