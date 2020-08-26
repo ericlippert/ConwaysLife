@@ -23,4 +23,10 @@ namespace ConwaysLife
     {
         string Report();
     }
+
+    interface IDrawScale
+    {
+        void Draw(LifeRect rect, Action<LifePoint> setPixel, int scale);
+        int MaxScale { get; }
+    }
 }
