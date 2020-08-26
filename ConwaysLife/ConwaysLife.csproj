@@ -53,6 +53,7 @@
     <Compile Include="BoolArrayLife.cs" />
     <Compile Include="BoolArrayOpt.cs" />
     <Compile Include="AbrashChangeList.cs" />
+    <Compile Include="CacheManager.cs" />
     <Compile Include="DoubleLinkList.cs" />
     <Compile Include="Hensel.cs" />
     <Compile Include="HenselLookup.cs" />
