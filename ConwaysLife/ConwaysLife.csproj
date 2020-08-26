@@ -75,6 +75,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtoHensel.cs" />
+    <Compile Include="Quad.cs" />
     <Compile Include="Scholes.cs" />
     <Compile Include="Screenshot.cs" />
     <Compile Include="SparseArray.cs" />
