@@ -20,22 +20,24 @@ sealed class Memoizer<A, R>
 
     private Dictionary<A, R> dict;
     private Dictionary<A, int> hits;
-    
-    public Func<A, R> MemoizedFunc { get; }
+    private Func<A, R> f;
+
+    public Func<A, R> memoized;
+    public R MemoizedFunc(A a)
+    {
+        RecordHit(a);
+        if (!dict.TryGetValue(a, out R r))
+        {
+            r = f(a);
+            dict.Add(a, r);
+        }
+        return r;
+    }
     
     public Memoizer(Func<A, R> f)
     {
-        dict = new Dictionary<A, R>();
-        MemoizedFunc = (A a) =>
-        {
-            RecordHit(a);
-            if (!dict.TryGetValue(a, out R r))
-            {
-                r = f(a);
-                dict.Add(a, r);
-            }
-            return r;
-        };
+        this.dict = new Dictionary<A, R>();
+        this.f = f;        
     }
 
     public void Clear(Dictionary<A, R> newDict = null)
