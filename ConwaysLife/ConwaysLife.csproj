@@ -55,6 +55,7 @@
     <Compile Include="AbrashChangeList.cs" />
     <Compile Include="CacheManager.cs" />
     <Compile Include="DoubleLinkList.cs" />
+    <Compile Include="Gosper.cs" />
     <Compile Include="Hensel.cs" />
     <Compile Include="HenselLookup.cs" />
     <Compile Include="HenselQuad2.cs" />
