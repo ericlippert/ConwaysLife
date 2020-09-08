@@ -1,7 +1,9 @@
 ﻿using System;
 using static ConwaysLife.Quad;
 using static System.Linq.Enumerable;
+using static System.Math;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace ConwaysLife
 {
@@ -16,6 +18,7 @@ namespace ConwaysLife
 
         private Quad cells;
         private long generation;
+        private int maxCache = 100000;
 
         public Gosper()
         {
@@ -163,8 +166,31 @@ namespace ConwaysLife
         private static Quad Step(Quad q) => 
             CacheManager.StepMemoizer.MemoizedFunc(q);
 
+        private void ResetCaches()
+        {
+            CacheManager.StepMemoizer.Clear();
+            var d = new Dictionary<(Quad, Quad, Quad, Quad), Quad>();
+            for (int i = 0; i < MaxLevel; i += 1)
+            {
+                var q = Empty(i);
+                d[(q, q, q, q)] = Empty(i + 1);
+            }
+            CacheManager.MakeQuadMemoizer.Clear(d);
+        }
+
         public void Step()
         {
+            bool resetMaxCache = false;
+            if ((generation & 0x3ff) == 0)
+            {
+                int cacheSize = CacheManager.MakeQuadMemoizer.Count + CacheManager.StepMemoizer.Count;
+                if (cacheSize > maxCache)
+                {
+                    resetMaxCache = true;
+                    ResetCaches();
+                }
+            }
+
             Quad current = cells;
             if (!current.HasAllEmptyEdges) 
                 current = current.Embiggen().Embiggen(); 
@@ -173,6 +199,12 @@ namespace ConwaysLife
             Quad next = Step(current);
             cells = next.Embiggen(); 
             generation += 1;
+
+            if (resetMaxCache)
+            {
+                int cacheSize = CacheManager.MakeQuadMemoizer.Count + CacheManager.StepMemoizer.Count; 
+                maxCache = Max(maxCache, cacheSize * 2);
+            }
         }
 
         // Step forward 2 to the n ticks.
