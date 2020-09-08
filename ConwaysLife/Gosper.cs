@@ -122,7 +122,7 @@ namespace ConwaysLife
                 Rule(q.SW.NE, n22));
         }
 
-        private static Quad Step(Quad q)
+        private static Quad UnmemoizedStep(Quad q)
         {
             Debug.Assert(q.Level >= 2);
             Quad r;
@@ -154,6 +154,9 @@ namespace ConwaysLife
             Debug.Assert(q.Level == r.Level + 1);
             return r;
         }
+
+        private static Quad Step(Quad q) => 
+            CacheManager.StepMemoizer.MemoizedFunc(q);
 
         public void Step()
         {
