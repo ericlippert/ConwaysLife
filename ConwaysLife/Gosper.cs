@@ -214,6 +214,10 @@ namespace ConwaysLife
                 Step();
         }
 
-        public string Report() => $"gen:{generation}";
+        public string Report() =>
+            $"gen {generation}\n" +
+            $"step {CacheManager.StepMemoizer.Count}\n" +
+            $"make {CacheManager.MakeQuadMemoizer.Count}\n" +
+            $"max  {maxCache}\n";
     }
 }
