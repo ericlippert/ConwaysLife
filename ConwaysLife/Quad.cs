@@ -62,6 +62,54 @@ namespace ConwaysLife
         // accessed so we'll cache it in the object and use an extra field.
         public int Level { get; }
 
+        // We have the NW, NE, SE and SW quads in hand, but we will also need to
+        // be able to get the N, S, E, W and center quads.
+
+        public Quad Center
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(NW.SE, NE.SW, SE.NW, SW.NE);
+            }
+        }
+
+        public Quad N
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(NW.NE, NE.NW, NE.SW, NW.SE);
+            }
+        }
+
+        public Quad E
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(NE.SW, NE.SE, SE.NE, SE.NW);
+            }
+        }
+
+        public Quad S
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(SW.NE, SE.NW, SE.SW, SW.SE);
+            }
+        }
+
+        public Quad W
+        {
+            get
+            {
+                Debug.Assert(Level >= 2);
+                return Make(NW.SW, NW.SE, SW.NE, SW.NW);
+            }
+        }
+
         public long Width => 1L << Level;
 
         private Quad()
