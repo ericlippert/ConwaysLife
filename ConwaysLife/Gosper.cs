@@ -10,6 +10,7 @@ namespace ConwaysLife
     sealed class Gosper : ILife, IReport, IDrawScale
     {
         private Quad cells;
+        private long generation;
 
         public Gosper()
         {
@@ -19,6 +20,7 @@ namespace ConwaysLife
         public void Clear()
         {
             cells = Empty(9);
+            generation = 0;
         }
 
         public bool this[LifePoint p]
@@ -120,17 +122,58 @@ namespace ConwaysLife
                 Rule(q.SW.NE, n22));
         }
 
+        private static Quad Step(Quad q)
+        {
+            Debug.Assert(q.Level >= 2);
+            Quad r;
+            if (q.IsEmpty)
+                r = Empty(q.Level - 1);
+            else if (q.Level == 2)
+                r = StepBaseCase(q);
+            else
+            {
+                Quad q9nw = Step(q.NW);
+                Quad q9n = Step(q.N);
+                Quad q9ne = Step(q.NE);
+                Quad q9w = Step(q.W);
+                Quad q9c = Step(q.Center);
+                Quad q9e = Step(q.E);
+                Quad q9sw = Step(q.SW);
+                Quad q9s = Step(q.S);
+                Quad q9se = Step(q.SE);
+                Quad q4nw = Make(q9nw, q9n, q9c, q9w);
+                Quad q4ne = Make(q9n, q9ne, q9e, q9c);
+                Quad q4se = Make(q9c, q9e, q9se, q9s);
+                Quad q4sw = Make(q9w, q9c, q9s, q9sw);
+                Quad rnw = q4nw.Center;
+                Quad rne = q4ne.Center;
+                Quad rse = q4se.Center;
+                Quad rsw = q4sw.Center;
+                r = Make(rnw, rne, rse, rsw);
+            }
+            Debug.Assert(q.Level == r.Level + 1);
+            return r;
+        }
+
         public void Step()
         {
-            // TODO
+            Quad current = cells;
+            if (!current.HasAllEmptyEdges) 
+                current = current.Embiggen().Embiggen(); 
+            else if (!current.Center.HasAllEmptyEdges) 
+                current = current.Embiggen(); 
+            Quad next = Step(current);
+            cells = next.Embiggen(); 
+            generation += 1;
         }
 
         // Step forward 2 to the n ticks.
         public void Step(int speed)
         {
-            // TODO
+            for (int i = 0; i < 1L << speed; i += 1)
+                Step();
         }
 
-        public string Report() => "Non-stepping Gosper's algorithm";
+        public string Report() => $"gen:{generation}";
     }
 }

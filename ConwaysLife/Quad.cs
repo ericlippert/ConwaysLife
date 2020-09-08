@@ -171,6 +171,12 @@ namespace ConwaysLife
                 Make(q, SW, q, q));
         }
 
+        public bool HasAllEmptyEdges => 
+            NW.NW.IsEmpty && NW.NE.IsEmpty && NE.NW.IsEmpty && 
+            NE.NE.IsEmpty && NE.SE.IsEmpty && SE.NE.IsEmpty && 
+            SE.SE.IsEmpty && SE.SW.IsEmpty && SW.SE.IsEmpty && 
+            SW.SW.IsEmpty && SW.NW.IsEmpty && NW.SW.IsEmpty;
+
         // Since we have memoized all quads, it is impossible to know given just a quad
         // what its coordinates are; multiple quads cannot both be referentially 
         // identical and also know their distinct locations. 
