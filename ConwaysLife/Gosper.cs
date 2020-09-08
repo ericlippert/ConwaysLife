@@ -9,6 +9,11 @@ namespace ConwaysLife
 
     sealed class Gosper : ILife, IReport, IDrawScale
     {
+        static Gosper()
+        {
+            CacheManager.StepMemoizer = new Memoizer<Quad, Quad>(UnmemoizedStep);
+        }
+
         private Quad cells;
         private long generation;
 
