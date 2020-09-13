@@ -84,7 +84,7 @@ namespace ConwaysLife
             Step(0);
         }
 
-        private void ResetCaches()
+        public static void ResetCaches()
         {
             CacheManager.StepSpeedMemoizer.Clear();
             var d = new Dictionary<(Quad, Quad, Quad, Quad), Quad>();

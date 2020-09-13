@@ -199,7 +199,7 @@ namespace ConwaysLife
         private void Reset()
         {
             StopRunning();
-            life = new Gosper();
+            life = new QuickLife();
 
             life.AddPattern(new LifePoint(128, 128), pattern);
 
@@ -361,29 +361,19 @@ namespace ConwaysLife
             timer.Enabled = true;
         }
 
-        private void PerfTest(ILife perf)
+        private void PerfTest(ILife perf, int speed)
         {
             bool save = timer.Enabled;
             timer.Enabled = false;
             perf.AddAcorn(new LifePoint(128, 128));
-            const int ticks = 5000;
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            if (perf is Gosper)
-            {
-                perf.Step(12); // 4096
-                perf.Step(10); // 1024
-            }
-            else
-            {
-                for (int i = 0; i < ticks; i += 1)
-                    perf.Step();
-            }
+            perf.Step(speed);
             stopwatch.Stop();
             string path = Path.Combine(desktop, "lifeperf.txt");
             using (var file = File.AppendText(path))
             {
-                file.WriteLine($"{DateTime.Now}:{perf.GetType()}:{stopwatch.ElapsedMilliseconds}");
+                file.WriteLine($"{DateTime.Now}:{perf.GetType()}:{speed}:{stopwatch.ElapsedMilliseconds}");
             }
             timer.Enabled = save;
         }
@@ -451,8 +441,13 @@ namespace ConwaysLife
                     // PerfTest(new SparseArray());
                     // PerfTest(new ProtoQuickLife());
                     // PerfTest(new QuickLife());
-                    PerfTest(new GosperSlow());
-                    // PerfTest(new Gosper());
+                    // PerfTest(new GosperSlow());
+                    for (int speed = 0; speed < 40; speed += 1)
+                    {
+                        Gosper.ResetCaches();
+                        PerfTest(new Gosper(), speed);
+                        // PerfTest(new QuickLife(), speed);
+                    }
                     break;
                 case Keys.R:
                     Reset();
