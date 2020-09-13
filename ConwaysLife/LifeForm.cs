@@ -78,7 +78,7 @@ namespace ConwaysLife
 
         private const int defaultSpeed = 5;  // 32 ticks per second
         private const int maximumTimerSpeed = 5;
-        private const int maximumSpeed = 15; // 32K ticks per second
+        private const int maximumSpeed = 40; 
         private int speed = defaultSpeed;
 
         private void SetTimer()
