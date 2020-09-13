@@ -263,7 +263,10 @@ namespace ConwaysLife
                 bitmap.PixelFormat);
             int* pixels = (int*)data.Scan0;
             int color = liveColor.ToArgb();
-            life.Draw(LifeRect, DrawPixel);
+            if (life is IDrawScale ds)
+                ds.Draw(LifeRect, DrawPixel, scale);
+            else
+                life.Draw(LifeRect, DrawPixel);
             bitmap.UnlockBits(data);
 
             void DrawPixel(LifePoint v)
