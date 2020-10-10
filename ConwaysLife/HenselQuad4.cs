@@ -180,8 +180,8 @@
 
         // Setters that affect all four Quad3s at once
 
-        private void SetEvenQuad4AllRegionsActive() => evenstate = 0x00000000;
-        private void SetOddQuad4AllRegionsActive() => oddstate = 0x00000000;
+        public void SetEvenQuad4AllRegionsActive() => evenstate = 0x00000000;
+        public void SetOddQuad4AllRegionsActive() => oddstate = 0x00000000;
         public void SetEvenQuad4AllRegionsStable() => evenstate |= 0x0f0f0f0f;
         public void SetOddQuad4AllRegionsStable() => oddstate |= 0x0f0f0f0f;
         public void SetEvenQuad4AllRegionsDead() => evenstate = 0xffffffff;

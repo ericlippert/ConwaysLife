@@ -8,6 +8,7 @@ namespace ConwaysLife.Hensel
     {
         private Dictionary<(short, short), Quad4> quad4s;
         private int generation;
+        private bool previousCorrect;
 
         public ProtoQuickLife()
         {
@@ -19,6 +20,7 @@ namespace ConwaysLife.Hensel
 
         public void Clear()
         {
+            previousCorrect = true;
             generation = 0;
             quad4s = new Dictionary<(short, short), Quad4>();
             for (int y = 0; y < size; y += 1)
@@ -36,17 +38,27 @@ namespace ConwaysLife.Hensel
 
         private void StepEven()
         {
-            foreach (Quad4 c in quad4s.Values)
-                c.StepEven();
+            foreach (Quad4 q in quad4s.Values)
+            { 
+                q.StepEven();
+                if (!previousCorrect)
+                    q.SetOddQuad4AllRegionsActive();
+            }
+            previousCorrect = true;
         }
 
         private void StepOdd()
         {
-            foreach (Quad4 c in quad4s.Values)
-                c.StepOdd();
+            foreach (Quad4 q in quad4s.Values)
+            {
+                q.StepOdd();
+                if (!previousCorrect)
+                    q.SetEvenQuad4AllRegionsActive();
+            }
+            previousCorrect = true;
         }
 
-        private Quad4 AllocateQuad4(int x, int y)
+    private Quad4 AllocateQuad4(int x, int y)
         {
             Quad4 c = new Quad4(x, y);
             c.S = GetQuad4(x, y - 1);
@@ -118,6 +130,8 @@ namespace ConwaysLife.Hensel
                 Quad4 q = GetQuad4((int)(x >> 4), (int)(y >> 4));
                 if (q == null)
                     return;
+
+                previousCorrect = false;
 
                 if (IsOdd)
                 {

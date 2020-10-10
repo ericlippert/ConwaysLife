@@ -59,6 +59,7 @@ namespace ConwaysLife.Hensel
         private readonly DoubleLinkList<Quad4> dead = new DoubleLinkList<Quad4>();
         private Dictionary<(short, short), Quad4> quad4s;
         private int generation;
+        private bool previousCorrect;
 
         public QuickLife()
         {
@@ -67,6 +68,7 @@ namespace ConwaysLife.Hensel
 
         public void Clear()
         {
+            previousCorrect = true;
             generation = 0;
             active.Clear();
             stable.Clear();
@@ -100,7 +102,10 @@ namespace ConwaysLife.Hensel
                     MakeOddNeighborsActive(q);
                 }
                 q.StayActiveNextStep = false;
+                if (!previousCorrect)
+                    q.SetOddQuad4AllRegionsActive();
             }
+            previousCorrect = true;
         }
 
         private void StepOdd()
@@ -113,7 +118,10 @@ namespace ConwaysLife.Hensel
                     MakeEvenNeighborsActive(q);
                 }
                 q.StayActiveNextStep = false;
+                if (!previousCorrect)
+                    q.SetEvenQuad4AllRegionsActive();
             }
+            previousCorrect = true;
         }
 
         private void MakeOddNeighborsActive(Quad4 q)
@@ -315,6 +323,8 @@ namespace ConwaysLife.Hensel
 
                 if (!IsValidPoint(x, y))
                     return;
+
+                previousCorrect = false;
 
                 Quad4 q = EnsureActive(GetQuad4((int)(x >> 4), (int)(y >> 4)), (int)(x >> 4), (int)(y >> 4));
 
