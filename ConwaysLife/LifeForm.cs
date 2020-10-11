@@ -191,7 +191,7 @@ namespace ConwaysLife
             displayWidthOffset = Width - display.Width;
             liveBrush = new SolidBrush(liveColor);
             gridPen = new Pen(gridColor);
-            pattern = Puffer2;
+            pattern = Breeder1;
             Reset();
             StartRunning();
         }
@@ -200,7 +200,7 @@ namespace ConwaysLife
         {
             StopRunning();
             life = new Gosper();
-            life.AddPattern(new LifePoint(128, 128), pattern);
+            life.AddPattern(new LifePoint(0, 256), pattern);
             scale = defaultScale;
             corner = new LifePoint(-2, LifeHeight - 2);
 
